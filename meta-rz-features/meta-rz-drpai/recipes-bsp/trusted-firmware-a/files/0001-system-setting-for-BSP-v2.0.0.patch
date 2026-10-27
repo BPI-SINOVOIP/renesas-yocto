@@ -1,0 +1,146 @@
+From bc596cbaf01dcf75ffcb7e8dad8e0346daca6050 Mon Sep 17 00:00:00 2001
+From: ryoji-takamatsu <ryoji-takamatsu@nec.com>
+Date: Thu, 11 Dec 2025 17:37:39 +0900
+Subject: [PATCH] add_gpv
+
+---
+ plat/renesas/rz/soc/v2h/bl2_plat_setup.c      | 50 +++++++++++++++++++
+ .../v2h/drivers/ddr/ddr_param_def_lpddr4.c    | 28 +++++++----
+ tools/cert_create/Makefile                    |  4 +-
+ tools/fiptool/Makefile                        |  8 +--
+ 4 files changed, 75 insertions(+), 15 deletions(-)
+
+diff --git a/plat/renesas/rz/soc/v2h/bl2_plat_setup.c b/plat/renesas/rz/soc/v2h/bl2_plat_setup.c
+index e7279d3..3d9e57f 100644
+--- a/plat/renesas/rz/soc/v2h/bl2_plat_setup.c
++++ b/plat/renesas/rz/soc/v2h/bl2_plat_setup.c
+@@ -30,6 +30,9 @@
+ extern void bl2_enter_bl31(const struct entry_point_info *bl_ep_info);
+ static console_t rzv2h_bl2_console;
+ 
++static void board_gpv_drp_setting(void);
++
++
+ static uint32_t bl2_plat_get_boot_mode(void)
+ {
+ 	if (sys_is_resume_reboot())
+@@ -124,6 +127,8 @@ void bl2_el3_early_platform_setup(u_register_t arg1, u_register_t arg2,
+ 			CONSOLE_FLAG_BOOT | CONSOLE_FLAG_CRASH);
+ 
+ 	pwrc_setup();
++
++   board_gpv_drp_setting();
+ }
+ 
+ void bl2_el3_plat_arch_setup(void)
+@@ -178,3 +183,48 @@ void bl2_platform_setup(void)
+ 	NOTICE("BL2: SYS_LSI_DEVID: 0x%x\n", mmio_read_32(SYS_LSI_DEVID));
+ 	NOTICE("BL2: SYS_LSI_PRR: 0x%x\n", mmio_read_32(SYS_LSI_PRR));
+ }
++
++static void board_gpv_drp_setting(void)
++{
++//MAC_M*0
++	(*(volatile uint32_t *)(0x1904410C)) = 0x00000063;
++	(*(volatile uint32_t *)(0x19044110)) = 0x20002000;
++	(*(volatile uint32_t *)(0x19044118)) = 0x00000000;
++	(*(volatile uint32_t *)(0x1904411C)) = 0x00000001;
++	(*(volatile uint32_t *)(0x19044120)) = 0x08000000;
++	(*(volatile uint32_t *)(0x19044124)) = 0x00000000;
++	(*(volatile uint32_t *)(0x19044128)) = 0x00000001;
++	(*(volatile uint32_t *)(0x1904412C)) = 0x08000000;
++
++//MAC_M*1
++	(*(volatile uint32_t *)(0x1904510C)) = 0x00000063;
++	(*(volatile uint32_t *)(0x19045110)) = 0x20002000;
++	(*(volatile uint32_t *)(0x19045118)) = 0x00000000;
++	(*(volatile uint32_t *)(0x1904511C)) = 0x00000001;
++	(*(volatile uint32_t *)(0x19045120)) = 0x10000000;
++	(*(volatile uint32_t *)(0x19045124)) = 0x00000000;
++	(*(volatile uint32_t *)(0x19045128)) = 0x00000001;
++	(*(volatile uint32_t *)(0x1904512C)) = 0x10000000;
++
++//MACWT_M*0
++	(*(volatile uint32_t *)(0x1904610C)) = 0x00000063;
++	(*(volatile uint32_t *)(0x19046110)) = 0x20002000;
++	(*(volatile uint32_t *)(0x19046118)) = 0x00000000;
++	(*(volatile uint32_t *)(0x1904611C)) = 0x00000001;
++	(*(volatile uint32_t *)(0x19046120)) = 0x10000000;
++	(*(volatile uint32_t *)(0x19046124)) = 0x00000000;
++	(*(volatile uint32_t *)(0x19046128)) = 0x00000001;
++	(*(volatile uint32_t *)(0x1904612C)) = 0x10000000;
++
++//MACWT_M*01
++	(*(volatile uint32_t *)(0x1904710C)) = 0x00000063;
++	(*(volatile uint32_t *)(0x19047110)) = 0x20002000;
++	(*(volatile uint32_t *)(0x19047118)) = 0x00000000;
++	(*(volatile uint32_t *)(0x1904711C)) = 0x00000001;
++	(*(volatile uint32_t *)(0x19047120)) = 0x10000000;
++	(*(volatile uint32_t *)(0x19047124)) = 0x00000000;
++	(*(volatile uint32_t *)(0x19047128)) = 0x00000001;
++	(*(volatile uint32_t *)(0x1904712C)) = 0x10000000;
++
++	return;
++}
+diff --git a/plat/renesas/rz/soc/v2h/drivers/ddr/ddr_param_def_lpddr4.c b/plat/renesas/rz/soc/v2h/drivers/ddr/ddr_param_def_lpddr4.c
+index fd15457..03a727e 100644
+--- a/plat/renesas/rz/soc/v2h/drivers/ddr/ddr_param_def_lpddr4.c
++++ b/plat/renesas/rz/soc/v2h/drivers/ddr/ddr_param_def_lpddr4.c
+@@ -320,8 +320,8 @@ const uint32_t param_setup_mc[][2] = {
+ 	{0x0131, 0x000fff00},
+ 	{0x0132, 0xffff8000},
+ 	{0x0133, 0x000fff00},
+-	{0x0134, 0xff0b0000},
+-	{0x0135, 0x010001ff},
++	{0x0134, 0x1f0b0000},
++	{0x0135, 0x0101011f},
+ 	{0x0136, 0x01010101},
+ 	{0x0137, 0x1b010101},
+ 	{0x0138, 0x03000001},
+@@ -394,10 +394,10 @@ const uint32_t param_setup_mc[][2] = {
+ 	{0x017b, 0x0b080e00},
+ 	{0x017c, 0x00000008},
+ 	{0x017d, 0x02030306},
+-	{0x017e, 0x00000101},
+-	{0x017f, 0x00000404},
++	{0x017e, 0x00000101},
++	{0x017f, 0x00000202},
+ 	{0x0180, 0x00000404},
+-	{0x0181, 0x00000404},
++	{0x0181, 0x01000505},
+ 	{0x0182, 0x00000404},
+ 	{0x0183, 0x00000404},
+ 	{0x0184, 0x00000000},
+@@ -728,11 +728,11 @@ const uint32_t param_setup_mc[][2] = {
+ 	{0x02c9, 0x0307ffff},
+ 	{0x02ca, 0xffffffff},
+ 	{0x02cb, 0x000f000f},
+-	{0x02cc, 0x01000000},
+-	{0x02cd, 0x01010101},
++	{0x02cc, 0x02000000},
++	{0x02cd, 0x01010104},
+ 	{0x02ce, 0x00010101},
+-	{0x02cf, 0x01010064},
+-	{0x02d0, 0x01010101},
++	{0x02cf, 0x0301000a},
++	{0x02d0, 0x01010102},
+ 	{0x02d1, 0x00010101},
+ 	{0x02d2, 0x01010064},
+ 	{0x02d3, 0x01010101},
+@@ -782,6 +782,16 @@ const uint32_t param_setup_mc[][2] = {
+ 	{0x02ff, 0x00020100},
+ 	{0x0300, 0x101e0002},
+ 	{0x0301, 0x00000006},
++	{0x04D0, 0x1f0b0000},
++	{0x04D4, 0x0101011f},
++	{0x05FC, 0x00000202},
++	{0x05F8, 0x00000101},
++	{0x0604, 0x01000505},
++	{0x0B34, 0x01010401},
++	{0x0B3C, 0x0301000a},
++	{0x0B40, 0x01010102},
++	{0x0B30, 0x02000000},
++	{0x0B34, 0x01010104},
+ 	{0x0802, 0x00000100},
+ 	{0x0803, 0x00000100},
+ 	{0x0804, 0x00000100},

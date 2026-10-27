@@ -1,0 +1,46 @@
+From 6af930d2ec143148b933e5d6921b3a5d4616b8a0 Mon Sep 17 00:00:00 2001
+From: Huynh Thanh Hung <hung.huynh.wz@renesas.com>
+Date: Mon, 9 Feb 2026 21:47:20 +0700
+Subject: [PATCH] runtime_pm: prepare and enable clock again when mismatch
+ state
+
+Even though the controller reports that the clock is already enabled,
+the clk framework still considers it unprepared.
+As a result, we must prepare and enable the clock again.
+
+Signed-off-by: Huynh Thanh Hung <hung.huynh.wz@renesas.com>
+---
+ .../platform/devicetree/mali_kbase_runtime_pm.c        | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/gpu/arm/midgard/platform/devicetree/mali_kbase_runtime_pm.c b/drivers/gpu/arm/midgard/platform/devicetree/mali_kbase_runtime_pm.c
+index 7ac330a..96df815 100644
+--- a/drivers/gpu/arm/midgard/platform/devicetree/mali_kbase_runtime_pm.c
++++ b/drivers/gpu/arm/midgard/platform/devicetree/mali_kbase_runtime_pm.c
+@@ -33,6 +33,7 @@
+ static void enable_gpu_power_control(struct kbase_device *kbdev)
+ {
+ 	unsigned int i;
++	struct clk_hw *hw = NULL;
+ 
+ #if (defined(CONFIG_REGULATOR) && (!IS_REGULATOR_ALWAYS_ON))
+ 	for (i = 0; i < kbdev->nr_regulators; i++) {
+@@ -53,8 +54,13 @@ static void enable_gpu_power_control(struct kbase_device *kbdev)
+ 	for (i = 0; i < kbdev->nr_clocks; i++) {
+ 		if (WARN_ON(kbdev->clocks[i] == NULL))
+ 			;
+-		else if (!__clk_is_enabled(kbdev->clocks[i]))
+-			WARN_ON(clk_prepare_enable(kbdev->clocks[i]));
++		else {
++			hw = __clk_get_hw(kbdev->clocks[i]);
++			if (!__clk_is_enabled(kbdev->clocks[i]) ||
++				(hw && !clk_hw_is_prepared(hw))) {
++				WARN_ON(clk_prepare_enable(kbdev->clocks[i]));
++			}
++		}
+ 	}
+ }
+ 
+-- 
+2.25.1
+

@@ -1,0 +1,32 @@
+From c97c2f2208fd39de360a834562cd409f398d99ff Mon Sep 17 00:00:00 2001
+From: Huynh Thanh Hung <hung.huynh.wz@renesas.com>
+Date: Tue, 20 Jan 2026 13:53:49 +0700
+Subject: [PATCH] mali_kbase_mem_linux: require sync when dmabuf is allocated
+ from non-contigous memory area
+
+When importing the dmabuf which allocated from non-contigous memory
+area, the GPU may use in-completed buffer, then we need to sync the data
+before using it.
+
+Signed-off-by: Huynh Thanh Hung <hung.huynh.wz@renesas.com>
+---
+ drivers/gpu/arm/midgard/mali_kbase_mem_linux.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/gpu/arm/midgard/mali_kbase_mem_linux.c b/drivers/gpu/arm/midgard/mali_kbase_mem_linux.c
+index 53cbb01..e6a0ba6 100644
+--- a/drivers/gpu/arm/midgard/mali_kbase_mem_linux.c
++++ b/drivers/gpu/arm/midgard/mali_kbase_mem_linux.c
+@@ -1581,6 +1581,9 @@ static struct kbase_va_region *kbase_mem_from_umm(struct kbase_context *kctx, in
+ 			goto error_out;
+ 		}
+ 
++		if (reg->gpu_alloc->imported.umm.sgt && reg->gpu_alloc->imported.umm.sgt->orig_nents > 1)
++			reg->gpu_alloc->imported.umm.need_sync = true;
++
+ 		*flags |= KBASE_MEM_IMPORT_HAVE_PAGES;
+ 	}
+ 
+-- 
+2.25.1
+
