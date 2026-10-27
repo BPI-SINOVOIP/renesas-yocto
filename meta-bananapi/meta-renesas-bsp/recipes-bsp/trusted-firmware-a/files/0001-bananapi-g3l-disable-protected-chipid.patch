@@ -1,0 +1,13 @@
+diff --git a/plat/renesas/rz/common/g3l_common.mk b/plat/renesas/rz/common/g3l_common.mk
+index c5a84f9a9..51ec54acd 100644
+--- a/plat/renesas/rz/common/g3l_common.mk
++++ b/plat/renesas/rz/common/g3l_common.mk
+@@ -17,7 +17,7 @@ PLAT_M33_BOOT_SUPPORT			:= 0
+ PLAT_SYSTEM_SUSPEND				:= 0
+ PLAT_SUSPEND_MODE				:= none
+ TRUSTED_BOARD_BOOT				:= 0
+-PROTECTED_CHIPID				:= 1
++PROTECTED_CHIPID				:= 0
+ SECURE_RTC						:= 0
+ INIT_UNUSED_NS_EL2				:= 1
+ 

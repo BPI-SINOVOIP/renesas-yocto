@@ -1,0 +1,6 @@
+KERNEL=="rgnmm", MODE="0660", GROUP="video"
+KERNEL=="rgnmmbuf", MODE="0660", GROUP="video"
+KERNEL=="uvcs", MODE="0660", GROUP="video"
+KERNEL=="vspm_if", MODE="0660", GROUP="video"
+KERNEL=="drp1", MODE="0660", GROUP="video"
+KERNEL=="drpai*", MODE="0660", GROUP="video"

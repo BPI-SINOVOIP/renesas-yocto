@@ -1,0 +1,1208 @@
+From e8a06177d15a3998625d02802920f5154315fd7a Mon Sep 17 00:00:00 2001
+From: August <2819763+Dangku@users.noreply.github.com>
+Date: Tue, 25 Aug 2026 09:29:14 +0800
+Subject: [PATCH] add bananapi-g3l board
+
+Signed-off-by: August <2819763+Dangku@users.noreply.github.com>
+---
+ arch/arm/dts/Makefile                      |   3 +
+ arch/arm/dts/bananapi-g3l.dts              | 200 ++++++++++++
+ arch/arm/mach-renesas/Kconfig.rcar3        |   6 +
+ board/renesas/bananapi-common/board-info.c | 215 +++++++++++++
+ board/renesas/bananapi-g3l/Kconfig         |  31 ++
+ board/renesas/bananapi-g3l/Makefile        |  13 +
+ board/renesas/bananapi-g3l/bananapi-g3l.c  | 339 +++++++++++++++++++++
+ configs/bananapi_g3l_defconfig             | 112 +++++++
+ include/configs/bananapi-g3l.h             | 190 ++++++++++++
+ 9 files changed, 1109 insertions(+)
+ create mode 100644 arch/arm/dts/bananapi-g3l.dts
+ create mode 100644 board/renesas/bananapi-common/board-info.c
+ create mode 100644 board/renesas/bananapi-g3l/Kconfig
+ create mode 100644 board/renesas/bananapi-g3l/Makefile
+ create mode 100644 board/renesas/bananapi-g3l/bananapi-g3l.c
+ create mode 100644 configs/bananapi_g3l_defconfig
+ create mode 100644 include/configs/bananapi-g3l.h
+
+diff --git a/arch/arm/dts/Makefile b/arch/arm/dts/Makefile
+index 7211f50aa5..9f06d66a0c 100644
+--- a/arch/arm/dts/Makefile
++++ b/arch/arm/dts/Makefile
+@@ -983,6 +983,9 @@ dtb-$(CONFIG_RCAR_GEN3) += \
+ 	rzg3l-dev.dtb \
+ 	smarc-rzg3l.dtb
+ 
++dtb-$(CONFIG_TARGET_BANANAPI_G3L) += \
++	bananapi-g3l.dtb
++
+ dtb-$(CONFIG_RCAR_GEN4) += \
+ 	r8a779h0-gray-hawk.dtb
+ 
+diff --git a/arch/arm/dts/bananapi-g3l.dts b/arch/arm/dts/bananapi-g3l.dts
+new file mode 100644
+index 0000000000..d315fa1fd2
+--- /dev/null
++++ b/arch/arm/dts/bananapi-g3l.dts
+@@ -0,0 +1,200 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Device Tree Source for the RZ/G3S Dev board
++ *
++ * Copyright (C) 2022 Renesas Electronics
++ */
++
++/dts-v1/;
++#include <dt-bindings/gpio/gpio.h>
++#include "r9a08g046.dtsi"
++#include "r9a08g046-u-boot.dtsi"
++#include <dt-bindings/pinctrl/rzg2l-pinctrl.h>
++
++/ {
++	model = "Bananapi BPI-G3L";
++	compatible = "sinovoip,bpi-g3l", "renesas,r9a08g046", "renesas,rzg3l";
++
++	aliases {
++		serial0 = &scif0;
++		spi0 = &xspi;
++	};
++
++	chosen {
++		stdout-path = "serial0:115200n8";
++	};
++
++	memory@48000000 {
++		device_type = "memory";
++		/* first 128MB is reserved for secure area. */
++		reg = <0 0x48000000 0 0x78000000>;
++	};
++};
++
++#if 0
++&pinctrl {
++	eth0_pins: eth0 {
++		pinmux = <RZG2L_PINMUX(1, 0, 1)>,
++				<RZG2L_PINMUX(1, 1, 1)>,
++				<RZG2L_PINMUX(1, 2, 1)>,
++				<RZG2L_PINMUX(1, 3, 1)>,
++				<RZG2L_PINMUX(1, 4, 1)>,
++				<RZG2L_PINMUX(2, 0, 1)>,
++				<RZG2L_PINMUX(3, 0, 1)>,
++				<RZG2L_PINMUX(3, 1, 1)>,
++				<RZG2L_PINMUX(3, 2, 1)>,
++				<RZG2L_PINMUX(3, 3, 1)>,
++				<RZG2L_PINMUX(4, 0, 1)>,
++				<RZG2L_PINMUX(4, 1, 1)>,
++				<RZG2L_PINMUX(4, 3, 1)>,
++				<RZG2L_PINMUX(4, 4, 1)>,
++				<RZG2L_PINMUX(4, 5, 1)>;
++	};
++
++	sdhi2_pins: sd2 {
++		pinmux = <RZG2L_PINMUX(11, 0, 8)>,	/* SD2_CLK	*/
++			 <RZG2L_PINMUX(11, 1, 8)>,	/* SD2_CMD	*/
++			 <RZG2L_PINMUX(11, 2, 8)>,	/* SD2_DATA0	*/
++			 <RZG2L_PINMUX(11, 3, 8)>,	/* SD2_DATA1	*/
++			 <RZG2L_PINMUX(12, 0, 8)>,	/* SD2_DATA2	*/
++			 <RZG2L_PINMUX(12, 1, 8)>,	/* SD2_DATA3	*/
++			 <RZG2L_PINMUX(14, 1, 7)>;	/* SD2_CD	*/
++	};
++
++	usb0_pins: usb0 {
++		pinmux = <RZG2L_PINMUX(5, 0, 1)>,	/* VBUS	*/
++			 <RZG2L_PINMUX(5, 2, 1)>;	/* OVC	*/
++	};
++
++	usb1_pins: usb1 {
++		pinmux = <RZG2L_PINMUX(6, 0, 1)>,	/* VBUS	*/
++			 <RZG2L_PINMUX(5, 4, 5)>;	/* OVC */
++	};
++};
++#endif	/* 0 */
++
++&xinclk {
++	clock-frequency = <24000000>;
++};
++
++&scif0 {
++	status = "okay";
++	clock = <100000000>;
++};
++
++&sdhi0 {
++	bus-width = <8>;
++	status = "okay";
++};
++
++&sdhi1 {
++	bus-width = <4>;
++	status = "okay";
++};
++
++#if 0
++&sdhi2 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&sdhi2_pins>;
++
++	bus-width = <4>;
++	status = "okay";
++};
++
++&eth0 {
++	pinctrl-0 = <&eth0_pins>;
++	pinctrl-names = "default";
++	phy-handle = <&phy0>;
++	phy-mode = "rgmii";
++	status = "okay";
++
++	phy0: ethernet-phy@7 {
++		reg = <7>;
++	};
++};
++#endif	/* 0 */
++
++&eth0 {
++	status = "okay";
++	phy-handle = <&phy0>;
++	phy-mode = "rgmii-id";
++
++	mdio {
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		phy0: ethernet-phy@0 {
++			compatible = "ethernet-phy-ieee802.3-c22";
++			reg = <0>;
++			txc-skew-ps = <1700>;
++			txen-skew-ps = <(-700)>;
++			txd0-skew-ps = <0>;
++			txd1-skew-ps = <0>;
++			txd2-skew-ps = <0>;
++			txd3-skew-ps = <0>;
++		};
++	};
++};
++
++&i2c0 {
++	status = "okay";
++};
++
++&i2c1 {
++	status = "okay";
++};
++
++&xspi {
++	status = "okay";
++
++	flash@0 {
++		compatible = "spi-flash", "jedec,spi-nor";
++		reg = <0>;
++		m25p,fast-read;
++		spi-max-frequency = <50000000>;
++		spi-tx-bus-width = <1>;
++		spi-rx-bus-width = <1>;
++
++		partitions {
++			compatible = "fixed-partitions";
++			#address-cells = <1>;
++			#size-cells = <1>;
++
++			partition@0 {
++				label = "bl2";
++				reg = <0x00000000 0x00060000>;
++				read-only;
++			};
++
++			partition@60000 {
++				label = "fip";
++				reg = <0x00060000 0x00780000>;
++				read-only;
++			};
++
++			partition@7E0000 {
++				label = "env";
++				reg = <0x007E0000 0x00020000>;
++			};
++
++			partition@800000 {
++				label = "user";
++				reg = <0x00800000 0x00800000>;
++			};
++		};
++	};
++};
++
++#if 0
++&ehci0 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&usb0_pins>;
++	status = "okay";
++};
++
++&ehci1 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&usb1_pins>;
++	status = "okay";
++};
++#endif	/* 0 */
+diff --git a/arch/arm/mach-renesas/Kconfig.rcar3 b/arch/arm/mach-renesas/Kconfig.rcar3
+index 709180c9da..2be1cd226b 100644
+--- a/arch/arm/mach-renesas/Kconfig.rcar3
++++ b/arch/arm/mach-renesas/Kconfig.rcar3
+@@ -314,6 +314,11 @@ config TARGET_RZN2H_DEV
+         help
+           Support for Renesas RZ/N2H Dev Platform
+ 
++config TARGET_BANANAPI_G3L
++	bool "Bananapi G3L board"
++	help
++          Support for Bananapi RZ/G3L Platform
++
+ endchoice
+ 
+ source "board/renesas/condor/Kconfig"
+@@ -336,6 +341,7 @@ source "board/renesas/rzv2n-dev/Kconfig"
+ source "board/renesas/rzg3e-dev/Kconfig"
+ source "board/renesas/rzg3s-dev/Kconfig"
+ source "board/renesas/rzg3l-dev/Kconfig"
++source "board/renesas/bananapi-g3l/Kconfig"
+ source "board/renesas/rzt2h-dev/Kconfig"
+ source "board/renesas/rzn2h-dev/Kconfig"
+ 
+diff --git a/board/renesas/bananapi-common/board-info.c b/board/renesas/bananapi-common/board-info.c
+new file mode 100644
+index 0000000000..10ba454bb9
+--- /dev/null
++++ b/board/renesas/bananapi-common/board-info.c
+@@ -0,0 +1,215 @@
++// SPDX-License-Identifier: GPL-2.0+
++/*
++ * Copyright (C) 2017 Microchip
++ *		      Wenyou Yang <wenyou.yang@microchip.com>
++ */
++
++#include <common.h>
++#include <dm.h>
++#include <eeprom.h>
++#include <env.h>
++#include <i2c_eeprom.h>
++#include <i2c.h>
++#include <malloc.h>
++#include <net.h>
++#include <vsprintf.h>
++#include <asm/io.h>
++#include <hash.h>
++#include <linux/arm-smccc.h>
++#include <linux/errno.h>
++#include <u-boot/crc.h>
++#include <u-boot/sha256.h>
++
++#define CHIPID_LEN	32
++#define RZ_SIP_SVC_GET_CHIPID	0x82000011
++
++#if (IS_ENABLED(CONFIG_I2C_EEPROM))
++
++#define SIGNATURE_LEN	8
++#define VERSION_LEN		8
++#define RESERVED_LEN	8
++#define SERIAL_LEN		24
++#define MAC_ADDR_LEN	12
++
++#define SIGNATURE_OFFSET	0
++#define VERSION_OFFSET		8
++#define RESERVED_OFFSET		16
++#define SERIAL_OFFSET		24
++#define ETHADDR_OFFSET		48
++#define ETH1ADDR_OFFSET		60
++
++struct bpi_boardinfo {
++	unsigned char signature[SIGNATURE_LEN];
++	unsigned char version[VERSION_LEN];
++	unsigned char reserved[RESERVED_LEN];
++	unsigned char serial[SERIAL_LEN];
++	unsigned char ethaddr[MAC_ADDR_LEN];
++	unsigned char eth1addr[MAC_ADDR_LEN];
++} __attribute__ ((__packed__));
++
++int bpi_get_boardinfo(void)
++{
++	struct bpi_boardinfo *info;
++	struct udevice *dev;
++	const char signature[SIGNATURE_LEN] = "Bananapi";
++	unsigned char signature_buf[SIGNATURE_LEN + 1] = {0};
++	unsigned char version_buf[VERSION_LEN + 1] = {0};
++	unsigned char reserved_buf[RESERVED_LEN + 1] = {0};
++	unsigned char serial_buf[SERIAL_LEN + 1] = {0};
++	unsigned char ethaddr_buf[MAC_ADDR_LEN + 1] = {0};
++	unsigned char eth1addr_buf[MAC_ADDR_LEN + 1] = {0};
++	u8 ethaddr_str[6];
++	u8 eth1addr_str[6];
++	int ret;
++	int node;
++
++	node = fdt_path_offset(gd->fdt_blob, "eeprom0");
++	if (node < 0) {
++		printf("%s: No eeprom0 path offset\n", __func__);
++		return node;
++	}
++
++	ret = uclass_get_device_by_of_offset(UCLASS_I2C_EEPROM, node, &dev);
++	if (ret) {
++		printf("%s: Could not find EEPROM\n", __func__);
++		return ret;
++	}
++
++	ret = i2c_set_chip_offset_len(dev, 1);
++	if (ret)
++		return ret;
++
++	info = malloc(sizeof(struct bpi_boardinfo));
++	if (!info)
++		return -ENOMEM;
++
++	ret = i2c_eeprom_read(dev, 0, (uint8_t *)info, sizeof(struct bpi_boardinfo));
++	if (ret) {
++		printf("%s: i2c_eeprom_read() failed: %d\n", __func__, ret);
++		free(info);
++		return ret;
++	}
++
++	memcpy(signature_buf, info->signature, SIGNATURE_LEN);
++	memcpy(version_buf, info->version, VERSION_LEN);
++	memcpy(reserved_buf, info->reserved, RESERVED_LEN);
++	memcpy(serial_buf, info->serial, SERIAL_LEN);
++	memcpy(ethaddr_buf, info->ethaddr, MAC_ADDR_LEN);
++	memcpy(eth1addr_buf, info->eth1addr, MAC_ADDR_LEN);
++
++	/* Check EEPROM signature. */
++	if (memcmp(info->signature, signature, SIGNATURE_LEN)) {
++		printf("Invalid I2C EEPROM signature.\n");
++		free(info);
++		return -EIO;
++	}
++
++	printf("signature: %s\n",  signature_buf);
++	printf("version: %s\n",  version_buf);
++	printf("reserved: %s\n",  reserved_buf);
++	printf("serial: %s\n",  serial_buf);
++	printf("ethaddr: %s\n",  ethaddr_buf);
++	printf("eth1addr: %s\n",  eth1addr_buf);
++
++	for (int i = 0; i < 6; i++) {
++		sscanf(&ethaddr_buf[i * 2], "%2hhx", &ethaddr_str[i]);
++		sscanf(&eth1addr_buf[i * 2], "%2hhx", &eth1addr_str[i]);
++	}
++
++	env_set("serial", serial_buf);
++	if (is_valid_ethaddr(ethaddr_str))
++		eth_env_set_enetaddr("ethaddr", ethaddr_str);
++	if (is_valid_ethaddr(eth1addr_str))
++		eth_env_set_enetaddr("eth1addr", eth1addr_str);
++
++	free(info);
++
++	return 0;
++}
++#endif
++
++static int bpi_read_chipid(u32 *soc_chipid)
++{
++#if IS_ENABLED(CONFIG_ARM_SMCCC)
++	struct arm_smccc_res res;
++
++	/*
++	* RZ/V2N protects the OTP slave from non-secure direct access. Ask EL3
++	* firmware to read OTPCPID instead of touching 0x1045114c from U-Boot.
++	*/
++
++	arm_smccc_smc(RZ_SIP_SVC_GET_CHIPID, 0, 0, 0, 0, 0, 0, 0, &res);
++	if (res.a0 == ARM_SMCCC_RET_NOT_SUPPORTED) {
++		printf("%s: RZ_SIP_SVC_GET_CHIPID is not supported\n", __func__);
++		return -EOPNOTSUPP;
++	}
++
++	soc_chipid[0] = (u32)res.a0;
++	soc_chipid[1] = (u32)res.a1;
++	soc_chipid[2] = (u32)res.a2;
++	soc_chipid[3] = (u32)res.a3;
++#else
++	printf("%s: CONFIG_ARM_SMCCC is required to read CHIPID\n", __func__);
++	return -EOPNOTSUPP;
++#endif
++
++	return 0;
++}
++
++int bpi_set_boardinfo(void)
++{
++	char *chipid = NULL;
++	u32 soc_chipid[4];
++	u8 hash[SHA256_SUM_LEN];
++	int size = sizeof(hash);
++	u8 eth_addr[6];
++	int ret;
++
++	chipid = malloc(CHIPID_LEN + 1);
++	if (!chipid)
++		return -1;
++
++	ret = bpi_read_chipid(soc_chipid);
++	if (ret) {
++		free(chipid);
++		return ret;
++	}
++
++	sprintf(chipid, "%08x%08x%08x%08x", soc_chipid[0], soc_chipid[1], soc_chipid[2], soc_chipid[3] );
++	env_set("chipid", chipid);
++	env_set("serial", chipid);
++	printf("chipid: %s\n", chipid);
++
++	if (env_get("ethaddr"))
++		return 0;
++
++	if (!chipid) {
++		printf("%s: could not retrieve chipid'\n", __func__);
++		return -1;
++	}
++
++	ret = hash_block("sha256", (void *)chipid, strlen(chipid), hash, &size);
++	if (ret) {
++		printf("%s: failed to calculate SHA256\n", __func__);
++		return -1;
++	}
++
++	/* Copy 6 bytes of the hash to base the MAC address on */
++	memcpy(eth_addr, hash, 6);
++	eth_addr[0] &= 0xfe;
++	eth_addr[0] |= 0x02;
++
++	if (is_valid_ethaddr(eth_addr)) {
++		eth_env_set_enetaddr("ethaddr", eth_addr);
++
++		eth_addr[5]++;
++		if (is_valid_ethaddr(eth_addr))
++			eth_env_set_enetaddr("eth1addr", eth_addr);
++	} else {
++		printf("invalid mac address(%pM) from chipid\n", eth_addr);
++	}
++
++	free(chipid);
++
++	return 0;
++}
+diff --git a/board/renesas/bananapi-g3l/Kconfig b/board/renesas/bananapi-g3l/Kconfig
+new file mode 100644
+index 0000000000..906ee36bc7
+--- /dev/null
++++ b/board/renesas/bananapi-g3l/Kconfig
+@@ -0,0 +1,31 @@
++if TARGET_BANANAPI_G3L
++
++config SYS_SOC
++	default "renesas"
++
++config SYS_BOARD
++	default "bananapi-g3l"
++
++config SYS_VENDOR
++	default "renesas"
++
++config SYS_CONFIG_NAME
++	default "bananapi-g3l"
++
++endif
++
++if TARGET_SMARC_RZG3L
++
++config SYS_SOC
++	default "renesas"
++
++config SYS_BOARD
++	default "bananapi-g3l"
++
++config SYS_VENDOR
++	default "renesas"
++
++config SYS_CONFIG_NAME
++	default "smarc-rzg3l"
++
++endif
+diff --git a/board/renesas/bananapi-g3l/Makefile b/board/renesas/bananapi-g3l/Makefile
+new file mode 100644
+index 0000000000..38b7a8f6db
+--- /dev/null
++++ b/board/renesas/bananapi-g3l/Makefile
+@@ -0,0 +1,13 @@
++#
++# board/renesas/bananapi-g3l/Makefile
++#
++# Copyright (C) 2022 Renesas Electronics Corporation
++#
++# SPDX-License-Identifier: GPL-2.0+
++#
++
++ifdef CONFIG_SPL_BUILD
++obj-y	:= ../rcar-common/gen3-spl.o
++else
++obj-y	:= bananapi-g3l.o ../rcar-common/common.o ../bananapi-common/board-info.o
++endif
+diff --git a/board/renesas/bananapi-g3l/bananapi-g3l.c b/board/renesas/bananapi-g3l/bananapi-g3l.c
+new file mode 100644
+index 0000000000..449ab19188
+--- /dev/null
++++ b/board/renesas/bananapi-g3l/bananapi-g3l.c
+@@ -0,0 +1,339 @@
++// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++/*
++ *  * Copyright (C) 2023 Renesas Electronics Corp.
++ */
++
++#include <common.h>
++#include <cpu_func.h>
++#include <hang.h>
++#include <image.h>
++#include <init.h>
++#include <malloc.h>
++#include <netdev.h>
++#include <dm.h>
++#include <dm/platform_data/serial_sh.h>
++#include <asm/processor.h>
++#include <asm/mach-types.h>
++#include <asm/io.h>
++#include <linux/bitops.h>
++#include <linux/errno.h>
++#include <asm/arch/sys_proto.h>
++#include <asm/gpio.h>
++#include <asm/arch/gpio.h>
++#include <asm/arch/renesas.h>
++#include <asm/arch/rcar-mstp.h>
++#include <asm/arch/sh_sdhi.h>
++#include <mmc.h>
++#include <efi_loader.h>
++#include <linux/delay.h>
++#include <i2c.h>
++
++DECLARE_GLOBAL_DATA_PTR;
++
++#if IS_ENABLED(CONFIG_EFI_HAVE_CAPSULE_SUPPORT)
++
++/*
++ * Firmware image type GUID for the RZ/G3L SystemReady capsule update flow.
++ * Generated specifically for G3L (do NOT reuse the G3E GUID).
++ *   uuidgen: a3b6769f-5d3e-4bd3-be24-660a8d1a79b6
++ */
++#define EFI_FIRMWARE_IMAGE_TYPE_RZG3L_GUID \
++	EFI_GUID(0xa3b6769f, 0x5d3e, 0x4bd3, 0xbe, 0x24, \
++		 0x66, 0x0a, 0x8d, 0x1a, 0x79, 0xb6)
++
++struct efi_fw_image fw_images[] = {
++	{
++		.image_type_id = EFI_FIRMWARE_IMAGE_TYPE_RZG3L_GUID,
++		.fw_name = u"bl2_bp-bananapi-g3l.bin",
++		.image_index = 1,
++	},
++	{
++		.image_type_id = EFI_FIRMWARE_IMAGE_TYPE_RZG3L_GUID,
++		.fw_name = u"fip-bananapi-g3l.bin",
++		.image_index = 2,
++	},
++};
++
++struct efi_capsule_update_info update_info = {
++	.dfu_string =
++		/* BL2 in SPI NOR at offset 0x0, max size 0x40000 */
++		"sf 0:0=bl2_bp-bananapi-g3l.bin raw 0x0 0x40000;"
++		/* FIP in SPI NOR at offset 0x60000, max size 0x780000 */
++		"fip-bananapi-g3l.bin raw 0x60000 0x780000",
++	.num_images = ARRAY_SIZE(fw_images),
++	.images = fw_images,
++};
++
++#endif /* EFI_HAVE_CAPSULE_SUPPORT */
++
++#define PFC_BASE			0x11030000
++
++#define ETH0_POC			(PFC_BASE + 0x3010) /* Ether ch0 IO Voltage Mode Control Register */
++#define ETH1_POC			(PFC_BASE + 0x3014) /* Ether ch1 IO Voltage Mode Control Register */
++#define ETH_PVDD_3300			0x00
++#define ETH_PVDD_1800			0x01
++#define ETH_PVDD_2500			0x02
++#define ETH_MODE			(PFC_BASE + 0x3018) /* Ether MII/RGMII Mode Control Register */
++
++/* CPG */
++#define CPG_BASE			0x11010000
++#define CPG_CLKON_BASE			(CPG_BASE + 0x500)
++#define CPG_CLKMON_BASE			(CPG_BASE + 0x680)
++#define CPG_RESET_BASE			(CPG_BASE + 0x800)
++#define CPG_CLKON_ETH			(CPG_CLKON_BASE + 0x7C)
++#define CPG_CLKMON_ETH			(CPG_CLKMON_BASE + 0x7C)
++#define CPG_RESET_ETH			(CPG_RESET_BASE + 0x7C)
++#define CPG_RESET_I2C			(CPG_RESET_BASE + 0x80)
++#define CPG_SDHI_DDIV			(CPG_BASE + 0x218)
++#define CPG_SDHI_DSEL			(CPG_BASE + 0x244)
++#define CPG_SPI_DDIV                   (CPG_BASE + 0x220)
++#define CPG_CLKDIV_STATUS		(CPG_BASE + 0x280)
++#define CPG_CLKSEL_STATUS		(CPG_BASE + 0x284)
++#define CPG_RST_USB			(CPG_BASE + 0x878)
++#define CPG_RSTMON_USB			(CPG_BASE + 0x9F8)
++#define CPG_CLKON_USB			(CPG_BASE + 0x578)
++#define CPG_CLKMON_USB			(CPG_BASE + 0x6F8)
++
++//g3l
++#define CPG_ETH_SSEL			(CPG_BASE + 0x410)
++#define CPG_ETH_SDIV			(CPG_BASE + 0x434)
++
++/* PFC */
++#define	PFC_P25				(PFC_BASE + 0x25)
++#define	PFC_PM25			(PFC_BASE + 0x014A)
++#define	PFC_PMC25			(PFC_BASE + 0x0225)
++
++#define	PFC_P30				(PFC_BASE + 0x30)
++#define	PFC_PM30			(PFC_BASE + 0x0160)
++#define	PFC_PMC30			(PFC_BASE + 0x0230)
++#define	PFC_PFC30			(PFC_BASE + 0x04c0)
++
++#define	PFC_P31				(PFC_BASE + 0x31)
++#define	PFC_PM31			(PFC_BASE + 0x0162)
++#define	PFC_PMC31			(PFC_BASE + 0x0231)
++
++#define	PFC_P33				(PFC_BASE + 0x33)
++#define	PFC_PM33			(PFC_BASE + 0x0166)
++#define	PFC_PMC33			(PFC_BASE + 0x0233)
++
++#define	PFC_P35				(PFC_BASE + 0x35)
++#define	PFC_PM35			(PFC_BASE + 0x016A)
++#define	PFC_PMC35			(PFC_BASE + 0x0235)
++
++#define	PFC_IOLH_30_L			(PFC_BASE + 0x1180)
++#define	PFC_IOLH_34_L			(PFC_BASE + 0x11A0)
++#define	PFC_IEN_30_L		(PFC_BASE + 0x1980)
++#define	PFC_IEN_30_H		(PFC_BASE + 0x1984)
++#define	PFC_IEN_34			(PFC_BASE + 0x19A0)
++#define	PFC_IEN_23			(PFC_BASE + 0x1918)
++#define	PFC_IEN_24			(PFC_BASE + 0x1920)
++
++//g3l Eth0
++#define PFC_PMC2A			(PFC_BASE + 0x22A)
++#define PFC_PMC2B			(PFC_BASE + 0x22B)
++#define PFC_PMC2C			(PFC_BASE + 0x22C)
++#define PFC_PFC2A			(PFC_BASE + 0x4A8)
++#define PFC_PFC2B			(PFC_BASE + 0x4AC)
++#define PFC_PFC2C			(PFC_BASE + 0x4B0)
++
++//g3l Eth1
++#define PFC_PMC2D			(PFC_BASE + 0x22D)
++#define PFC_PMC2E			(PFC_BASE + 0x22E)
++#define PFC_PMC2F			(PFC_BASE + 0x22F)
++#define PFC_PFC2D			(PFC_BASE + 0x4B4)
++#define PFC_PFC2E			(PFC_BASE + 0x4B8)
++#define PFC_PFC2F			(PFC_BASE + 0x4BC)
++
++//i2c
++#define	PFC_PFC35			(PFC_BASE + 0x4D4)
++
++//i2c3 on P20/P21
++#define	PFC_PMC22			(PFC_BASE + 0x222)
++#define	PFC_PFC22			(PFC_BASE + 0x488)
++
++/* SYSC clone-channel select for I2C ch3 alternate pin group */
++#define SYSC_BASE			0x11020000
++#define SYS_IPCONT_SEL_CLONECH		(SYSC_BASE + 0x0E2C)
++
++#define PFC_PWPR			(PFC_BASE + 0x3000)
++#define PWPR_B0WI			BIT(7)	 /* Bit Write Disable */
++#define PWPR_PFCWE			BIT(6)	/* PFC Register Write Enable */
++
++#define USBPHY_BASE		(0x11e00000)
++#define USB0_BASE		(0x11e10000)
++#define USB1_BASE		(0x11e30000)
++#define USBF_BASE		(0x11e20000)
++#define USBPHY_RESET		(USBPHY_BASE + 0x000u)
++#define COMMCTRL		0x800
++#define HcRhDescriptorA		0x048
++#define LPSTS			0x102
++#define	AHB_BUS_CTR		0x208
++
++void s_init(void)
++{
++	/* Disable GPIO Write Protect */
++	(*(volatile u32 *)PFC_PWPR) &= ~(0x1u << 7);	/* PWPR.BOWI = 0 */
++	(*(volatile u32 *)PFC_PWPR) |= (0x1u << 6);	/* PWPR.PFCWE = 1 */
++
++	/* PG-PG5 function 1	*/
++	*(volatile u32 *)(PFC_PFC30) = (*(volatile u32 *)(PFC_PFC30) & 0xFF000000) | 0x111111;
++	*(volatile u8 *)(PFC_PMC30) |= 0x3F;	/* PG0-PG5 function	*/
++
++#if CONFIG_TARGET_BANANAPI_G3L
++	/* PJ1 = 0 QSD1_IOVS=0	*/
++	
++	*(volatile u8 *)(PFC_PMC33) &= ~(0x02);
++	*(volatile u16 *)(PFC_PM33) = (*(volatile u16 *)(PFC_PM33) & 0xFF) | 0x08; /*bit[5:4]='B10	*/
++	*(volatile u8 *)(PFC_P33) &= ~(0x02);
++	/* PJ2 = 1 QSD1_PWEN=1	*/
++	*(volatile u8 *)(PFC_PMC33) &= ~(0x04);
++	*(volatile u16 *)(PFC_PM33) = (*(volatile u16 *)(PFC_PM33) & 0xFF) | 0x20; /*bit[5:4]='B10	*/
++	*(volatile u8 *)(PFC_P33) |= 0x04;
++
++#else
++	/* P56 = 1 QSD1_PWEN=1	*/
++	*(volatile u8 *)(PFC_PMC25) &= ~(0x40);
++	*(volatile u16 *)(PFC_PM25) = (*(volatile u16 *)(PFC_PM25) & 0xFFF) | 0x2000; /*bit[13:12]='B10	*/
++	*(volatile u8 *)(PFC_P25) |= 0x40;
++#endif
++
++	/* Input Enable Control PG0-PG5 Enable	*/
++	*(volatile u32 *)(PFC_IEN_30_L) = 0x01010101;
++	*(volatile u32 *)(PFC_IEN_30_H) = 0x00000101;
++
++	//g3l
++	/* Pinmux for ETH0 */
++	*(volatile u32 *)(PFC_PFC2A) = 0x00001111;
++	*(volatile u32 *)(PFC_PFC2B) = 0x11111111;
++	*(volatile u32 *)(PFC_PFC2C) = 0x00000111;
++	*(volatile u8 *)(PFC_PMC2A) = 0xF;
++	*(volatile u8 *)(PFC_PMC2B) = 0xFF;
++	*(volatile u8 *)(PFC_PMC2C) = 0x7;
++
++
++	/* Pinmux for ETH1 */
++	*(volatile u32 *)(PFC_PFC2D) = 0x00001111;
++	*(volatile u32 *)(PFC_PFC2E) = 0x11111111;
++	*(volatile u32 *)(PFC_PFC2F) = 0x00000111;
++	*(volatile u8 *)(PFC_PMC2D) = 0xF;
++	*(volatile u8 *)(PFC_PMC2E) = 0xFF;
++	*(volatile u8 *)(PFC_PMC2F) = 0x7;
++
++
++	/* Pinmux for I2C0	*/
++	*(volatile u32 *)(PFC_PFC35) |= 0x4400;
++	*(volatile u8 *)(PFC_PMC35)  |= 0x0C;
++
++#if CONFIG_TARGET_BANANAPI_G3L
++	/* Select I2C ch3 alternate pin group P20/P21 (SYS_IPCONT_SEL_CLONECH bit[1]) */
++	*(volatile u32 *)(SYS_IPCONT_SEL_CLONECH) |= 0x2;
++
++	/* Pinmux for I2C1 on PA6/PA7 (function 4) */
++	*(volatile u32 *)(PFC_PFC2A) |= 0x44000000;
++	*(volatile u8  *)(PFC_PMC2A) |= 0xC0;
++
++	/* Pinmux for I2C2 on PA4/PA5 (function 4) */
++	*(volatile u32 *)(PFC_PFC2A) |= 0x00440000;
++	*(volatile u8  *)(PFC_PMC2A) |= 0x30;
++
++	/* Pinmux for I2C3 on P20/P21 (function 4) */
++	*(volatile u32 *)(PFC_PFC22) |= 0x00000044;
++	*(volatile u8  *)(PFC_PMC22) |= 0x03;
++#endif
++
++	/* can go in board_eht_init() once enabled */
++	*(volatile u32 *)(ETH0_POC) = (*(volatile u32 *)(ETH0_POC) & 0xFFFFFFFC) | ETH_PVDD_1800;
++	*(volatile u32 *)(ETH1_POC) = (*(volatile u32 *)(ETH1_POC) & 0xFFFFFFFC) | ETH_PVDD_1800;
++	/* Enable RGMII for both ETH{0,1} */
++	*(volatile u32 *)(ETH_MODE) = (*(volatile u32 *)(ETH_MODE) & 0xFFFFFFF0);
++
++	*(volatile u32 *)(PFC_PWPR) = 0;
++	*(volatile u32 *)(PFC_PWPR) = PWPR_B0WI;
++
++
++	//g3l
++	/* ETH CLK Setup for Eth0 and Eth1 */
++	*(volatile u32 *)(CPG_CLKON_ETH) = 0x3FFF3FFF;
++	while(*(volatile u32 *)(CPG_CLKMON_ETH) != 0x00003FFF);
++	*(volatile u32 *)(CPG_ETH_SSEL) = 0xFFFF0202;  //source clock selection for ETH0 and ETH1
++	*(volatile u32 *)(CPG_RESET_ETH) = 0x00030003;
++
++	/*
++	 * Setting SD CLKs.
++	 * Currently, we use IMCLKs with output CLK rate 133 MHz, HSCLK will be considered to support later.
++	 */
++	*(volatile u32 *)(CPG_SDHI_DDIV) = 0x01110000;
++	*(volatile u32 *)(CPG_SDHI_DSEL) = 0x01110222;
++	while ((*(volatile u32 *)(CPG_CLKDIV_STATUS) != 0) || (*(volatile u32 *)(CPG_CLKSEL_STATUS) != 0))
++		;
++        /* I2C CLK */
++        *(volatile u32 *)(CPG_RESET_I2C) = 0xF000F;
++
++       /* Setting xSPI CLK 133 MHz */
++       *(volatile u32 *)(CPG_SPI_DDIV) = 0x00010001;
++       while (*(volatile u32 *)(CPG_CLKDIV_STATUS) != 0);
++}
++
++static void board_usb_init(void)
++{
++}
++
++int board_early_init_f(void)
++{
++	return 0;
++}
++
++int board_init(void)
++{
++	/* Address of boot parameters */
++	gd->bd->bi_boot_params = CONFIG_TEXT_BASE + 0x50000;
++	board_usb_init();
++
++	return 0;
++}
++
++int board_late_init(void)
++{
++	struct udevice *dev;
++	const u8 pmic_i2c_bus = 0;
++	int ret;
++
++	ret = i2c_get_chip_for_busnum(pmic_i2c_bus, 0x12, 1, &dev);
++	if (!ret)
++	{
++		/* Config MPIO1 func to Output from I2C output */
++		dm_i2c_reg_clrset(dev, 0x8B, 0x7, 0x7);
++
++		/* Assert and deassert MPIO1 line to reset PHY */
++		dm_i2c_reg_clrset(dev, 0x7f, 0x2, 0x0);
++		udelay(2);
++		dm_i2c_reg_clrset(dev, 0x7f, 0x0, 0x2);
++
++		/* Config MPIO1 func to Reset output */
++		dm_i2c_reg_clrset(dev, 0x8B, 0x7, 0x5);
++		dm_i2c_reg_clrset(dev, 0x7f, 0x2, 0x0);
++	}
++
++	return ret;
++}
++
++#if (IS_ENABLED(CONFIG_I2C_EEPROM))
++extern int bpi_get_boardinfo(void);
++#endif
++extern int bpi_set_boardinfo(void);
++#if (IS_ENABLED(CONFIG_MISC_INIT_R))
++__weak int misc_init_r(void)
++{
++#if (IS_ENABLED(CONFIG_I2C_EEPROM))
++	bpi_get_boardinfo();
++#endif
++
++	bpi_set_boardinfo();
++
++	return 0;
++}
++#endif
++
++void reset_cpu(void)
++{
++}
+diff --git a/configs/bananapi_g3l_defconfig b/configs/bananapi_g3l_defconfig
+new file mode 100644
+index 0000000000..482815dc33
+--- /dev/null
++++ b/configs/bananapi_g3l_defconfig
+@@ -0,0 +1,112 @@
++#new
++CONFIG_SYS_LOAD_ADDR=0x58000000
++CONFIG_TEXT_BASE=0x50000000
++CONFIG_OF_UPSTREAM=n
++CONFIG_OF_BOARD_SETUP=n
++
++CONFIG_SYS_MONITOR_LEN=1048576
++CONFIG_SYS_MALLOC_LEN=0x4000000
++
++CONFIG_DM_ETH_PHY=y
++CONFIG_DWC_ETH_QOS=y
++CONFIG_DWC_ETH_QOS_RZV2H=y
++
++CONFIG_ARM=y
++CONFIG_ARCH_CPU_INIT=y
++#CONFIG_ARCH_RMOBILE=y
++CONFIG_ARCH_RENESAS=y
++CONFIG_ENV_SIZE=0x20000
++CONFIG_ENV_OFFSET=0x007E0000
++CONFIG_DM_GPIO=y
++CONFIG_RCAR_GEN3=y
++CONFIG_R9A08G046=y
++CONFIG_TARGET_BANANAPI_G3L=y
++CONFIG_DEFAULT_DEVICE_TREE="bananapi-g3l"
++CONFIG_SMBIOS_PRODUCT_NAME=""
++CONFIG_SPL=n
++CONFIG_FIT=y
++CONFIG_SUPPORT_RAW_INITRD=y
++CONFIG_DEFAULT_FDT_FILE="bananapi-g3l.dtb"
++CONFIG_VERSION_VARIABLE=y
++CONFIG_HUSH_PARSER=y
++CONFIG_CMD_BOOTZ=y
++CONFIG_CMD_GPIO=y
++CONFIG_CMD_I2C=y
++CONFIG_CMD_MMC=y
++CONFIG_CMD_PCI=y
++CONFIG_CMD_USB=y
++CONFIG_CMD_DHCP=y
++CONFIG_CMD_MII=y
++CONFIG_CMD_PING=y
++CONFIG_CMD_EXT2=y
++CONFIG_CMD_EXT4=y
++CONFIG_CMD_EXT4_WRITE=y
++CONFIG_CMD_FAT=y
++CONFIG_CMD_FS_GENERIC=y
++CONFIG_OF_CONTROL=y
++CONFIG_OF_LIST="bananapi-g3l"
++CONFIG_MULTI_DTB_FIT_LZO=y
++CONFIG_MULTI_DTB_FIT_USER_DEFINED_AREA=y
++CONFIG_ENV_OVERWRITE=y
++CONFIG_SYS_RELOC_GD_ENV_ADDR=y
++CONFIG_REGMAP=y
++CONFIG_SYSCON=y
++CONFIG_CLK=y
++CONFIG_CLK_RENESAS=y
++CONFIG_CLK_R9A08G045S=y
++CONFIG_RCAR_GPIO=y
++CONFIG_PINCTRL_PFC_RZG2L=y
++CONFIG_RZG2L_GPIO=y
++CONFIG_DM_I2C=y
++CONFIG_SYS_I2C_RCAR_IIC=y
++CONFIG_SH_SDHI=y
++CONFIG_BITBANGMII=y
++CONFIG_PHY_MICREL=y
++CONFIG_PHY_MICREL_KSZ90X1=y
++CONFIG_DM_ETH=y
++CONFIG_RENESAS_RAVB=y
++CONFIG_PCI=y
++CONFIG_DM_PCI=y
++CONFIG_PCI_RCAR_GEN3=y
++CONFIG_DM_REGULATOR=y
++CONFIG_DM_REGULATOR_FIXED=y
++CONFIG_DM_REGULATOR_GPIO=y
++CONFIG_SCIF_CONSOLE=y
++CONFIG_TEE=y
++CONFIG_OPTEE=y
++CONFIG_USB=y
++CONFIG_DM_USB=y
++CONFIG_USB_XHCI_HCD=y
++CONFIG_USB_EHCI_HCD=y
++CONFIG_USB_EHCI_GENERIC=y
++CONFIG_USB_STORAGE=y
++CONFIG_OF_LIBFDT_OVERLAY=y
++CONFIG_SMBIOS_MANUFACTURER=""
++CONFIG_ENV_IS_IN_SPI_FLASH=y
++CONFIG_SUPPORT_EMMC_BOOT=y
++CONFIG_SYS_I2C_RZG2L_RIIC=y
++CONFIG_SPI_FLASH=y
++CONFIG_SPI_FLASH_BAR=y
++CONFIG_SPI_FLASH_USE_4K_SECTORS=y
++CONFIG_SPI=y
++CONFIG_DM_SPI=y
++CONFIG_SPI_FLASH_ATMEL=y
++CONFIG_SPI_FLASH_WINBOND=y
++CONFIG_RENESAS_RPC_SPI=y
++CONFIG_CMD_SF=y
++CONFIG_CMD_SPI=y
++CONFIG_SPI_FLASH_STMICRO=y
++CONFIG_DM_SPI_FLASH=y
++CONFIG_ENV_SECT_SIZE=0x20000
++CONFIG_MTD=y
++CONFIG_BOARD_LATE_INIT=y
++CONFIG_MISC_INIT_R=y
++CONFIG_NET_RANDOM_ETHADDR=y
++CONFIG_MISC=y
++#CONFIG_I2C_EEPROM=y
++CONFIG_SYS_I2C_EEPROM_ADDR=0x57
++CONFIG_SYS_I2C_EEPROM_BUS=3
++CONFIG_SYS_EEPROM_SIZE=256
++CONFIG_SYS_EEPROM_PAGE_WRITE_DELAY_MS=5
++CONFIG_SYS_I2C_EEPROM_ADDR_LEN=1
++CONFIG_CMD_EEPROM=y
+diff --git a/include/configs/bananapi-g3l.h b/include/configs/bananapi-g3l.h
+new file mode 100644
+index 0000000000..86f3c8d2e8
+--- /dev/null
++++ b/include/configs/bananapi-g3l.h
+@@ -0,0 +1,190 @@
++/* SPDX-License-Identifier: GPL-2.0+ */
++/*
++ * Copyright (C) 2022 Renesas Electronics Corporation
++ */
++
++#ifndef __BANANAPI_G3L_H
++#define __BANANAPI_G3L_H
++
++#include <asm/arch/renesas.h>
++
++#define CONFIG_REMAKE_ELF
++
++#ifdef CONFIG_SPL
++#define CONFIG_SPL_TARGET	"spl/u-boot-spl.scif"
++#endif
++
++/* boot option */
++
++#define CONFIG_CMDLINE_TAG
++#define CONFIG_SETUP_MEMORY_TAGS
++#define CONFIG_INITRD_TAG
++
++/* Generic Interrupt Controller Definitions */
++/* RZ/G3S use GIC-v3 */
++#define CONFIG_GICV3
++#define GICD_BASE	0x12400000
++#define GICR_BASE	0x12440000
++
++/* console */
++#define CONFIG_SYS_CBSIZE		2048
++#define CONFIG_SYS_BARGSIZE		CONFIG_SYS_CBSIZE
++#define CONFIG_SYS_MAXARGS		64
++#define CONFIG_SYS_BAUDRATE_TABLE	{ 115200, 38400 }
++
++/* PHY needs a longer autoneg timeout */
++#define PHY_ANEG_TIMEOUT		20000
++
++/* MEMORY */
++#define CONFIG_SYS_INIT_SP_ADDR		CONFIG_SYS_TEXT_BASE
++
++/* SDHI clock freq */
++#define CONFIG_SH_SDHI_FREQ		133000000
++
++#define DRAM_RSV_SIZE			0x08000000
++#define CONFIG_SYS_SDRAM_BASE		(0x40000000 + DRAM_RSV_SIZE)
++#define CONFIG_SYS_SDRAM_SIZE		(0x80000000u - DRAM_RSV_SIZE) //total 2GB
++#define CONFIG_SYS_LOAD_ADDR		0x58000000
++/* Default load address for tfpt,bootp... */
++#define CONFIG_LOADADDR			CONFIG_SYS_LOAD_ADDR
++#define CONFIG_VERY_BIG_RAM
++#define CFG_MAX_MEM_MAPPED		(0x80000000u - DRAM_RSV_SIZE)
++
++#define CONFIG_SYS_MONITOR_BASE		0x00000000
++//MM Defined in u-boot/kconfig & u-boot/boot/kconfig, overriden/configured in rzg3s_defconfig and variants
++/*
++#define CONFIG_SYS_MONITOR_LEN		(1 * 1024 * 1024)
++#define CONFIG_SYS_MALLOC_LEN		(64 * 1024 * 1024)
++#define CONFIG_SYS_BOOTM_LEN		(64 << 20)
++*/
++
++/* The HF/QSPI layout permits up to 1 MiB large bootloader blob */
++#define CONFIG_BOARD_SIZE_LIMIT		1048576
++
++/* ENV setting */
++
++#if defined(CONFIG_RZG3L_DISTRO_BOOT)
++#define CFG_EXTRA_ENV_SETTINGS	\
++	"usb_pgood_delay=2000\0" \
++	"fdt_addr_r=0x48000000\0" \
++	"fdtfile="CONFIG_DEFAULT_FDT_FILE"\0" \
++	"kernel_addr_r=0x48080000\0" \
++	"boot_efi_binary=efi/boot/bootaa64.efi\0" \
++	"scan_for_usb_dev=" \
++		"usb start; " \
++		"if test ! -e usb ${devnum}:1 /; then usb reset; fi;\0" \
++	"scan_boot_efi=" \
++		"part list ${devtype} ${devnum} devplist; "  \
++		"env exists devplist || setenv devplist 1; " \
++		"for distro_bootpart in ${devplist}; do " \
++			"if test -e ${devtype} ${devnum}:${distro_bootpart} ${boot_efi_binary}; then " \
++				"load ${devtype} ${devnum}:${distro_bootpart} " \
++				"${kernel_addr_r} ${boot_efi_binary};"          \
++				"echo BootEFI from <${devtype}> [${devnum}:${distro_bootpart}]; "\
++				"bootefi ${kernel_addr_r};"                     \
++			"fi;" \
++		"done;\0" \
++	"mmc0=" \
++			"setenv devnum 0;" \
++			"setenv devtype mmc;" \
++			"run scan_boot_efi;\0" \
++	"mmc1=" \
++			"setenv devnum 1;" \
++			"setenv devtype mmc;" \
++			"run scan_boot_efi;\0" \
++	"usb0=" \
++			"setenv devnum 0;" \
++			"setenv devtype usb;" \
++			"run scan_for_usb_dev;"\
++			"run scan_boot_efi;\0"\
++	"usb1=" \
++			"setenv devnum 1;" \
++			"setenv devtype usb;" \
++			"run scan_for_usb_dev;"\
++			"run scan_boot_efi;\0" \
++	"boot_targets=" \
++			"usb0 usb1 mmc0 mmc1\0" \
++	"dfu_alt_info=" \
++			"sf 0:0=fip.bin raw 0x60000 0x780000\0" \
++	"dfu_bufsiz=" \
++			"0x780000\0" \
++	"ipaddr=" \
++			"192.168.10.7\0" \
++	"serverip=" \
++			"192.168.10.3\0" \
++	"distro_bootcmd=" \
++			"env exists boot_targets || setenv boot_targets mmc0 mmc1 usb0 usb1; " \
++			"for target in ${boot_targets}; do "\
++				"run ${target};" \
++			"done;\0" \
++	"bootcmd=run distro_bootcmd\0"
++#else
++#define ENV_MMC_LIST_DEFAULT            "mmc_list=1 0\0"
++#define ENV_BOOT_ORDER_DEFAULT          "boot_order=mmc\0"
++#define ENV_BOOTSCRIPTS_PREFIX          "boot_prefixes=/ /boot/\0"
++#define ENV_BOOT_ATTEMPT_DEFAULT                        \
++        "boot_attempt="                                         \
++            "for prefix_idx in ${boot_prefixes}; do "           \
++                "setenv prefix ${prefix_idx}; "                 \
++	        "if test \"${prefix}\" = \"/\"; then "          \
++                    "setenv rootdev /dev/mmcblk${devnum}p2; "   \
++                "elif test \"${prefix}\" = \"/boot/\"; then "   \
++                    "setenv rootdev /dev/mmcblk${devnum}p1; "   \
++                "fi; "                                          \
++                "echo \"## Attempting fetch ${prefix}${bootscript} in ${devtype}:${devnum}...\"; "  \
++                "if test -e ${devtype} ${devnum} ${prefix}${bootscript}; then "       \
++                    "load ${devtype} ${devnum} ${bootscript_addr} ${prefix}${bootscript}; " \
++                    "source ${bootscript_addr}; "                               \
++                    "echo SCRIPT FAILED: continuing...; "   \
++                "fi; "                                          \
++          "done\0"
++
++#define ENV_MMC_DEFAULT                                 \
++        "boot_mmc="                                     \
++            "echo \"## run boot_mmc\"; "        \
++                "setenv devtype mmc; "                  \
++                "for n in ${mmc_list}; do "             \
++                        "setenv devnum ${n}; "          \
++                        "run boot_attempt; "            \
++                "done\0"
++
++#define ENV_BOOT_DEFAULT                                \
++        "boot_default="                                 \
++                "for type in ${boot_order}; do "        \
++                        "run boot_${type}; "            \
++                "done\0"
++
++#define CFG_EXTRA_ENV_SETTINGS \
++	ENV_MMC_DEFAULT \
++	ENV_MMC_LIST_DEFAULT \
++	ENV_BOOTSCRIPTS_PREFIX \
++	ENV_BOOT_ORDER_DEFAULT \
++	ENV_BOOT_DEFAULT \
++	ENV_BOOT_ATTEMPT_DEFAULT \
++	"rootdev=/dev/mmcblk0p2\0" \
++	"fdtfile=bananapi-g3l.dtb\0" \
++	"bootscript=boot.scr\0"       \
++	"bootscript_addr=0x48070000\0"  \
++	"kernel_addr_r=0x48080000\0"  \
++	"fdt_addr_r=0x48000000\0"  \
++	"ramdisk_addr_r=0x50000000\0"  \
++	"usb_pgood_delay=2000\0" \
++	"bootm_size=0x10000000\0" \
++	"ipaddr=192.168.1.11\0" \
++	"serverip=192.168.1.10\0" \
++	"netmask=255.255.255.0\0" \
++	"prodsdbootargs=setenv bootargs rw rootwait earlycon root=/dev/mmcblk1p2 net.ifnames=0 \0" \
++	"prodemmcbootargs=setenv bootargs rw rootwait earlycon root=/dev/mmcblk0p2 net.ifnames=0 \0" \
++	"bootimage=booti ${kernel_addr_r} - ${fdt_addr_r} \0" \
++	"emmcload=ext4load mmc 0:2 ${kernel_addr_r} boot/Image;ext4load mmc 0:2 ${fdt_addr_r} boot/${fdtfile};run prodemmcbootargs \0" \
++	"sd1load=ext4load mmc 1:2 ${kernel_addr_r} boot/Image;ext4load mmc 1:2 ${fdt_addr_r} boot/${fdtfile};run prodsdbootargs \0" \
++	"bootcmd_check=if mmc dev 1; then run sd1load; else run emmcload; fi \0"
++
++#define CONFIG_BOOTCOMMAND "run boot_default;run bootcmd_check;run bootimage"
++#endif
++
++/* For board */
++/* Ethernet RAVB */
++#define CONFIG_BITBANGMII_MULTI
++
++#endif /* __BANANAPI_G3L_H */
+-- 
+2.43.0
+

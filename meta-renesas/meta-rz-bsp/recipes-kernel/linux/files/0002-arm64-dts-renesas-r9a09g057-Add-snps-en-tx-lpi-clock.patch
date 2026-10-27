@@ -1,0 +1,39 @@
+From ca71712d965e22ab43b76d433c052fb0017dd081 Mon Sep 17 00:00:00 2001
+From: hienhuynh <hien.huynh.px@renesas.com>
+Date: Wed, 17 Dec 2025 15:01:00 +0700
+Subject: [PATCH 2/2] arm64: dts: renesas: r9a09g057: Add
+ "snps,en-tx-lpi-clockgating" property for Ethernet
+
+Currently in phy_init_eee(), the driver unconditionally configures the
+PHY to stop RX clk after entering Rx LPI state, which may cause an LPI
+interrupt storm. Enable rx_clk_runs_in_lpi option so that the RX clk continues
+running in LPI state.
+
+Signed-off-by: Au Dang <au.dang.jx@renesas.com>
+---
+ arch/arm64/boot/dts/renesas/r9a09g057.dtsi | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/renesas/r9a09g057.dtsi b/arch/arm64/boot/dts/renesas/r9a09g057.dtsi
+index 7c4120a28edf..2435397f3495 100644
+--- a/arch/arm64/boot/dts/renesas/r9a09g057.dtsi
++++ b/arch/arm64/boot/dts/renesas/r9a09g057.dtsi
+@@ -2900,6 +2900,7 @@ eth0: ethernet@15c30000 {
+ 			snps,fixed-burst;
+ 			snps,no-pbl-x8;
+ 			snps,force_thresh_dma_mode;
++			snps,en-tx-lpi-clockgating;
+ 			snps,axi-config = <&stmmac_axi_setup>;
+ 			snps,mtl-rx-config = <&mtl_rx_setup0>;
+ 			snps,mtl-tx-config = <&mtl_tx_setup0>;
+@@ -3002,6 +3003,7 @@ eth1: ethernet@15c40000 {
+ 			snps,fixed-burst;
+ 			snps,no-pbl-x8;
+ 			snps,force_thresh_dma_mode;
++			snps,en-tx-lpi-clockgating;
+ 			snps,axi-config = <&stmmac_axi_setup>;
+ 			snps,mtl-rx-config = <&mtl_rx_setup1>;
+ 			snps,mtl-tx-config = <&mtl_tx_setup1>;
+-- 
+2.34.1
+

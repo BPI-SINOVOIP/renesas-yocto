@@ -1,0 +1,13 @@
+diff --git a/plat/renesas/rz/common/v2h_common.mk b/plat/renesas/rz/common/v2h_common.mk
+index 58699e4dc..494854ee0 100644
+--- a/plat/renesas/rz/common/v2h_common.mk
++++ b/plat/renesas/rz/common/v2h_common.mk
+@@ -14,7 +14,7 @@ GICV3_OVERRIDE_DISTIF_PWR_OPS	:= 1
+ HW_ASSISTED_COHERENCY			:= 1
+ USE_COHERENT_MEM				:= 0
+ TRUSTED_BOARD_BOOT				:= 0
+-PROTECTED_CHIPID				:= 1
++PROTECTED_CHIPID				:= 0
+ PLAT_DDR_ECC					:= 0
+ INIT_UNUSED_NS_EL2				:= 1
+ 

@@ -1,0 +1,1803 @@
+From 23b21de9168b929d885a8aca91cb08dbcbea262e Mon Sep 17 00:00:00 2001
+From: August <2819763+Dangku@users.noreply.github.com>
+Date: Mon, 26 Oct 2026 10:33:47 +0800
+Subject: [PATCH] add bananapi-ai2h board
+
+Signed-off-by: August <2819763+Dangku@users.noreply.github.com>
+---
+ arch/arm/dts/Makefile                       |   3 +
+ arch/arm/dts/bananapi-ai2h.dts              | 750 ++++++++++++++++++++
+ arch/arm/mach-renesas/Kconfig.rcar3         |   7 +
+ board/renesas/bananapi-ai2h/Kconfig         |  15 +
+ board/renesas/bananapi-ai2h/Makefile        |  13 +
+ board/renesas/bananapi-ai2h/bananapi-ai2h.c | 383 ++++++++++
+ board/renesas/bananapi-common/board-info.c  | 215 ++++++
+ configs/bananapi_ai2h_defconfig             | 200 ++++++
+ include/configs/bananapi-ai2h.h             | 118 +++
+ 9 files changed, 1704 insertions(+)
+ create mode 100644 arch/arm/dts/bananapi-ai2h.dts
+ create mode 100644 board/renesas/bananapi-ai2h/Kconfig
+ create mode 100644 board/renesas/bananapi-ai2h/Makefile
+ create mode 100644 board/renesas/bananapi-ai2h/bananapi-ai2h.c
+ create mode 100644 board/renesas/bananapi-common/board-info.c
+ create mode 100644 configs/bananapi_ai2h_defconfig
+ create mode 100644 include/configs/bananapi-ai2h.h
+
+diff --git a/arch/arm/dts/Makefile b/arch/arm/dts/Makefile
+index 7211f50aa5..4b3e69a47d 100644
+--- a/arch/arm/dts/Makefile
++++ b/arch/arm/dts/Makefile
+@@ -983,6 +983,9 @@ dtb-$(CONFIG_RCAR_GEN3) += \
+ 	rzg3l-dev.dtb \
+ 	smarc-rzg3l.dtb
+ 
++dtb-$(CONFIG_TARGET_BANANAPI_AI2H) += \
++	bananapi-ai2h.dtb
++
+ dtb-$(CONFIG_RCAR_GEN4) += \
+ 	r8a779h0-gray-hawk.dtb
+ 
+diff --git a/arch/arm/dts/bananapi-ai2h.dts b/arch/arm/dts/bananapi-ai2h.dts
+new file mode 100644
+index 0000000000..88495b6d6a
+--- /dev/null
++++ b/arch/arm/dts/bananapi-ai2h.dts
+@@ -0,0 +1,750 @@
++// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++/*
++ * Device Tree Source for the Bananapi AI2H board
++ *
++ * Copyright (C) 2024 Renesas Electronics Corp.
++ */
++
++/dts-v1/;
++#include "r9a09g057.dtsi"
++#include <dt-bindings/pinctrl/rzg2l-pinctrl.h>
++#include <dt-bindings/gpio/gpio.h>
++
++/ {
++	model = "Bananapi BPI-AI2H";
++	compatible = "sinovoip,bpi-ai2h", "renesas,r9a09g057h4", "renesas,r9a09g057";
++
++	aliases {
++		i2c0 = &i2c0;
++		i2c1 = &i2c1;
++		i2c2 = &i2c2;
++		i2c3 = &i2c3;
++		i2c6 = &i2c6;
++		i2c7 = &i2c7;
++		i2c8 = &i2c8;
++		serial0 = &scif0;
++		serial1 = &sci0;
++		serial2 = &sci2;
++		mmc0 = &sdhi0;
++		mmc1 = &sdhi1;
++		spi0 = &xspi;
++		spi1 = &spi0;
++		spi2 = &spi2;
++		ethernet0 = &eth0;
++		ethernet1 = &eth1;
++	};
++
++	chosen {
++		bootargs = "ignore_loglevel";
++		stdout-path = "serial0:115200n8";
++	};
++
++	memory@48000000 {
++		device_type = "memory";
++		/* first 128MB is reserved for secure area. */
++		reg = <0x0 0x48000000 0x1 0xF8000000>;
++	};
++
++	memory@240000000 {
++		device_type = "memory";
++		reg = <0x2 0x40000000 0x2 0x00000000>;
++	};
++
++	reserved-memory {
++		#address-cells = <2>;
++		#size-cells = <2>;
++		ranges;
++
++		global_cma: linux,cma@58000000 {
++			compatible = "shared-dma-pool";
++			linux,cma-default;
++			reusable;
++			reg = <0x0 0x58000000 0x0 0x28000000>;
++		};
++
++		mmp_reserved: linux,multimedia {
++			compatible = "shared-dma-pool";
++			reusable;
++			reg = <0x00000000 0x80000000 0x0 0x10000000>;
++		};
++
++		isp_reserved: frame_buffer@90000000 {
++			compatible = "shared-dma-pool";
++			reusable;
++			reg = <0x0 0x90000000 0x0 0x18000000>;
++		};
++
++		opencva_reserved: OpenCVA@A8000000 {
++			reusable;
++			reg = <0x0 0xA8000000 0x0 0x7D00000>;
++		};
++
++		drp_codec: DRP-Codec@AFD00000 {
++			reusable;
++			reg = <0x0 0xAFD00000 0x0 0x300000>;
++		};
++
++		image_buf0: image_buf@B0000000 {
++			compatible = "shared-dma-pool";
++			reusable;
++			reg = <0x0 0xB0000000 0x0 0x4000000>;
++			label = "image_buf0";
++		};
++
++		cru_func: cru_buffer@B4000000 {
++			compatible = "shared-dma-pool";
++			reusable;
++			reg = <0x0 0xB4000000 0x0 0x16400000>;
++		};
++
++		drp_reserved: DRP-AI@240000000 {
++			reusable;
++			reg = <0x2 0x40000000 0x0 0x20000000>;
++		};
++	};
++
++	mmngr {
++		compatible = "renesas,mmngr";
++		memory-region = <&mmp_reserved>;
++	};
++
++	mmngrbuf {
++		compatible = "renesas,mmngrbuf";
++	};
++
++	vspm_if {
++		compatible = "renesas,vspm_if";
++	};
++
++	reg_1p8v: regulator0 {
++		compatible = "regulator-fixed";
++
++		regulator-name = "fixed-1.8V";
++		regulator-min-microvolt = <1800000>;
++		regulator-max-microvolt = <1800000>;
++		regulator-boot-on;
++		regulator-always-on;
++	};
++
++	reg_3p3v: regulator1 {
++		compatible = "regulator-fixed";
++
++		regulator-name = "fixed-3.3V";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		regulator-boot-on;
++		regulator-always-on;
++	};
++
++	vdd5v0_sys: regulator-vdd5v0-sys {
++		compatible = "regulator-fixed";
++
++		regulator-name = "vdd5v0_sys";
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
++		regulator-always-on;
++		regulator-boot-on;
++	};
++
++	/* SD PWEN */
++	vmmc_sdhi1: regulator-vcc-sdhi1 {
++		compatible = "regulator-fixed";
++
++		regulator-name = "SDHI1 Vmmc";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++
++		gpios = <&pinctrl RZG2L_GPIO(10, 3) GPIO_ACTIVE_HIGH>;
++		enable-active-high;
++	};
++
++	/* SD IOVS */
++	vccq_sdhi1: regulator-vccq-sdhi1 {
++		compatible = "regulator-gpio";
++
++		regulator-name = "SDHI1 VccQ";
++		regulator-min-microvolt = <1800000>;
++		regulator-max-microvolt = <3300000>;
++
++		gpios = <&pinctrl RZG2L_GPIO(10, 2) GPIO_ACTIVE_HIGH>;
++
++		gpios-states = <0>;
++		states = <3300000 0 1800000 1>;
++	};
++/*
++	vbus_reg: regulator_vbus {
++ 		compatible = "regulator-fixed";
++		regulator-name = "vbus-regulator";
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
++		startup-delay-us = <20000>;
++		gpios = <&pinctrl RZG2L_GPIO(10, 4) GPIO_ACTIVE_HIGH>;
++		enable-active-high;
++		regulator-boot-on;
++		regulator-always-on;
++	};
++*/
++	hdmi_reg: regulator_hdmi {
++		compatible = "regulator-fixed";
++		regulator-name = "hdmi-regulator";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		startup-delay-us = <20000>;
++		gpios = <&pinctrl RZG2L_GPIO(0, 5) GPIO_ACTIVE_HIGH>;
++		enable-active-high;
++		regulator-boot-on;
++		regulator-always-on;
++	};
++
++
++	hdmi-out {
++		compatible = "hdmi-connector";
++		type = "d";
++
++		port {
++			hdmi_con_out: endpoint {
++				remote-endpoint = <&adv7535_out>;
++			};
++		};
++	};
++
++	snd_rzv2h: sound {
++		#address-cells = <1>;
++		#size-cells = <0>;
++		compatible = "simple-audio-card";
++		simple-audio-card,name = "rsnd_rzv2h";
++		status="disabled";
++
++		ssi_link: simple-audio-card,dai-link@0 {
++			format = "i2s";
++			reg = <0>;
++			bitclock-master = <&cpu_dai0>;
++			frame-master = <&cpu_dai0>;
++			mclk-fs = <256>;
++
++			cpu_dai0: cpu {
++				sound-dai = <&rcar_sound 0>;
++			};
++
++			codec {
++				sound-dai = <&da7212>;
++				clocks = <&rcar_sound>;
++			};
++		};
++	};
++};
++
++&audio_clka {
++	clock-frequency = <22579200>;
++};
++
++&audio_clkb {
++	clock-frequency = <24576000>;
++};
++
++&audio_clkc {
++	clock-frequency = <22579200>;
++};
++
++&pinctrl {
++	sci0_pins: sci0 {
++		pinmux = <RZG2L_PORT_PINMUX(5, 0, 1)>, /* SCI0_TXD_MOSI_SDA */
++			 <RZG2L_PORT_PINMUX(5, 1, 1)>, /* SCI0_RXD_MISO_SCL */
++			 <RZG2L_PORT_PINMUX(5, 2, 4)>, /* SCI0_CTS */
++			 <RZG2L_PORT_PINMUX(5, 3, 2)>; /* SCI0_RTS */
++	};
++
++	sci2_pins: sci2 {
++		pinmux = <RZG2L_PORT_PINMUX(5, 4, 1)>, /* TXD */
++			 <RZG2L_PORT_PINMUX(5, 5, 1)>, /* RXD */
++			 <RZG2L_PORT_PINMUX(5, 6, 1)>, /* CTS */
++			 <RZG2L_PORT_PINMUX(5, 7, 1)>; /* RTS */
++	};
++
++	sdhi1_pins: sd1 {
++		pinmux = <RZG2L_PORT_PINMUX(9, 4, 14)>; /* SD1_CD */
++	};
++
++	i2c0_pins: i2c0 {
++		pinmux = <RZG2L_PORT_PINMUX(3, 0, 1)>, /* I2C0_SDA */
++			 <RZG2L_PORT_PINMUX(3, 1, 1)>; /* I2C0_SCL */
++	};
++
++	i2c1_pins: i2c1 {
++		pinmux = <RZG2L_PORT_PINMUX(3, 2, 1)>, /* I2C1_SDA */
++			 <RZG2L_PORT_PINMUX(3, 3, 1)>; /* I2C1_SCL */
++	};
++
++	i2c2_pins: i2c2 {
++		pinmux = <RZG2L_PORT_PINMUX(2, 0, 4)>, /* I2C2_SDA */
++			 <RZG2L_PORT_PINMUX(2, 1, 4)>; /* I2C2_SCL */
++	};
++
++	i2c3_pins: i2c3 {
++		pinmux = <RZG2L_PORT_PINMUX(3, 6, 1)>, /* I2C3_SDA */
++			 <RZG2L_PORT_PINMUX(3, 7, 1)>; /* I2C3_SCL */
++	};
++
++	i2c6_pins: i2c6 {
++		pinmux = <RZG2L_PORT_PINMUX(4, 4, 1)>, /* I2C6_SDA */
++			 <RZG2L_PORT_PINMUX(4, 5, 1)>; /* I2C6_SCL */
++	};
++
++	i2c7_pins: i2c7 {
++		pinmux = <RZG2L_PORT_PINMUX(4, 6, 1)>, /* I2C7_SDA */
++			 <RZG2L_PORT_PINMUX(4, 7, 1)>; /* I2C7_SCL */
++	};
++
++	i2c8_pins: i2c8 {
++		pinmux = <RZG2L_PORT_PINMUX(0, 6, 1)>, /* I2C8_SDA */
++			 <RZG2L_PORT_PINMUX(0, 7, 1)>; /* I2C8_SCL */
++	};
++
++	spi0_pins: spi0 {
++		pinmux = <RZG2L_PORT_PINMUX(9, 1, 1)>, /* MISO */
++			 <RZG2L_PORT_PINMUX(9, 0, 1)>, /* MOSI */
++			 <RZG2L_PORT_PINMUX(9, 3, 1)>, /* CS0 */
++			 <RZG2L_PORT_PINMUX(9, 5, 1)>, /* CS1 */
++			 <RZG2L_PORT_PINMUX(9, 2, 1)>; /* SCK */
++	};
++
++	spi2_pins: spi2 {
++		pinmux = <RZG2L_PORT_PINMUX(11, 3, 5)>, /* MISO */
++			 <RZG2L_PORT_PINMUX(11, 4, 5)>, /* MOSI */
++			 <RZG2L_PORT_PINMUX(10, 7, 5)>, /* CS0 */
++			 <RZG2L_PORT_PINMUX(10, 6, 5)>, /* CS1 */
++			 <RZG2L_PORT_PINMUX(11, 5, 5)>; /* SCK */
++	};
++
++	sound_clk_pins: sound_clk {
++		pinmux = <RZG2L_PORT_PINMUX(1, 0, 7)>, /* AUDIO_CLKB */
++			 <RZG2L_PORT_PINMUX(1, 1, 7)>, /* AUDIO_CLKC */
++			 <RZG2L_PORT_PINMUX(9, 7, 8)>; /* AUDIO_CLKOUT */
++	};
++
++	sound_pins: sound {
++		pinmux = <RZG2L_PORT_PINMUX(1, 2, 7)>, /* SSI3_SCK */
++			 <RZG2L_PORT_PINMUX(1, 3, 7)>, /* SSI3_WS */
++			 <RZG2L_PORT_PINMUX(0, 4, 7)>, /* SSI3_SDATA_OUT */
++			 <RZG2L_PORT_PINMUX(1, 5, 7)>; /* SSI4_SDATA_IN */
++	};
++};
++
++&extal_clk {
++	clock-frequency = <24000000>;
++};
++
++&ostm2 {
++	status = "okay";
++};
++
++&ostm3 {
++	status = "okay";
++};
++
++&scif0 {
++	status = "okay";
++};
++
++/* 40pin uart0 */
++&sci0 {
++	pinctrl-0 = <&sci0_pins>;
++	pinctrl-names = "default";
++
++	uart-has-rtscts;
++	status = "disabled";
++};
++
++/* 40pin uart2 */
++&sci2 {
++	pinctrl-0 = <&sci2_pins>;
++	pinctrl-names = "default";
++	status = "disabled";
++};
++
++/* eMMC */
++&sdhi0 {
++	vmmc-supply = <&reg_3p3v>;
++	vqmmc-supply = <&reg_1p8v>;
++	bus-width = <8>;
++	mmc-hs200-1_8v;
++	non-removable;
++	fixed-emmc-driver-type = <1>;
++	status = "okay";
++};
++
++/* SD */
++&sdhi1 {
++	pinctrl-0 = <&sdhi1_pins>;
++	pinctrl-names = "default";
++	vmmc-supply = <&vmmc_sdhi1>;
++	vqmmc-supply = <&vccq_sdhi1>;
++	bus-width = <4>;
++	sd-uhs-sdr50;
++	sd-uhs-sdr104;
++	status = "okay";
++};
++
++&eth0 {
++	phy-handle = <&rtl8211f_0>;
++	phy-mode = "rgmii-id";
++	status = "okay";
++
++	mdio {
++		compatible = "snps,dwmac-mdio";
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		rtl8211f_0: ethernet-phy@0 {
++			compatible = "ethernet-phy-ieee802.3-c22";
++			reg = <0>;
++			//max-speed = <1000>;
++                        //reset-assert-us = <10000>;
++                        //reset-deassert-us = <30000>;
++                        //reset-gpios = <&pinctrl RZG2L_GPIO(7, 1) IRQ_TYPE_LEVEL_LOW>;
++
++			//interrupt-parent = <&pinctrl>;
++			//interrupts = <RZG2L_GPIO(7, 1) IRQ_TYPE_LEVEL_LOW>;
++		};
++	};
++};
++
++&eth1 {
++	phy-handle = <&rtl8211f_1>;
++	phy-mode = "rgmii-id";
++	status = "okay";
++
++	mdio {
++		compatible = "snps,dwmac-mdio";
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		rtl8211f_1: ethernet-phy@0 {
++			compatible = "ethernet-phy-ieee802.3-c22";
++			reg = <0>;
++			//max-speed = <1000>;
++                        //reset-assert-us = <10000>;
++                        //reset-deassert-us = <30000>;
++                        //reset-gpios = <&pinctrl RZG2L_GPIO(7, 1) IRQ_TYPE_LEVEL_LOW>;
++
++                        //interrupt-parent = <&pinctrl>;
++                        //interrupts = <RZG2L_GPIO(7, 1) IRQ_TYPE_LEVEL_LOW>;
++		};
++	};
++};
++
++/* cam i2c-mux */
++&i2c0 {
++	clock-frequency = <400000>;
++	pinctrl-0 = <&i2c0_pins>;
++	pinctrl-names = "default";
++
++	status = "disabled";
++};
++
++/* 40pin i2c1 */
++&i2c1 {
++	clock-frequency = <400000>;
++	pinctrl-0 = <&i2c1_pins>;
++	pinctrl-names = "default";
++
++	status = "disabled";
++};
++
++/* 40pin i2c2 */
++&i2c2 {
++	clock-frequency = <400000>;
++	pinctrl-0 = <&i2c2_pins>;
++	pinctrl-names = "default";
++
++	status = "disabled";
++
++	da7212: codec@1a {
++		compatible = "dlg,da7212";
++		#sound-dai-cells = <0>;
++		#address-cells = <1>;
++		#size-cells = <0>;
++		reg = <0x1a>;
++
++		clocks = <&rcar_sound>;
++		clock-names = "mclk";
++
++		dlg,micbias1-lvl = <2500>;
++		dlg,micbias2-lvl = <2500>;
++		dlg,dmic-data-sel = "lrise_rfall";
++		dlg,dmic-samplephase = "between_clkedge";
++		dlg,dmic-clkrate = <3000000>;
++
++		VDDA-supply = <&reg_1p8v>;
++		VDDSP-supply = <&reg_3p3v>;
++		VDDMIC-supply = <&reg_3p3v>;
++		VDDIO-supply = <&reg_1p8v>;
++	};
++};
++
++&i2c3 {
++	clock-frequency = <400000>;
++	pinctrl-0 = <&i2c3_pins>;
++	pinctrl-names = "default";
++
++	status = "okay";
++
++	core_eeprom: eeprom@57 {
++		compatible = "atmel,24c02";
++		reg = <0x57>;
++		pagesize = <8>;
++		//read-only;
++	};
++
++	carrier_eeprom: eeprom@56 {
++		compatible = "atmel,24c02";
++		reg = <0x56>;
++		pagesize = <8>;
++		//read-only;
++	};
++
++	adv7535: hdmi@3d {
++		compatible = "adi,adv7535";
++		reg = <0x3d>;
++
++		avdd-supply = <&reg_1p8v>;
++		dvdd-supply = <&reg_1p8v>;
++		pvdd-supply = <&reg_1p8v>;
++		a2vdd-supply = <&reg_1p8v>;
++		v3p3-supply = <&reg_3p3v>;
++		v1p2-supply = <&reg_1p8v>;
++
++		interrupt-parent = <&pinctrl>;
++		interrupts = <RZG2L_GPIO(4, 3) IRQ_TYPE_LEVEL_LOW>;
++
++		adi,dsi-lanes = <4>;
++
++		ports {
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			port@0 {
++				reg = <0>;
++				adv7535_in: endpoint@0 {
++					remote-endpoint = <&dsi0_out>;
++				};
++			};
++
++			port@1 {
++				reg = <1>;
++				adv7535_out: endpoint@1 {
++				remote-endpoint = <&hdmi_con_out>;
++				};
++			};
++		};
++	};
++
++	ext_rtc: rtc@51 {
++		compatible = "nxp,pcf8563";
++		reg = <0x51>;
++		status = "disabled";
++	};
++};
++
++/*Core board camera CN1*/
++&i2c6 {
++	pinctrl-0 = <&i2c6_pins>;
++	pinctrl-names = "default";
++
++	status = "disabled";
++};
++
++/*Core board camera CN2*/
++&i2c7 {
++	pinctrl-0 = <&i2c7_pins>;
++	pinctrl-names = "default";
++
++	status = "disabled";
++};
++
++&i2c8 {
++	status = "okay";
++};
++
++&du {
++	status = "okay";
++};
++
++&dsi0 {
++	status = "okay";
++
++	ports {
++		port@1 {
++			dsi0_out: endpoint {
++				remote-endpoint = <&adv7535_in>;
++				data-lanes = <1 2 3 4>;
++			};
++		};
++	};
++};
++
++&xhci0 {
++	memory-region = <&global_cma>;
++	status = "okay";
++};
++
++&xhci1 {
++	memory-region = <&global_cma>;
++	status = "okay";
++};
++
++&usb20phyrst {
++	status = "okay";
++};
++
++&usb21phyrst {
++	status = "okay";
++};
++
++&ohci0 {
++	memory-region = <&global_cma>;
++
++	dr_mode = "otg";
++	status = "okay";
++};
++
++&ohci1 {
++	memory-region = <&global_cma>;
++
++	status = "okay";
++};
++
++&ehci0 {
++	memory-region = <&global_cma>;
++
++	dr_mode = "otg";
++	status = "okay";
++};
++
++&ehci1 {
++	memory-region = <&global_cma>;
++
++	status = "okay";
++};
++
++&hsusb {
++	dr_mode = "otg";
++	status = "okay";
++};
++
++&usb2_phy0 {
++	status = "okay";
++};
++
++&usb2_phy1 {
++	status = "okay";
++};
++
++&rtc {
++	status = "okay";
++};
++
++&wdt1 {
++	status = "okay";
++};
++
++/* 40pin spi0 */
++&spi0 {
++	pinctrl-0 = <&spi0_pins>;
++	pinctrl-names = "default";
++
++	status = "disabled";
++};
++
++/* 40pin spi2 */
++&spi2 {
++	pinctrl-0 = <&spi2_pins>;
++	pinctrl-names = "default";
++
++	status = "disabled";
++};
++
++&xspi {
++	status = "okay";
++
++	flash@0 {
++		compatible = "micron,mt25qu512a", "jedec,spi-nor";
++		reg = <0>;
++		m25p,fast-read;
++		spi-max-frequency = <50000000>;
++		spi-tx-bus-width = <1>;
++		spi-rx-bus-width = <1>;
++
++		partitions {
++			compatible = "fixed-partitions";
++			#address-cells = <1>;
++			#size-cells = <1>;
++
++			partition@0 {
++				label = "bl2";
++				reg = <0x00000000 0x00060000>;
++				read-only;
++			};
++
++			partition@60000 {
++				label = "fip";
++				reg = <0x00060000 0x00780000>;
++				read-only;
++			};
++
++			partition@7E0000 {
++				label = "env";
++				reg = <0x007E0000 0x00020000>;
++			};
++
++			partition@800000 {
++				label = "user";
++				reg = <0x00800000 0x03800000>;
++			};
++		};
++	};
++};
++
++&rcar_sound {
++	pinctrl-0 = <&sound_clk_pins &sound_pins>;
++	pinctrl-names = "default";
++
++	status = "disabled";
++
++	/* audio_clkout */
++	#clock-cells = <0>;
++	clock-frequency = <11289600>;
++
++	/* Multi DAI */
++	#sound-dai-cells = <1>;
++
++	rcar_sound,dai {
++		dai0 {
++			playback = <&ssi3>;
++			capture  = <&ssi4 &src0 &dvc0>;
++		};
++	};
++};
++
++&ssi4 {
++	shared-pin;
++};
++
++&pcie0 {
++	/* Map all possible DDR as inbound ranges */
++	dma-ranges = <0x42000000 0 0x40000000 0 0x40000000 0x4 0x00000000>;
++
++	status = "disabled";
++};
++
++&adc {
++	status = "okay";
++};
++
++&cmtw0 {
++	status = "okay";
++};
++
++&cmtw1 {
++	status = "okay";
++};
+diff --git a/arch/arm/mach-renesas/Kconfig.rcar3 b/arch/arm/mach-renesas/Kconfig.rcar3
+index 709180c9da..2c6f467686 100644
+--- a/arch/arm/mach-renesas/Kconfig.rcar3
++++ b/arch/arm/mach-renesas/Kconfig.rcar3
+@@ -281,6 +281,12 @@ config TARGET_SMARC_RZG3E
+ 	help
+           Support for Renesas RZ/G3E Dev Platform
+ 
++config TARGET_BANANAPI_AI2H
++	bool "Bananpai AI2H board"
++	select SSCANF
++	help
++	  Support for Bananapi AI2H Dev Platform
++
+ config TARGET_RZG3S_DEV
+ 	bool "RZ/G3S Dev board"
+ 	help
+@@ -333,6 +339,7 @@ source "board/renesas/rzg2lc-dev/Kconfig"
+ source "board/renesas/rzg2ul-dev/Kconfig"
+ source "board/renesas/rzv2h-dev/Kconfig"
+ source "board/renesas/rzv2n-dev/Kconfig"
++source "board/renesas/bananapi-ai2h/Kconfig"
+ source "board/renesas/rzg3e-dev/Kconfig"
+ source "board/renesas/rzg3s-dev/Kconfig"
+ source "board/renesas/rzg3l-dev/Kconfig"
+diff --git a/board/renesas/bananapi-ai2h/Kconfig b/board/renesas/bananapi-ai2h/Kconfig
+new file mode 100644
+index 0000000000..4a36433251
+--- /dev/null
++++ b/board/renesas/bananapi-ai2h/Kconfig
+@@ -0,0 +1,15 @@
++if TARGET_BANANAPI_AI2H
++
++config SYS_SOC
++	default "renesas"
++
++config SYS_BOARD
++	default "bananapi-ai2h"
++
++config SYS_VENDOR
++	default "renesas"
++
++config SYS_CONFIG_NAME
++	default "bananapi-ai2h"
++
++endif
+diff --git a/board/renesas/bananapi-ai2h/Makefile b/board/renesas/bananapi-ai2h/Makefile
+new file mode 100644
+index 0000000000..9139e1e40f
+--- /dev/null
++++ b/board/renesas/bananapi-ai2h/Makefile
+@@ -0,0 +1,13 @@
++#
++# board/renesas/bananapi-ai2h/Makefile
++#
++# Copyright (C) 2022 Renesas Electronics Corporation
++#
++# SPDX-License-Identifier: GPL-2.0+
++#
++
++ifdef CONFIG_SPL_BUILD
++obj-y	:= ../rcar-common/gen3-spl.o
++else
++obj-y	:= bananapi-ai2h.o ../rcar-common/v2h-common.o ../bananapi-common/board-info.o
++endif
+diff --git a/board/renesas/bananapi-ai2h/bananapi-ai2h.c b/board/renesas/bananapi-ai2h/bananapi-ai2h.c
+new file mode 100644
+index 0000000000..724f124e95
+--- /dev/null
++++ b/board/renesas/bananapi-ai2h/bananapi-ai2h.c
+@@ -0,0 +1,383 @@
++#include <common.h>
++#include <cpu_func.h>
++#include <image.h>
++#include <init.h>
++#include <malloc.h>
++#include <netdev.h>
++#include <dm.h>
++#include <dm/platform_data/serial_sh.h>
++#include <asm/processor.h>
++#include <asm/mach-types.h>
++#include <asm/io.h>
++#include <linux/bitops.h>
++#include <linux/errno.h>
++#include <asm/arch/sys_proto.h>
++#include <asm/gpio.h>
++#include <asm/arch/gpio.h>
++#include <asm/arch/renesas.h>
++#include <asm/arch/rcar-mstp.h>
++#include <asm/arch/sh_sdhi.h>
++#include <i2c.h>
++#include <mmc.h>
++#include <linux/delay.h>
++#include <efi_loader.h>
++
++DECLARE_GLOBAL_DATA_PTR;
++
++#define	PFC_BASE			0x10410000
++#define	CPG_BASE			0x10420000
++
++#define PWPR				(PFC_BASE + 0x3C04)
++#define PWPR_REGWE_A			BIT(6)
++#define	PWPR_REGWE_B			BIT(5)
++
++#define	P_2A				(PFC_BASE + 0x002A)
++#define	PM_2A				(PFC_BASE + 0x0154)
++#define	PMC_2A				(PFC_BASE + 0x022A)
++#define PFC_PMC26			(PFC_BASE + 0x0226)
++#define PFC_PFC26			(PFC_BASE + 0x0498)
++#define PFC_PMC29			(PFC_BASE + 0x0229)
++#define PFC_PFC29			(PFC_BASE + 0x04A4)
++
++#define P_20				(PFC_BASE + 0x0020)
++#define PM_20				(PFC_BASE + 0x0140)
++#define	PMC_20				(PFC_BASE + 0x0220)
++#define	PFC_20				(PFC_BASE + 0x0480)
++#define PMC_23				(PFC_BASE + 0x0223)
++#define PFC_23				(PFC_BASE + 0x048C)
++#define P_26				(PFC_BASE + 0x0026)
++#define PM_26				(PFC_BASE + 0x014C)
++#define PMC_26				(PFC_BASE + 0x0226)
++#define P_27				(PFC_BASE + 0x0027)
++#define PM_27				(PFC_BASE + 0x014E)
++#define PMC_27				(PFC_BASE + 0x0227)
++#define P_28				(PFC_BASE + 0x0028)
++#define PM_28				(PFC_BASE + 0x0150)
++#define PMC_28				(PFC_BASE + 0x0228)
++
++#define	PFC_OSCBYPS			(PFC_BASE + 0x3C00)
++
++#define PFC_OEN				(PFC_BASE + 0x3C40)
++#define PFC_OEN_OEN0			BIT(0)
++#define PFC_OEN_OEN1			BIT(1)
++#define PFC_PWPR			(PFC_BASE + 0x3C04)
++
++#define	CPG_CLKON_9			(CPG_BASE + 0x0624)
++#define	CPG_RST_9			(CPG_BASE + 0x0924)
++#define	CPG_RST_10			(CPG_BASE + 0x0928)
++
++/* CPG */
++#define CPG_BASE			0x10420000
++#define CPG_SSEL0			(CPG_BASE + 0x0300)
++#define CPG_SSEL1			(CPG_BASE + 0x0304)
++#define CPG_CLKON_11			(CPG_BASE + 0x062C)
++#define CPG_CLKON_12			(CPG_BASE + 0x0630)
++#define CPG_CLKMON_5			(CPG_BASE + 0x0814)
++#define CPG_CLKMON_6			(CPG_BASE + 0x0818)
++#define CPG_RST_11			(CPG_BASE + 0x092C)
++#define CPG_RSTMON_5			(CPG_BASE + 0x0A14)
++
++#define CPG_RST_USB			(CPG_BASE + 0x0928)
++#define CPG_RSTMON4_USB			(CPG_BASE + 0x0A10)
++#define CPG_RSTMON5_USB			(CPG_BASE + 0x0A14)
++#define CPG_CLKON_USB			(CPG_BASE + 0x062C)
++#define CPG_CLKMON_USB			(CPG_BASE + 0x0814)
++
++#define ICU_IPTSR_REG			0x10400060
++
++/* USB */
++#define USBPHY20_BASE			(0x15830000)
++#define USBPHY21_BASE			(0x15840000)
++#define USBPHY20_RESET			(USBPHY20_BASE + 0x000u)
++#define USBPHY21_RESET			(USBPHY21_BASE + 0x000u)
++
++#define USB20_BASE			(0x15800000)
++#define USB21_BASE			(0x15810000)
++#define USBF_BASE			(0x15820000)
++
++#define COMMCTRL			0x800
++#define HcRhDescriptorA			0x048
++#define LPSTS				0x102
++#define USB2_PHY_UTMICTRL2		0xb04
++#define USB2_PHY_RESET			0x000
++#define USB2_PHY_OTGR			0x600
++
++#define SYS_ADC_CFG			0x10431600
++
++#if IS_ENABLED(CONFIG_EFI_HAVE_CAPSULE_SUPPORT)
++
++#define EFI_FIRMWARE_IMAGE_TYPE_RZV2H_GUID \
++    EFI_GUID(0xf94c5e89, 0x15db, 0x44d3, 0x87, 0xb0, 0x6c, 0x35, 0x42, 0x9d, 0xfa, 0x18)
++struct efi_fw_image fw_images[] = {
++	{
++		.image_type_id = EFI_FIRMWARE_IMAGE_TYPE_RZV2H_GUID,
++		.fw_name = u"bl2_bp_spi.bin",
++		.image_index = 1,
++	},
++	{
++		.image_type_id = EFI_FIRMWARE_IMAGE_TYPE_RZV2H_GUID,
++		.fw_name = u"fip.bin",
++		.image_index = 2,
++	},
++};
++
++struct efi_capsule_update_info update_info = {
++	.dfu_string =
++		/* BL2 in SPI NOR at offset 0x0, max size 0x20000  */
++		"sf 0:0=bl2_bp_spi.bin raw 0x0 0x20000;"
++		/* FIP in SPI NOR at offset 0x60000, max size 0x780000 */
++		"fip.bin raw 0x60000 0x780000",
++	.num_images = ARRAY_SIZE(fw_images),
++	.images = fw_images,
++};
++#endif /* EFI_HAVE_CAPSULE_SUPPORT */
++
++void s_init(void)
++{
++	*(volatile u32 *)PWPR |= (PWPR_REGWE_A | PWPR_REGWE_B);
++
++	/* Enable ADC */
++	*(volatile u32 *)(SYS_ADC_CFG) = 0;
++
++#if CONFIG_TARGET_BANANAPI_AI2H
++	/* set P0_0 output high for Carrier LED  */
++	*(volatile u8 *)PMC_20 &= ~(0x01 << 0);/* P00 port */
++	*(volatile u8 *)P_20 = (*(volatile u32 *)P_20  & ~(0x01 << 0)) | (0x01 << 0); /* P00=1 */
++	*(volatile u16 *)PM_20 = (*(volatile u32 *)PM_20 & ~(0x03 << 0)) | (0x02 << 0); /* P00 output       */
++
++	/* set P0_1 output high for Core LED  */
++	*(volatile u8 *)PMC_20 &= ~(0x01 << 1);/* P01 port */
++	*(volatile u8 *)P_20 = (*(volatile u32 *)P_20  & ~(0x01 << 1)) | (0x01 << 1); /* P01=1 */
++	*(volatile u16 *)PM_20 = (*(volatile u32 *)PM_20 & ~(0x03 << 2)) | (0x02 << 2); /* P01 output       */
++
++	/* set camABCD, power and reset low */
++	*(volatile u8 *)PMC_26 &= 0x00;/* P60~P67 port */
++	*(volatile u8 *)P_26 = (*(volatile u32 *)P_26  & ~(0xff << 0)) | (0x00 << 0); /* P60~P67=0 */
++	*(volatile u16 *)PM_26 = (*(volatile u32 *)PM_26 & ~(0xffff << 0)) | (0xAAAA << 0); /* P60~P67 output       */
++
++	/* usb vbus low */
++	*(volatile u8 *)PMC_2A &= ~(0x01 << 4);/* PA4 port */
++	*(volatile u8 *)P_2A = (*(volatile u32 *)P_2A  & ~(0x01<<4)) | (0x00 << 4); /* PA4=0 */
++	*(volatile u16 *)PM_2A = (*(volatile u32 *)PM_2A & ~(0x03<<8)) | (0x02 << 8); /* PA4 output */
++
++	/* 8821CU power low */
++	*(volatile u8 *)PMC_27 &= ~(0x01 << 3); /* P73 port */
++	*(volatile u8 *)P_27 = (*(volatile u32 *)P_27  & ~(0x01 << 3)) | (0x00 << 3); /* P73=0 */
++	*(volatile u16 *)PM_27 = (*(volatile u32 *)PM_27 & ~(0x03 << 6)) | (0x02 << 6); /* P73 output */
++#endif
++
++#if CONFIG_TARGET_BANANAPI_AI2H
++	/* SD1 poweren and iovs */
++	*(volatile u8 *)PMC_2A   &= ~(0x03 << 2);/* PA3,PA2 port */
++	*(volatile u8 *)P_2A      = (*(volatile u32 *)P_2A  & ~(0x03<<2)) | (0x02 <<2); /* PA3=1,PA2=0		*/
++	*(volatile u16 *)PM_2A    = (*(volatile u32 *)PM_2A & ~(0x0f<<4)) | (0x0a <<4); /* PA3,PA2 output	*/
++#endif
++
++	/* I2C3	*/
++	*(volatile u32 *)PFC_23  = (*(volatile u32 *)PFC_23 & 0x00FFFFFF) | (0x01 << 28) | (0x01 << 24);
++	*(volatile u8 *)PMC_23   |= (0x03) << 6;	/* P37,P36 multiplexed function	*/
++
++	/* I2C3	*/
++	*(volatile u32 *)CPG_CLKON_9 = 0x00800080;
++	*(volatile u32 *)CPG_RST_9   = 0x08000800;
++
++	/* I2C8 */
++	*(volatile u32 *)PFC_20  = (*(volatile u32 *)PFC_20 & 0x00FFFFFF) | (0x01 << 28) | (0x01 << 24);
++	*(volatile u8 *)PMC_20   |= (0x03) << 6;	/* P07,P06 multiplexed function	*/
++
++	*(volatile u32 *)CPG_CLKON_9 = 0x00080008;
++	*(volatile u32 *)CPG_RST_10  = 0x00010001;
++
++	/* Enale OE of IO block for xSPI */
++	*(volatile u32 *)(PFC_OEN) &= ~GENMASK(5,2);
++
++	// Use PLL clock for clk_tx_i only for RGMII mode
++	// Wite OEN reg. OEN0 bit "0" for output direction
++	*(volatile u32 *)(PFC_OEN) &= ~(PFC_OEN_OEN1 | PFC_OEN_OEN0);
++	while((*(volatile u32 *)(PFC_OEN) & (PFC_OEN_OEN1 | PFC_OEN_OEN0)) != 0x0)
++		;
++	
++	*(volatile u32 *)PWPR &= ~(PWPR_REGWE_A | PWPR_REGWE_B);
++
++	/* Set Bypass and Powerdown mode for Audio OSC */
++	*(volatile u32 *)(PFC_OSCBYPS) = 0x00140404;
++
++	*(volatile u32 *)(ICU_IPTSR_REG) = 0;
++	
++	/* Reset ETH 0,1 */
++	*(volatile u32 *)(CPG_RST_11) = 0x00030000;
++	while((*(volatile u32 *)(CPG_RSTMON_5) & 0x00000006) == 0x0)
++		;
++
++	/* Release reset ETH0,1 */
++	*(volatile u32 *)(CPG_RST_11) = 0x00030003;
++	while((*(volatile u32 *)(CPG_RSTMON_5) & 0x00000006) != 0x0)
++		;
++
++	/* Disable SMUX2_GBE0_RXCLK and SMUX2_GBE1_RXCLK */
++	*(volatile u32 *) (CPG_SSEL0) = 0x10000000;
++	*(volatile u32 *) (CPG_SSEL1) = 0x00100000;
++
++	/* Enable SMUX2_GBE0_RXCLK and SMUX2_GBE1_RXCLK */
++	*(volatile u32 *) (CPG_SSEL0) = 0x10001000;
++	*(volatile u32 *) (CPG_SSEL1) = 0x00100010;
++
++	/* Enable aclk_csr, aclk, tx, rx, tx_180, rx_180 for ETH0 */
++	/* Enable tx, rx for ETH1 */
++	*(volatile u32 *)(CPG_CLKON_11) = 0xFF00FF00;
++	while((*(volatile u32 *)(CPG_CLKMON_5) & 0xFF000000) != 0xFF000000)
++		;
++
++	/* Enable aclk_csr, aclk, tx_180, rx_180 for ETH1 */
++	*(volatile u32 *)(CPG_CLKON_12) = 0x000F000F;
++	while((*(volatile u32 *)(CPG_CLKMON_6) & 0x0000000F) != 0x0000000F)
++		;
++
++}
++
++static void _usbphy_init(void)
++{
++	/* Overwrite SLEEPM/SUSPENDM signals by USB2PHY Control */
++	(*(volatile u32 *)(USBPHY20_BASE + USB2_PHY_UTMICTRL2)) = 0x00000303;
++	(*(volatile u32 *)(USBPHY21_BASE + USB2_PHY_UTMICTRL2)) = 0x00000303;
++
++	/* Assert USB2PHY reset */
++	(*(volatile u32 *)(USBPHY20_BASE + USB2_PHY_RESET)) = 0x00000206;
++	(*(volatile u32 *)(USBPHY21_BASE + USB2_PHY_RESET)) = 0x00000206;
++
++	/* Delay 10us */
++	udelay(10);
++
++	/* De-Assert USB2PHY reset */
++	(*(volatile u32 *)(USBPHY20_BASE + USB2_PHY_RESET)) = 0x00000200;
++	(*(volatile u32 *)(USBPHY21_BASE + USB2_PHY_RESET)) = 0x00000200;
++
++	/* Release overwrites of SLEEPM/SUSMENDM signals, and RESET signal */
++	(*(volatile u32 *)(USBPHY20_BASE + USB2_PHY_UTMICTRL2)) = 0x00000003;
++	(*(volatile u32 *)(USBPHY20_BASE + USB2_PHY_RESET)) = 0;
++
++	(*(volatile u32 *)(USBPHY21_BASE + USB2_PHY_UTMICTRL2)) = 0x00000003;
++	(*(volatile u32 *)(USBPHY21_BASE + USB2_PHY_RESET)) = 0;
++
++	/* Activate VBUS Valid comparator */
++	(*(volatile u32 *)(USBPHY20_BASE + USB2_PHY_OTGR)) = 0x00000909;
++	(*(volatile u32 *)(USBPHY21_BASE + USB2_PHY_OTGR)) = 0x00000909;
++}
++
++static void _reset_usb2(void)
++{
++	/* Reset for USBTEST */
++	(*(volatile u32 *)CPG_RST_USB) |= 0x80008000;
++	while((*(volatile u32 *)(CPG_RSTMON5_USB) & 0x00000001) != 0x0);
++
++	/* Reset for USB2 host 0 and 1 */
++	(*(volatile u32 *)CPG_RST_USB) |= 0x30003000;
++	while((*(volatile u32 *)(CPG_RSTMON4_USB) & 0x60000000) != 0x0);
++}
++
++static void board_usb_init(void)
++{
++	/* Reset USB*/
++	_reset_usb2();
++
++	/* Enable clock for USB */
++	(*(volatile u32 *)CPG_CLKON_USB) = 0x00F800F8;
++	while((*(volatile u32 *)(CPG_CLKMON_USB) & 0x00F80000) != 0x00F80000);
++
++	/* Setup  */
++	/* Disable GPIO Write Protect */
++	(*(volatile u32 *)PFC_PWPR) |= (0x1u << 6);
++
++#if CONFIG_TARGET_BANANAPI_AI2H
++	/* set PA_4 output high for USB30 VL817, USB31 AND USB21 VBUSEN  */
++	*(volatile u8 *)PMC_2A &= ~(0x01 << 4); /* PA4 port */
++	*(volatile u8 *)P_2A = (*(volatile u32 *)P_2A  & ~(0x01 << 4)) | (0x01 << 4); /* PA4=1 */
++	*(volatile u16 *)PM_2A = (*(volatile u32 *)PM_2A & ~(0x03 << 8)) | (0x02 << 8); /* PA4 output */
++#endif
++
++	/* Enable Write protect */
++	(*(volatile u32 *)PFC_PWPR) &= ~(0x1u << 6);
++
++	/* Initialize phy */
++	_usbphy_init();
++
++	/*USB0 is HOST*/
++	(*(volatile u32 *)(USB20_BASE + COMMCTRL)) = 0;
++
++	/*USB1 is HOST*/
++	(*(volatile u32 *)(USB21_BASE + COMMCTRL)) = 0;
++
++	/* Set USBPHY normal operation (Function only) */
++	(*(volatile u16 *)(USBF_BASE + LPSTS)) |= (0x1u << 14);
++
++	/* Overcurrent is not supported */
++	(*(volatile u32 *)(USB20_BASE + HcRhDescriptorA)) |= (0x1u << 12);
++	(*(volatile u32 *)(USB21_BASE + HcRhDescriptorA)) |= (0x1u << 12);
++}
++
++int board_late_init(void)
++{
++	/* trigger ETC_RESETN pin of ethernet phy
++     * ETC_RESETN pin is connected to GreenPAK SLG46620G,
++     * To reset Ethernet PHY (KSZ9131) after powering up, we should disable and
++     * reenable Buck5 of PMIC by I2C8.
++	 */
++	struct udevice *dev;
++	const u8 pmic_i2c_bus = 8;
++	u8 reg;
++	int ret;
++
++	ret = i2c_get_chip_for_busnum(pmic_i2c_bus, 0x12, 1, &dev);
++
++	if (!ret)
++	{
++		dm_i2c_read(dev, 0x3c, &reg, 1);
++		reg &= (~0x01);
++
++		dm_i2c_write(dev, 0x3c, &reg, 1);
++
++		udelay(2);
++		reg |= (0x01);
++
++		dm_i2c_write(dev, 0x3c, &reg, 1);
++	}
++
++	return ret;
++}
++
++int board_early_init_f(void)
++{
++	return 0;
++}
++
++int board_init(void)
++{
++	/* address of boot parameters */
++	gd->bd->bi_boot_params = CONFIG_TEXT_BASE + 0x50000;
++
++	board_usb_init();
++
++	return 0;
++}
++
++#if (IS_ENABLED(CONFIG_I2C_EEPROM))
++extern int bpi_get_boardinfo(void);
++#endif
++extern int bpi_set_boardinfo(void);
++#if (IS_ENABLED(CONFIG_MISC_INIT_R))
++__weak int misc_init_r(void)
++{
++#if (IS_ENABLED(CONFIG_I2C_EEPROM))
++	bpi_get_boardinfo();
++#endif
++
++	bpi_set_boardinfo();
++
++	return 0;
++}
++#endif
++
++void reset_cpu(void)
++{
++
++}
+diff --git a/board/renesas/bananapi-common/board-info.c b/board/renesas/bananapi-common/board-info.c
+new file mode 100644
+index 0000000000..10ba454bb9
+--- /dev/null
++++ b/board/renesas/bananapi-common/board-info.c
+@@ -0,0 +1,215 @@
++// SPDX-License-Identifier: GPL-2.0+
++/*
++ * Copyright (C) 2017 Microchip
++ *		      Wenyou Yang <wenyou.yang@microchip.com>
++ */
++
++#include <common.h>
++#include <dm.h>
++#include <eeprom.h>
++#include <env.h>
++#include <i2c_eeprom.h>
++#include <i2c.h>
++#include <malloc.h>
++#include <net.h>
++#include <vsprintf.h>
++#include <asm/io.h>
++#include <hash.h>
++#include <linux/arm-smccc.h>
++#include <linux/errno.h>
++#include <u-boot/crc.h>
++#include <u-boot/sha256.h>
++
++#define CHIPID_LEN	32
++#define RZ_SIP_SVC_GET_CHIPID	0x82000011
++
++#if (IS_ENABLED(CONFIG_I2C_EEPROM))
++
++#define SIGNATURE_LEN	8
++#define VERSION_LEN		8
++#define RESERVED_LEN	8
++#define SERIAL_LEN		24
++#define MAC_ADDR_LEN	12
++
++#define SIGNATURE_OFFSET	0
++#define VERSION_OFFSET		8
++#define RESERVED_OFFSET		16
++#define SERIAL_OFFSET		24
++#define ETHADDR_OFFSET		48
++#define ETH1ADDR_OFFSET		60
++
++struct bpi_boardinfo {
++	unsigned char signature[SIGNATURE_LEN];
++	unsigned char version[VERSION_LEN];
++	unsigned char reserved[RESERVED_LEN];
++	unsigned char serial[SERIAL_LEN];
++	unsigned char ethaddr[MAC_ADDR_LEN];
++	unsigned char eth1addr[MAC_ADDR_LEN];
++} __attribute__ ((__packed__));
++
++int bpi_get_boardinfo(void)
++{
++	struct bpi_boardinfo *info;
++	struct udevice *dev;
++	const char signature[SIGNATURE_LEN] = "Bananapi";
++	unsigned char signature_buf[SIGNATURE_LEN + 1] = {0};
++	unsigned char version_buf[VERSION_LEN + 1] = {0};
++	unsigned char reserved_buf[RESERVED_LEN + 1] = {0};
++	unsigned char serial_buf[SERIAL_LEN + 1] = {0};
++	unsigned char ethaddr_buf[MAC_ADDR_LEN + 1] = {0};
++	unsigned char eth1addr_buf[MAC_ADDR_LEN + 1] = {0};
++	u8 ethaddr_str[6];
++	u8 eth1addr_str[6];
++	int ret;
++	int node;
++
++	node = fdt_path_offset(gd->fdt_blob, "eeprom0");
++	if (node < 0) {
++		printf("%s: No eeprom0 path offset\n", __func__);
++		return node;
++	}
++
++	ret = uclass_get_device_by_of_offset(UCLASS_I2C_EEPROM, node, &dev);
++	if (ret) {
++		printf("%s: Could not find EEPROM\n", __func__);
++		return ret;
++	}
++
++	ret = i2c_set_chip_offset_len(dev, 1);
++	if (ret)
++		return ret;
++
++	info = malloc(sizeof(struct bpi_boardinfo));
++	if (!info)
++		return -ENOMEM;
++
++	ret = i2c_eeprom_read(dev, 0, (uint8_t *)info, sizeof(struct bpi_boardinfo));
++	if (ret) {
++		printf("%s: i2c_eeprom_read() failed: %d\n", __func__, ret);
++		free(info);
++		return ret;
++	}
++
++	memcpy(signature_buf, info->signature, SIGNATURE_LEN);
++	memcpy(version_buf, info->version, VERSION_LEN);
++	memcpy(reserved_buf, info->reserved, RESERVED_LEN);
++	memcpy(serial_buf, info->serial, SERIAL_LEN);
++	memcpy(ethaddr_buf, info->ethaddr, MAC_ADDR_LEN);
++	memcpy(eth1addr_buf, info->eth1addr, MAC_ADDR_LEN);
++
++	/* Check EEPROM signature. */
++	if (memcmp(info->signature, signature, SIGNATURE_LEN)) {
++		printf("Invalid I2C EEPROM signature.\n");
++		free(info);
++		return -EIO;
++	}
++
++	printf("signature: %s\n",  signature_buf);
++	printf("version: %s\n",  version_buf);
++	printf("reserved: %s\n",  reserved_buf);
++	printf("serial: %s\n",  serial_buf);
++	printf("ethaddr: %s\n",  ethaddr_buf);
++	printf("eth1addr: %s\n",  eth1addr_buf);
++
++	for (int i = 0; i < 6; i++) {
++		sscanf(&ethaddr_buf[i * 2], "%2hhx", &ethaddr_str[i]);
++		sscanf(&eth1addr_buf[i * 2], "%2hhx", &eth1addr_str[i]);
++	}
++
++	env_set("serial", serial_buf);
++	if (is_valid_ethaddr(ethaddr_str))
++		eth_env_set_enetaddr("ethaddr", ethaddr_str);
++	if (is_valid_ethaddr(eth1addr_str))
++		eth_env_set_enetaddr("eth1addr", eth1addr_str);
++
++	free(info);
++
++	return 0;
++}
++#endif
++
++static int bpi_read_chipid(u32 *soc_chipid)
++{
++#if IS_ENABLED(CONFIG_ARM_SMCCC)
++	struct arm_smccc_res res;
++
++	/*
++	* RZ/V2N protects the OTP slave from non-secure direct access. Ask EL3
++	* firmware to read OTPCPID instead of touching 0x1045114c from U-Boot.
++	*/
++
++	arm_smccc_smc(RZ_SIP_SVC_GET_CHIPID, 0, 0, 0, 0, 0, 0, 0, &res);
++	if (res.a0 == ARM_SMCCC_RET_NOT_SUPPORTED) {
++		printf("%s: RZ_SIP_SVC_GET_CHIPID is not supported\n", __func__);
++		return -EOPNOTSUPP;
++	}
++
++	soc_chipid[0] = (u32)res.a0;
++	soc_chipid[1] = (u32)res.a1;
++	soc_chipid[2] = (u32)res.a2;
++	soc_chipid[3] = (u32)res.a3;
++#else
++	printf("%s: CONFIG_ARM_SMCCC is required to read CHIPID\n", __func__);
++	return -EOPNOTSUPP;
++#endif
++
++	return 0;
++}
++
++int bpi_set_boardinfo(void)
++{
++	char *chipid = NULL;
++	u32 soc_chipid[4];
++	u8 hash[SHA256_SUM_LEN];
++	int size = sizeof(hash);
++	u8 eth_addr[6];
++	int ret;
++
++	chipid = malloc(CHIPID_LEN + 1);
++	if (!chipid)
++		return -1;
++
++	ret = bpi_read_chipid(soc_chipid);
++	if (ret) {
++		free(chipid);
++		return ret;
++	}
++
++	sprintf(chipid, "%08x%08x%08x%08x", soc_chipid[0], soc_chipid[1], soc_chipid[2], soc_chipid[3] );
++	env_set("chipid", chipid);
++	env_set("serial", chipid);
++	printf("chipid: %s\n", chipid);
++
++	if (env_get("ethaddr"))
++		return 0;
++
++	if (!chipid) {
++		printf("%s: could not retrieve chipid'\n", __func__);
++		return -1;
++	}
++
++	ret = hash_block("sha256", (void *)chipid, strlen(chipid), hash, &size);
++	if (ret) {
++		printf("%s: failed to calculate SHA256\n", __func__);
++		return -1;
++	}
++
++	/* Copy 6 bytes of the hash to base the MAC address on */
++	memcpy(eth_addr, hash, 6);
++	eth_addr[0] &= 0xfe;
++	eth_addr[0] |= 0x02;
++
++	if (is_valid_ethaddr(eth_addr)) {
++		eth_env_set_enetaddr("ethaddr", eth_addr);
++
++		eth_addr[5]++;
++		if (is_valid_ethaddr(eth_addr))
++			eth_env_set_enetaddr("eth1addr", eth_addr);
++	} else {
++		printf("invalid mac address(%pM) from chipid\n", eth_addr);
++	}
++
++	free(chipid);
++
++	return 0;
++}
+diff --git a/configs/bananapi_ai2h_defconfig b/configs/bananapi_ai2h_defconfig
+new file mode 100644
+index 0000000000..b8c2267233
+--- /dev/null
++++ b/configs/bananapi_ai2h_defconfig
+@@ -0,0 +1,200 @@
++CONFIG_USB_GADGET=y
++CONFIG_USB_RENESAS_USBHS=y
++CONFIG_USB_GADGET_DOWNLOAD=y
++CONFIG_USB_FUNCTION_MASS_STORAGE=y
++CONFIG_CMD_USB_MASS_STORAGE=y
++CONFIG_ARM=y
++CONFIG_ARCH_CPU_INIT=y
++CONFIG_ARCH_RENESAS=y
++CONFIG_OF_UPSTREAM=n
++CONFIG_MTD=y
++CONFIG_TEXT_BASE=0x50000000
++CONFIG_ENV_SIZE=0x20000
++CONFIG_ENV_OFFSET=0x007E0000
++CONFIG_SYS_LOAD_ADDR=0x58000000
++CONFIG_DM_GPIO=y
++CONFIG_RCAR_GEN3=y
++CONFIG_R9A09G057=y
++CONFIG_TARGET_BANANAPI_AI2H=y
++CONFIG_DEFAULT_DEVICE_TREE="bananapi-ai2h"
++CONFIG_SMBIOS_PRODUCT_NAME=""
++CONFIG_SPL=n
++CONFIG_FIT=y
++CONFIG_SUPPORT_RAW_INITRD=y
++CONFIG_DEFAULT_FDT_FILE="bananapi-ai2h.dtb"
++CONFIG_VERSION_VARIABLE=y
++CONFIG_HUSH_PARSER=y
++CONFIG_CMD_BOOTZ=y
++CONFIG_CMD_GPIO=y
++CONFIG_CMD_I2C=y
++CONFIG_CMD_MMC=y
++CONFIG_CMD_PCI=y
++CONFIG_CMD_USB=y
++CONFIG_CMD_DHCP=y
++CONFIG_CMD_MII=y
++CONFIG_CMD_PING=y
++CONFIG_CMD_EXT2=y
++CONFIG_CMD_EXT4=y
++CONFIG_CMD_EXT4_WRITE=y
++CONFIG_CMD_FAT=y
++CONFIG_CMD_FS_GENERIC=y
++CONFIG_OF_CONTROL=y
++CONFIG_OF_PLATDATA=y
++CONFIG_OF_LIST="bananapi-ai2h"
++CONFIG_MULTI_DTB_FIT_LZO=y
++CONFIG_MULTI_DTB_FIT_USER_DEFINED_AREA=y
++CONFIG_ENV_OVERWRITE=y
++CONFIG_SYS_RELOC_GD_ENV_ADDR=y
++CONFIG_REGMAP=y
++CONFIG_SYSCON=y
++CONFIG_CLK=y
++CONFIG_CLK_RENESAS=y
++CONFIG_CLK_R9A09G057=y
++CONFIG_RCAR_GPIO=y
++#CONFIG_PINCTRL_PFC_RZG2L=y
++CONFIG_PINCTRL_PFC_RZV2H=y
++CONFIG_RZV2H_GPIO=y
++CONFIG_DM_I2C=y
++CONFIG_SYS_I2C_RCAR_IIC=y
++CONFIG_SH_SDHI=y
++CONFIG_BITBANGMII=y
++CONFIG_PHY_MICREL=y
++CONFIG_PHY_MICREL_KSZ90X1=y
++CONFIG_NET_RANDOM_ETHADDR=y
++CONFIG_DM_ETH=y
++CONFIG_DM_ETH_PHY=y
++CONFIG_DWC_ETH_QOS=y
++CONFIG_DWC_ETH_QOS_RZV2H=y
++CONFIG_RENESAS_RAVB=y
++CONFIG_PCI=y
++CONFIG_DM_PCI=y
++CONFIG_PCI_RCAR_GEN3=y
++CONFIG_DM_REGULATOR=y
++CONFIG_DM_REGULATOR_FIXED=y
++CONFIG_DM_REGULATOR_GPIO=y
++CONFIG_SCIF_CONSOLE=y
++CONFIG_TEE=y
++CONFIG_OPTEE=y
++CONFIG_USB=y
++CONFIG_USB_OTG=y
++CONFIG_DM_USB=y
++CONFIG_USB_XHCI_HCD=y
++CONFIG_USB_EHCI_HCD=y
++CONFIG_USB_EHCI_GENERIC=y
++CONFIG_USB_STORAGE=y
++CONFIG_OF_LIBFDT_OVERLAY=y
++CONFIG_SMBIOS_MANUFACTURER=""
++CONFIG_ENV_IS_IN_SPI_FLASH=y
++CONFIG_SYS_I2C_RZG2L_RIIC=y
++CONFIG_SPI_FLASH=y
++CONFIG_SPI_FLASH_BAR=y
++CONFIG_SPI_FLASH_USE_4K_SECTORS=y
++CONFIG_SPI=y
++CONFIG_DM_SPI=y
++CONFIG_SPI_FLASH_WINBOND=y
++CONFIG_RENESAS_RPC_SPI=y
++CONFIG_CMD_SF=y
++CONFIG_CMD_SPI=y
++CONFIG_SPI_FLASH_STMICRO=y
++CONFIG_DM_SPI_FLASH=y
++CONFIG_ENV_SECT_SIZE=0x20000
++#Core UEFI features:
++CONFIG_BOOTM_EFI=y
++CONFIG_CMD_BOOTEFI=y
++CONFIG_CMD_NVEDIT_EFI=y
++CONFIG_CMD_EFIDEBUG=y
++CONFIG_CMD_BOOTEFI_HELLO=y
++CONFIG_CMD_BOOTEFI_HELLO_COMPILE=y
++CONFIG_CMD_BOOTEFI_SELFTEST=y
++CONFIG_CMD_GPT=y
++CONFIG_EFI_PARTITION=y
++CONFIG_EFI_LOADER=y
++CONFIG_EFI_DEVICE_PATH_TO_TEXT=y
++CONFIG_EFI_UNICODE_COLLATION_PROTOCOL2=y
++CONFIG_EFI_UNICODE_CAPITALIZATION=y
++CONFIG_EFI_HAVE_RUNTIME_RESET=y
++CONFIG_CMD_EFI_VARIABLE_FILE_STORE=y
++#Real Time Clock (RTC) support:
++CONFIG_DM_RTC=y
++CONFIG_EFI_GET_TIME=y
++CONFIG_EFI_SET_TIME=y
++CONFIG_RTC_EMULATION=y
++#update firmware:
++CONFIG_CMD_DFU=y
++CONFIG_FLASH_CFI_MTD=y
++CONFIG_EFI_CAPSULE_FIRMWARE_FIT=y
++CONFIG_EFI_CAPSULE_FIRMWARE_MANAGEMENT=y
++CONFIG_EFI_CAPSULE_FIRMWARE=y
++CONFIG_EFI_CAPSULE_FIRMWARE_RAW=y
++CONFIG_EFI_CAPSULE_FMP_HEADER=y
++# to enable partitions and filesystems support:
++CONFIG_FAT_WRITE=y
++CONFIG_FS_FAT=y
++CONFIG_CMD_PART=y
++CONFIG_PARTITIONS=y
++CONFIG_DOS_PARTITION=y
++CONFIG_ISO_PARTITION=y
++CONFIG_PARTITION_UUIDS=y
++#Device Firmware update:
++CONFIG_OF_LIBFDT=y
++#CONFIG_DISTRO_DEFAULTS=y
++CONFIG_CMD_RTC=y
++CONFIG_EFI_RUNTIME_UPDATE_CAPSULE=y
++CONFIG_EFI_HAVE_CAPSULE_SUPPORT=y
++CONFIG_EFI_CAPSULE_ON_DISK=y
++CONFIG_SPL_DFU=y
++CONFIG_DM_MTD=y
++CONFIG_DFU_MTD=y
++CONFIG_SPL_DFU_MTD=y
++CONFIG_DFU_SF=y
++CONFIG_DFU_OVER_USB=y
++CONFIG_DFU=y
++CONFIG_DFU_MMC=y
++CONFIG_DFU_NAND=y
++CONFIG_DFU_RAM=y
++CONFIG_DFU_SF_PART=y
++CONFIG_DFU_TIMEOUT=y
++CONFIG_DFU_OVER_TFTP=y
++CONFIG_DFU_TFTP=y
++#generate capsule files
++#CONFIG_EFI_CAPSULE_AUTHENTICATE=y
++CONFIG_EFI_SECURE_BOOT=y
++CONFIG_EFI_SIGNATURE_SUPPORT=y
++CONFIG_RSA=y
++CONFIG_RSA_VERIFY=y
++CONFIG_RSA_VERIFY_WITH_PKEY=y
++CONFIG_IMAGE_SIGN_INFO=y
++CONFIG_RSA_SOFTWARE_EXP=y
++CONFIG_ASYMMETRIC_KEY_TYPE=y
++CONFIG_ASYMMETRIC_PUBLIC_KEY_SUBTYPE=y
++CONFIG_RSA_PUBLIC_KEY_PARSER=y
++CONFIG_X509_CERTIFICATE_PARSER=y
++CONFIG_PKCS7_MESSAGE_PARSER=y
++CONFIG_PKCS7_VERIFY=y
++CONFIG_HASH=y
++CONFIG_SHA1=y
++CONFIG_SHA256=y
++CONFIG_SHA512=y
++CONFIG_SHA384=y
++CONFIG_MD5=y
++CONFIG_CRC32=y
++#EFI System Resource Table (ESRT)
++CONFIG_EFI_ESRT=y
++#Secure boot
++#CONFIG_FIT_SIGNATURE=y
++
++CONFIG_PROT_TCP=y
++CONFIG_PROT_TCP_SACK=y
++CONFIG_CMD_WGET=y
++CONFIG_BOARD_LATE_INIT=y
++
++CONFIG_MISC_INIT_R=y
++CONFIG_NET_RANDOM_ETHADDR=y
++CONFIG_MISC=y
++#CONFIG_I2C_EEPROM=y
++CONFIG_SYS_I2C_EEPROM_ADDR=0x57
++CONFIG_SYS_I2C_EEPROM_BUS=3
++CONFIG_SYS_EEPROM_SIZE=256
++CONFIG_SYS_EEPROM_PAGE_WRITE_DELAY_MS=5
++CONFIG_SYS_I2C_EEPROM_ADDR_LEN=1
++CONFIG_CMD_EEPROM=y
+diff --git a/include/configs/bananapi-ai2h.h b/include/configs/bananapi-ai2h.h
+new file mode 100644
+index 0000000000..3323a86324
+--- /dev/null
++++ b/include/configs/bananapi-ai2h.h
+@@ -0,0 +1,118 @@
++/* SPDX-License-Identifier: GPL-2.0+ */
++/*
++ * Copyright (C) 2022 Renesas Electronics Corporation
++ */
++
++#ifndef __BANANAPI_AI2H_H
++#define __BANANAPI_AI2H_H
++
++#include <asm/arch/renesas.h>
++
++#define CONFIG_REMAKE_ELF
++
++#ifdef CONFIG_SPL
++#define CONFIG_SPL_TARGET	"spl/u-boot-spl.scif"
++#endif
++
++/* boot option */
++
++#define CONFIG_CMDLINE_TAG
++#define CONFIG_SETUP_MEMORY_TAGS
++#define CONFIG_INITRD_TAG
++
++/* Generic Interrupt Controller Definitions */
++/* RZ/V2H use GIC-v3 */
++#define CONFIG_GICV3
++#define GICD_BASE	0x14900000
++#define GICR_BASE	0x14940000
++
++/* console */
++#define CONFIG_SYS_CBSIZE		2048
++#define CONFIG_SYS_BARGSIZE		CONFIG_SYS_CBSIZE
++#define CONFIG_SYS_BAUDRATE_TABLE	{ 115200, 38400 }
++
++/* PHY needs a longer autoneg timeout */
++#define PHY_ANEG_TIMEOUT		20000
++
++/* MEMORY */
++#define CONFIG_SYS_INIT_SP_ADDR		CONFIG_SYS_TEXT_BASE
++
++#define	DRAM_RSV_SIZE			0x08000000
++#define	CFG_MAX_MEM_MAPPED		(0x80000000u - DRAM_RSV_SIZE)
++
++/* SDHI clock freq */
++#define CONFIG_SH_SDHI_FREQ		133000000
++
++/* ENV setting */
++#define ENV_MMC_LIST_DEFAULT            "mmc_list=1 0\0"
++#define ENV_BOOT_ORDER_DEFAULT          "boot_order=mmc\0"
++#define ENV_BOOTSCRIPTS_PREFIX          "boot_prefixes=/ /boot/\0"
++#define ENV_BOOT_ATTEMPT_DEFAULT                        \
++        "boot_attempt="                                         \
++            "for prefix_idx in ${boot_prefixes}; do "           \
++                "setenv prefix ${prefix_idx}; "                 \
++	        "if test \"${prefix}\" = \"/\"; then "          \
++                    "setenv rootdev /dev/mmcblk${devnum}p2; "   \
++                "elif test \"${prefix}\" = \"/boot/\"; then "   \
++                    "setenv rootdev /dev/mmcblk${devnum}p1; "   \
++                "fi; "                                          \
++                "echo \"## Attempting fetch ${prefix}${bootscript} in ${devtype}:${devnum}...\"; "  \
++                "if test -e ${devtype} ${devnum} ${prefix}${bootscript}; then "       \
++                    "load ${devtype} ${devnum} ${bootscript_addr} ${prefix}${bootscript}; " \
++                    "source ${bootscript_addr}; "                               \
++                    "echo SCRIPT FAILED: continuing...; "   \
++                "fi; "                                          \
++          "done\0"
++
++#define ENV_MMC_DEFAULT                                 \
++        "boot_mmc="                                     \
++            "echo \"## run boot_mmc\"; "        \
++                "setenv devtype mmc; "                  \
++                "for n in ${mmc_list}; do "             \
++                        "setenv devnum ${n}; "          \
++                        "run boot_attempt; "            \
++                "done\0"
++
++#define ENV_BOOT_DEFAULT                                \
++        "boot_default="                                 \
++                "for type in ${boot_order}; do "        \
++                        "run boot_${type}; "            \
++                "done\0"
++
++#define CFG_EXTRA_ENV_SETTINGS       \
++	ENV_MMC_DEFAULT \
++	ENV_MMC_LIST_DEFAULT \
++	ENV_BOOTSCRIPTS_PREFIX \
++	ENV_BOOT_ORDER_DEFAULT \
++	ENV_BOOT_DEFAULT \
++	ENV_BOOT_ATTEMPT_DEFAULT \
++	"rootdev=/dev/mmcblk0p2\0" \
++	"fdtfile=bananapi-ai2h.dtb\0" \
++	"bootscript=boot.scr\0"       \
++	"bootscript_addr=0x48070000\0"  \
++	"kernel_addr_r=0x48080000\0"  \
++	"fdt_addr_r=0x48000000\0"  \
++	"ramdisk_addr_r=0x50000000\0"  \
++	"usb_pgood_delay=2000\0"        \
++	"bootm_size=0x10000000\0"       \
++	"ipaddr=192.168.1.11\0" \
++	"serverip=192.168.1.10\0" \
++	"netmask=255.255.255.0\0" \
++	"prodsdbootargs=setenv bootargs rw rootwait earlycon root=/dev/mmcblk1p2 net.ifnames=0 \0" \
++	"prodemmcbootargs=setenv bootargs rw rootwait earlycon root=/dev/mmcblk0p2 net.ifnames=0 \0" \
++	"bootimage=booti ${kernel_addr_r} - ${fdt_addr_r} \0" \
++	"ocaaddr=0xA8000000 \0"     \
++	"ocabin=OpenCV_Bin.bin \0"  \
++	"codaddr=0xAFD00000 \0"     \
++	"codbin=Codec_Bin.bin \0"   \
++	"emmcload=ext4load mmc 0:2 ${ocaaddr} boot/${ocabin}; ext4load mmc 0:2 ${codaddr} boot/${codbin}; ext4load mmc 0:2 ${kernel_addr_r} boot/Image;ext4load mmc 0:2 ${fdt_addr_r} boot/${fdtfile};run prodemmcbootargs \0" \
++	"sd1load=ext4load mmc 1:2 ${ocaaddr} boot/${ocabin}; ext4load mmc 1:2 ${codaddr} boot/${codbin}; ext4load mmc 1:2 ${kernel_addr_r} boot/Image;ext4load mmc 1:2 ${fdt_addr_r} boot/${fdtfile};run prodsdbootargs \0" \
++	"bootcmd_check=if mmc dev 1; then run sd1load; else run emmcload; fi \0"
++
++#define CONFIG_BOOTCOMMAND     "run boot_default;run bootcmd_check;run bootimage"
++
++/* For board */
++/* Ethernet RAVB */
++#define CONFIG_BITBANGMII_MULTI
++
++#endif /* __BANANAPI_AI2H_H */
+-- 
+2.43.0
+

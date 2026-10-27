@@ -1,0 +1,16 @@
+diff --git a/conf/local.conf b/conf/local.conf
+index a48f4ef..2241ce5 100644
+--- a/conf/local.conf
++++ b/conf/local.conf
+@@ -312,6 +312,8 @@ SDKIMAGE_FEATURES:append = " staticdev-pkgs dev-pkgs dbg-pkgs"
+ 
+ IMAGE_INSTALL:append = " psplash"
+ 
++IMAGE_INSTALL:append = " tesseract tesseract-lang "
++
+ # Un-comment a following line to enable the Docker Engine.
+ # DISTRO_FEATURES:append = " virtualization docker"
+ 
+-- 
+2.34.1
+

@@ -1,0 +1,16 @@
+diff --git a/conf/local.conf b/conf/local.conf
+index 2241ce5..7829387 100644
+--- a/conf/local.conf
++++ b/conf/local.conf
+@@ -314,6 +314,8 @@ IMAGE_INSTALL:append = " psplash"
+ 
+ IMAGE_INSTALL:append = " tesseract tesseract-lang "
+ 
++CORE_IMAGE_EXTRA_INSTALL += "libgomp libgomp-dev libgomp-staticdev"
++
+ # Un-comment a following line to enable the Docker Engine.
+ # DISTRO_FEATURES:append = " virtualization docker"
+ 
+-- 
+2.34.1
+

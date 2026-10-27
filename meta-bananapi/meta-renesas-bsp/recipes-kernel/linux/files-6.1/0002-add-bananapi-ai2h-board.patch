@@ -1,0 +1,6548 @@
+From 5fb9f0333381a04245c8b1db515ce6898722a91a Mon Sep 17 00:00:00 2001
+From: OpenEmbedded <oe.patch@oe>
+Date: Mon, 26 Oct 2026 11:18:16 +0800
+Subject: [PATCH] add bananapi-ai2h board
+
+Signed-off-by: OpenEmbedded <oe.patch@oe>
+---
+ arch/arm64/boot/dts/renesas/Makefile          |    5 +
+ .../bananapi-ai2h-waveshare-jetson-io-a.dts   |   69 ++
+ arch/arm64/boot/dts/renesas/bananapi-ai2h.dts | 1082 +++++++++++++++++
+ arch/arm64/boot/dts/renesas/overlay/Makefile  |   52 +
+ .../renesas/overlay/README.renesas-overlays   |   18 +
+ .../overlay/bpi-ai2h-camA-imx415-74M.dts      |  199 +++
+ .../renesas/overlay/bpi-ai2h-camA-imx415.dts  |  199 +++
+ .../bpi-ai2h-camAB-imx415-74M-dual-master.dts |  260 ++++
+ .../bpi-ai2h-camAB-imx415-74M-dual.dts        |  260 ++++
+ .../bpi-ai2h-camAB-imx415-dual-master.dts     |  260 ++++
+ .../overlay/bpi-ai2h-camAB-imx415-dual.dts    |  260 ++++
+ .../overlay/bpi-ai2h-camB-imx415-74M.dts      |  199 +++
+ .../renesas/overlay/bpi-ai2h-camB-imx415.dts  |  199 +++
+ .../overlay/bpi-ai2h-camC-imx415-74M.dts      |  150 +++
+ .../renesas/overlay/bpi-ai2h-camC-imx415.dts  |  150 +++
+ .../bpi-ai2h-camCD-imx415-74M-dual-master.dts |  211 ++++
+ .../bpi-ai2h-camCD-imx415-74M-dual.dts        |  211 ++++
+ .../bpi-ai2h-camCD-imx415-dual-master.dts     |  211 ++++
+ .../overlay/bpi-ai2h-camCD-imx415-dual.dts    |  211 ++++
+ .../overlay/bpi-ai2h-camD-imx415-74M.dts      |  150 +++
+ .../renesas/overlay/bpi-ai2h-camD-imx415.dts  |  150 +++
+ .../dts/renesas/overlay/bpi-ai2h-i2c0-mux.dts |   57 +
+ .../renesas/overlay/bpi-ai2h-i2c1-flash.dts   |   27 +
+ .../dts/renesas/overlay/bpi-ai2h-i2c1-rtc.dts |   34 +
+ .../dts/renesas/overlay/bpi-ai2h-i2c1.dts     |   20 +
+ .../dts/renesas/overlay/bpi-ai2h-i2c2.dts     |   20 +
+ .../overlay/bpi-ai2h-i2s3-nxez-pcm512x.dts    |   89 ++
+ .../bpi-ai2h-i2s3-waveshare-wm8960.dts        |  105 ++
+ .../overlay/bpi-ai2h-panel-hc070iy30025.dts   |  143 +++
+ .../boot/dts/renesas/overlay/bpi-ai2h-pwm.dts |   15 +
+ .../dts/renesas/overlay/bpi-ai2h-pwmfan.dts   |   84 ++
+ .../dts/renesas/overlay/bpi-ai2h-spi0.dts     |   36 +
+ .../renesas/overlay/bpi-ai2h-spi2-flash.dts   |   31 +
+ .../bpi-ai2h-spi2-waveshare-st7789v.dts       |   38 +
+ .../overlay/bpi-ai2h-spi2-waveshare-tft24.dts |   37 +
+ .../bpi-ai2h-spi2-waveshare-tft35c.dts        |   71 ++
+ .../dts/renesas/overlay/bpi-ai2h-spi2.dts     |   36 +
+ .../dts/renesas/overlay/bpi-ai2h-uart0.dts    |   20 +
+ .../dts/renesas/overlay/bpi-ai2h-uart2.dts    |   20 +
+ ...i-ai2h-waveshare-jetson-io-cam0-imx415.dts |  150 +++
+ ...aveshare-jetson-io-cam0-luckfox-imx415.dts |  157 +++
+ ...i-ai2h-waveshare-jetson-io-cam0-ov5640.dts |  127 ++
+ ...eshare-jetson-io-cam0-waveshare-imx415.dts |  150 +++
+ ...eshare-jetson-io-cam1-waveshare-imx415.dts |  158 +++
+ .../dts/renesas/overlay/renesas-fixup.scr     |  Bin 0 -> 232 bytes
+ .../dts/renesas/overlay/renesas-fixup.scr-cmd |    4 +
+ arch/arm64/boot/dts/renesas/r9a09g057.dtsi    |    4 +-
+ 47 files changed, 6137 insertions(+), 2 deletions(-)
+ create mode 100644 arch/arm64/boot/dts/renesas/bananapi-ai2h-waveshare-jetson-io-a.dts
+ create mode 100644 arch/arm64/boot/dts/renesas/bananapi-ai2h.dts
+ create mode 100644 arch/arm64/boot/dts/renesas/overlay/Makefile
+ create mode 100644 arch/arm64/boot/dts/renesas/overlay/README.renesas-overlays
+ create mode 100644 arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camA-imx415-74M.dts
+ create mode 100644 arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camA-imx415.dts
+ create mode 100644 arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camAB-imx415-74M-dual-master.dts
+ create mode 100644 arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camAB-imx415-74M-dual.dts
+ create mode 100644 arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camAB-imx415-dual-master.dts
+ create mode 100644 arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camAB-imx415-dual.dts
+ create mode 100644 arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camB-imx415-74M.dts
+ create mode 100644 arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camB-imx415.dts
+ create mode 100644 arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camC-imx415-74M.dts
+ create mode 100644 arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camC-imx415.dts
+ create mode 100644 arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camCD-imx415-74M-dual-master.dts
+ create mode 100644 arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camCD-imx415-74M-dual.dts
+ create mode 100644 arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camCD-imx415-dual-master.dts
+ create mode 100644 arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camCD-imx415-dual.dts
+ create mode 100644 arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camD-imx415-74M.dts
+ create mode 100644 arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camD-imx415.dts
+ create mode 100644 arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-i2c0-mux.dts
+ create mode 100644 arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-i2c1-flash.dts
+ create mode 100644 arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-i2c1-rtc.dts
+ create mode 100644 arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-i2c1.dts
+ create mode 100644 arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-i2c2.dts
+ create mode 100644 arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-i2s3-nxez-pcm512x.dts
+ create mode 100644 arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-i2s3-waveshare-wm8960.dts
+ create mode 100644 arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-panel-hc070iy30025.dts
+ create mode 100644 arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-pwm.dts
+ create mode 100644 arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-pwmfan.dts
+ create mode 100644 arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-spi0.dts
+ create mode 100644 arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-spi2-flash.dts
+ create mode 100644 arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-spi2-waveshare-st7789v.dts
+ create mode 100644 arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-spi2-waveshare-tft24.dts
+ create mode 100644 arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-spi2-waveshare-tft35c.dts
+ create mode 100644 arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-spi2.dts
+ create mode 100644 arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-uart0.dts
+ create mode 100644 arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-uart2.dts
+ create mode 100644 arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-waveshare-jetson-io-cam0-imx415.dts
+ create mode 100644 arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-waveshare-jetson-io-cam0-luckfox-imx415.dts
+ create mode 100644 arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-waveshare-jetson-io-cam0-ov5640.dts
+ create mode 100644 arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-waveshare-jetson-io-cam0-waveshare-imx415.dts
+ create mode 100644 arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-waveshare-jetson-io-cam1-waveshare-imx415.dts
+ create mode 100644 arch/arm64/boot/dts/renesas/overlay/renesas-fixup.scr
+ create mode 100644 arch/arm64/boot/dts/renesas/overlay/renesas-fixup.scr-cmd
+
+diff --git a/arch/arm64/boot/dts/renesas/Makefile b/arch/arm64/boot/dts/renesas/Makefile
+index 3ca326cd32c9..ee061f863d22 100644
+--- a/arch/arm64/boot/dts/renesas/Makefile
++++ b/arch/arm64/boot/dts/renesas/Makefile
+@@ -96,5 +96,10 @@ dtb-$(CONFIG_ARCH_R9A09G047) += r9a09g047e57-smarc.dtb
+ dtb-$(CONFIG_ARCH_R9A09G057) += r9a09g057h44-rzv2h-evk.dtb
+ dtb-$(CONFIG_ARCH_R9A09G057) += r9a09g057h44-rzv2h-evk-ver2.dtb
+ 
++dtb-$(CONFIG_ARCH_R9A09G057) += bananapi-ai2h.dtb
++dtb-$(CONFIG_ARCH_R9A09G057) += bananapi-ai2h-waveshare-jetson-io-a.dtb
++
+ dtb-$(CONFIG_ARCH_RCAR_GEN3) += draak-ebisu-panel-aa104xd12.dtbo
+ dtb-$(CONFIG_ARCH_RCAR_GEN3) += salvator-panel-aa104xd12.dtbo
++
++subdir-y       := $(dts-dirs) overlay
+diff --git a/arch/arm64/boot/dts/renesas/bananapi-ai2h-waveshare-jetson-io-a.dts b/arch/arm64/boot/dts/renesas/bananapi-ai2h-waveshare-jetson-io-a.dts
+new file mode 100644
+index 000000000000..b45300648818
+--- /dev/null
++++ b/arch/arm64/boot/dts/renesas/bananapi-ai2h-waveshare-jetson-io-a.dts
+@@ -0,0 +1,69 @@
++// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++/*
++ * Device Tree Source for the waveshare jetson-io-base-a board
++ *
++ * Copyright (C) 2024 Renesas Electronics Corp.
++ */
++
++/dts-v1/;
++#include "bananapi-ai2h.dts"
++
++/ {
++        model = "Waveshare JETSON-IO-BASE-A with Bananapi AI2H Module";
++        compatible = "waveshare,jeston-base-a-ai2h", "renesas,r9a09g057h44", "renesas,r9a09g057";
++
++	/delete-node/ hdmi-out;
++};
++
++&pinctrl {
++	/*
++        sd1-pwr-en-hog {
++		gpio-hog;
++		gpios = <RZG2L_GPIO(8, 2) GPIO_ACTIVE_HIGH>;
++		output-high;
++		line-name = "sd1_pwr_en";
++	};*/
++
++	/delete-node/ sd1;
++};
++
++/* SD */
++&sdhi1 {
++	/delete-property/ sd-uhs-sdr50;
++	/delete-property/ sd-uhs-sdr104;
++	cap-sd-highspeed;
++	cd-gpios = <&pinctrl RZG2L_GPIO(8, 3) GPIO_ACTIVE_LOW>;
++	pinctrl-0;
++	pinctrl-1;
++	pinctrl-names;
++};
++
++&eth0 {
++	status = "disabled";
++};
++
++&dsi0_out {
++	/delete-property/ remote-endpoint;
++	/delete-property/ data-lanes;
++};
++
++&i2c1 {
++	/delete-node/ codec@1a;
++};
++
++&i2c3 {
++	/delete-node/ eeprom@56;
++	/delete-node/ hdmi@3d;
++	/delete-node/ rtc@51;
++};
++
++&rcar_sound {
++	ports {
++		/delete-node/ port@0;
++		/delete-node/ port@1;
++	};
++};
++
++&sound_card {
++	/delete-property/ dais;
++};
+diff --git a/arch/arm64/boot/dts/renesas/bananapi-ai2h.dts b/arch/arm64/boot/dts/renesas/bananapi-ai2h.dts
+new file mode 100644
+index 000000000000..4f404dc8a52b
+--- /dev/null
++++ b/arch/arm64/boot/dts/renesas/bananapi-ai2h.dts
+@@ -0,0 +1,1082 @@
++// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++/*
++ * Device Tree Source for the Bananapi AI2H board
++ *
++ * Copyright (C) 2025 Renesas Electronics Corp.
++ */
++
++/dts-v1/;
++#include <dt-bindings/pinctrl/renesas,r9a09g057-pinctrl.h>
++#include <dt-bindings/soc/renesas,rsci.h>
++#include <dt-bindings/soc/renesas,gpt.h>
++#include <dt-bindings/gpio/gpio.h>
++#include <dt-bindings/input/input.h>
++#include "r9a09g057.dtsi"
++
++/ {
++	model = "Bananapi BPI-AI2H";
++	compatible = "sinovoip,bpi-ai2h", "renesas,r9a09g057h44", "renesas,r9a09g057";
++
++	aliases {
++		i2c0 = &i2c0;
++		i2c1 = &i2c1;
++		i2c2 = &i2c2;
++		i2c3 = &i2c3;
++		i2c6 = &i2c6;
++		i2c7 = &i2c7;
++		i2c8 = &i2c8;
++		serial0 = &scif;
++		serial1 = &sci0;
++		serial2 = &sci2;
++		mmc0 = &sdhi0;
++		mmc1 = &sdhi1;
++		spi0 = &xspi;
++		spi1 = &rspi0;
++		spi2 = &rspi2;
++		ethernet0 = &eth0;
++		ethernet1 = &eth1;
++	};
++
++	chosen {
++		bootargs = "ignore_loglevel";
++		stdout-path = "serial0:115200n8";
++	};
++
++	memory@48000000 {
++		device_type = "memory";
++		/* first 128MB is reserved for secure area. */
++		reg = <0x0 0x48000000 0x1 0xF8000000>;
++	};
++
++	memory@240000000 {
++		device_type = "memory";
++		reg = <0x2 0x40000000 0x2 0x00000000>;
++	};
++
++	reserved-memory {
++		#address-cells = <2>;
++		#size-cells = <2>;
++		ranges;
++
++		global_cma: linux,cma@58000000 {
++			compatible = "shared-dma-pool";
++			linux,cma-default;
++			reusable;
++			reg = <0x0 0x58000000 0x0 0x28000000>;
++		};
++
++		mmp_reserved: linux,multimedia {
++			compatible = "shared-dma-pool";
++			reusable;
++			reg = <0x00000000 0x80000000 0x0 0x10000000>;
++		};
++
++		isp_reserved: frame_buffer@90000000 {
++			compatible = "shared-dma-pool";
++			reusable;
++			reg = <0x0 0x90000000 0x0 0x18000000>;
++		};
++
++		opencva_reserved: OpenCVA@A8000000 {
++			reusable;
++			reg = <0x0 0xA8000000 0x0 0x7D00000>;
++		};
++
++		drp_codec: DRP-Codec@AFD00000 {
++			reusable;
++			reg = <0x0 0xAFD00000 0x0 0x300000>;
++		};
++
++		image_buf0: image_buf@B0000000 {
++			compatible = "shared-dma-pool";
++			reusable;
++			reg = <0x0 0xB0000000 0x0 0x4000000>;
++			label = "image_buf0";
++		};
++
++		cru_func: cru_buffer@B4000000 {
++			compatible = "shared-dma-pool";
++			reusable;
++			reg = <0x0 0xB4000000 0x0 0x16400000>;
++		};
++
++		drp_reserved: DRP-AI@240000000 {
++			reusable;
++			reg = <0x2 0x40000000 0x0 0x20000000>;
++		};
++	};
++
++	mmngr {
++		compatible = "renesas,mmngr";
++		memory-region = <&mmp_reserved>;
++	};
++
++	mmngrbuf {
++		compatible = "renesas,mmngrbuf";
++	};
++
++	vspm_if {
++		compatible = "renesas,vspm_if";
++	};
++
++	reg_0p8v: regulator-0p8v {
++		compatible = "regulator-fixed";
++		regulator-name = "reg-0.8V";
++		regulator-min-microvolt = <800000>;
++		regulator-max-microvolt = <800000>;
++		regulator-boot-on;
++		regulator-always-on;
++	};
++
++	reg_1p8v: regulator-1p8v {
++		compatible = "regulator-fixed";
++		regulator-name = "reg-1.8V";
++		regulator-min-microvolt = <1800000>;
++		regulator-max-microvolt = <1800000>;
++		regulator-boot-on;
++		regulator-always-on;
++	};
++
++	reg_3p3v: regulator-3p3v {
++		compatible = "regulator-fixed";
++		regulator-name = "reg-3.3V";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		regulator-boot-on;
++		regulator-always-on;
++	};
++
++	vdd5v0_sys: regulator-vdd5v0-sys {
++		compatible = "regulator-fixed";
++
++		regulator-name = "vdd5v0_sys";
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
++		regulator-always-on;
++		regulator-boot-on;
++	};
++
++	/* SD PWEN */
++	vmmc_sdhi1: regulator-vcc-sdhi1 {
++		compatible = "regulator-fixed";
++
++		regulator-name = "SDHI1 Vmmc";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++
++		gpios = <&pinctrl RZV2H_GPIO(A, 3) GPIO_ACTIVE_HIGH>;
++		enable-active-high;
++	};
++
++	/* SD IOVS */
++	vccq_sdhi1: regulator-vccq-sdhi1 {
++		compatible = "regulator-gpio";
++
++		regulator-name = "SDHI1 VccQ";
++		regulator-min-microvolt = <1800000>;
++		regulator-max-microvolt = <3300000>;
++
++		gpios = <&pinctrl RZV2H_GPIO(A, 2) GPIO_ACTIVE_HIGH>;
++
++		gpios-states = <0>;
++		states = <3300000 0 1800000 1>;
++	};
++
++	vbus_reg: regulator_vbus {
++ 		compatible = "regulator-fixed";
++		regulator-name = "vbus-regulator";
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
++		startup-delay-us = <20000>;
++		gpios = <&pinctrl RZV2H_GPIO(A, 4) GPIO_ACTIVE_HIGH>;
++		enable-active-high;
++		regulator-boot-on;
++		regulator-always-on;
++	};
++
++	rtl8821cu_reg: regulator_vbus {
++		compatible = "regulator-fixed";
++		regulator-name = "rtl8821cu-regulator";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		startup-delay-us = <20000>;
++		gpios = <&pinctrl RZV2H_GPIO(7, 3) GPIO_ACTIVE_HIGH>;
++		enable-active-high;
++		regulator-boot-on;
++		regulator-always-on;
++	};
++
++	hdmi_reg: regulator_hdmi {
++		compatible = "regulator-fixed";
++		regulator-name = "hdmi-regulator";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		startup-delay-us = <20000>;
++		gpios = <&pinctrl RZV2H_GPIO(0, 5) GPIO_ACTIVE_HIGH>;
++		enable-active-high;
++		regulator-boot-on;
++		regulator-always-on;
++	};
++
++	gpio-keys {
++		compatible = "gpio-keys";
++		status = "okay";
++
++		/* GPIO recovery key */
++		recovery {
++			interrupt-parent = <&pinctrl>;
++			interrupts = <RZV2H_GPIO(0, 3) IRQ_TYPE_LEVEL_LOW>;
++			//gpios = <&pinctrl RZV2H_GPIO(0, 3) GPIO_ACTIVE_HIGH>;
++			linux,code = <KEY_VENDOR>;
++			label = "GPIO Key Recovery";
++			debounce-interval = <100>;
++			//wakeup-source;
++		};
++
++		/* NMI power key */
++		power {
++			interrupt-parent = <&icu>;
++			interrupts = <0 IRQ_TYPE_EDGE_FALLING>;
++			linux,code = <KEY_POWER>;
++			label = "NMI Key Power";
++			debounce-interval = <100>;
++			//wakeup-source;
++		};
++	};
++
++	leds {
++		compatible = "gpio-leds";
++
++		core-led {
++			gpios = <&pinctrl RZV2H_GPIO(0, 1) GPIO_ACTIVE_HIGH>;
++			label = "core-led";
++			linux,default-trigger = "default-on";
++			default-state = "off";
++		};
++
++		carrier-led {
++			gpios = <&pinctrl RZV2H_GPIO(0, 0) GPIO_ACTIVE_HIGH>;
++                        label = "carrier-led";
++                        linux,default-trigger = "heartbeat";
++			default-state = "off";
++                };
++	};
++
++	gpio_fan: gpio-fan {
++		compatible = "gpio-fan";
++		status = "okay";
++		gpios = <&pinctrl RZV2H_GPIO(8, 5) GPIO_ACTIVE_HIGH>;
++		gpio-fan,speed-map = <0 1 3000 0>;
++		#cooling-cells = <2>;
++        };
++
++	hdmi-out {
++		compatible = "hdmi-connector";
++		type = "d";
++
++		port {
++			hdmi_con_out: endpoint {
++				remote-endpoint = <&adv7535_out>;
++			};
++		};
++	};
++
++	/* adv7535 */
++	osc1: cec-clock {
++		compatible = "fixed-clock";
++		#clock-cells = <0>;
++		clock-frequency = <12000000>;
++	};
++
++	/* raa215300 pmic 32.768kHz crystal */
++	x6: x6-clock {
++		compatible = "fixed-clock";
++		#clock-cells = <0>;
++		clock-frequency = <32768>;
++	};
++
++	/* versa3 5p35023 */
++	x1_clk: x1-clock {
++		compatible = "fixed-clock";
++		#clock-cells = <0>;
++		clock-frequency = <24000000>;
++	};
++
++	sound_card: sound {
++		compatible = "audio-graph-card";
++
++		label = "rcar-sound";
++
++		dais = <&rsnd_port0>;	/* HDMI0  */
++	};
++
++};
++
++&cpu_thermal0 {
++	trips {
++		fan_active: fan-active {
++			temperature = <75000>;
++			hysteresis = <2000>;
++			type = "active";
++		};
++	};
++
++	cooling-maps {
++		map1 {
++			trip = <&fan_active>;
++			cooling-device = <&gpio_fan 0 1>;
++		};
++	};
++};
++
++&audio_extal_clk {
++	clock-frequency = <22579200>;
++};
++
++&eth0 {
++	pinctrl-0 = <&eth0_pins>;
++	pinctrl-names = "default";
++	phy-handle = <&phy0>;
++	phy-mode = "rgmii-id";
++	status = "okay";
++};
++
++&eth1 {
++	pinctrl-0 = <&eth1_pins>;
++	pinctrl-names = "default";
++	phy-handle = <&phy1>;
++	phy-mode = "rgmii-id";
++	status = "okay";
++};
++
++&gpu {
++	status = "okay";
++	mali-supply = <&reg_0p8v>;
++};
++
++&hsusb {
++	dr_mode = "otg";
++	status = "okay";
++};
++
++/* cam i2c-mux */
++&i2c0 {
++	pinctrl-0 = <&i2c0_pins>;
++	pinctrl-names = "default";
++	clock-frequency = <400000>;
++
++	status = "disabled";
++};
++
++/* 40pin i2c1 */
++&i2c1 {
++	pinctrl-0 = <&i2c1_pins>;
++	pinctrl-names = "default";
++	clock-frequency = <400000>;
++
++	status = "disabled";
++
++	da7212: codec@1a {
++		compatible = "dlg,da7212";
++		status = "disabled";
++		#sound-dai-cells = <0>;
++		#address-cells = <1>;
++		#size-cells = <0>;
++		reg = <0x1a>;
++
++		clocks = <&rcar_sound>;
++		clock-names = "mclk";
++
++		dlg,micbias1-lvl = <2500>;
++		dlg,micbias2-lvl = <2500>;
++		dlg,dmic-data-sel = "lrise_rfall";
++		dlg,dmic-samplephase = "between_clkedge";
++		dlg,dmic-clkrate = <3000000>;
++
++		VDDA-supply = <&reg_1p8v>;
++		VDDSP-supply = <&reg_3p3v>;
++		VDDMIC-supply = <&reg_3p3v>;
++		VDDIO-supply = <&reg_1p8v>;
++
++		port {
++			da7212_endpoint: endpoint {
++				remote-endpoint = <&rsnd_endpoint1>;
++			};
++		};
++	};
++};
++
++/* 40pin i2c2 */
++&i2c2 {
++	pinctrl-0 = <&i2c2_pins>;
++	pinctrl-names = "default";
++	clock-frequency = <400000>;
++
++	status = "disabled";
++};
++
++&i2c3 {
++	pinctrl-0 = <&i2c3_pins>;
++	pinctrl-names = "default";
++	clock-frequency = <400000>;
++
++	status = "okay";
++
++	core_eeprom: eeprom@57 {
++		compatible = "atmel,24c02";
++		reg = <0x57>;
++		pagesize = <8>;
++		//read-only;
++	};
++
++	carrier_eeprom: eeprom@56 {
++		compatible = "atmel,24c02";
++		reg = <0x56>;
++		pagesize = <8>;
++		//read-only;
++	};
++
++	adv7535: hdmi@3d {
++		compatible = "adi,adv7535";
++		reg = <0x3d>;
++
++		clocks = <&osc1>;
++		clock-names = "cec";
++		avdd-supply = <&reg_1p8v>;
++		dvdd-supply = <&reg_1p8v>;
++		pvdd-supply = <&reg_1p8v>;
++		a2vdd-supply = <&reg_1p8v>;
++		v3p3-supply = <&reg_3p3v>;
++		v1p2-supply = <&reg_1p8v>;
++
++		interrupt-parent = <&pinctrl>;
++		interrupts = <RZV2H_GPIO(4, 3) IRQ_TYPE_EDGE_FALLING>;
++
++		adi,dsi-lanes = <4>;
++
++		ports {
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			port@0 {
++				reg = <0>;
++				adv7535_in: endpoint@0 {
++					remote-endpoint = <&dsi0_out>;
++				};
++			};
++
++			port@1 {
++				reg = <1>;
++				adv7535_out: endpoint@1 {
++					remote-endpoint = <&hdmi_con_out>;
++				};
++			};
++
++			port@2 {
++				reg = <2>;
++				dsi_hdmi0_snd_in: endpoint {
++					remote-endpoint = <&rsnd_endpoint0>;
++				};
++			};
++		};
++	};
++};
++
++&du {
++	status = "okay";
++};
++
++&dsi0 {
++	status = "okay";
++
++	ports {
++		port@1 {
++			dsi0_out: endpoint {
++				remote-endpoint = <&adv7535_in>;
++				data-lanes = <1 2 3 4>;
++			};
++		};
++	};
++};
++
++/*Core board camera CN1*/
++&i2c6 {
++	pinctrl-0 = <&i2c6_pins>;
++	pinctrl-names = "default";
++	clock-frequency = <400000>;
++
++	status = "disabled";
++};
++
++/*Core board camera CN2*/
++&i2c7 {
++	pinctrl-0 = <&i2c7_pins>;
++	pinctrl-names = "default";
++	clock-frequency = <400000>;
++
++	status = "disabled";
++};
++
++&i2c8 {
++	pinctrl-0 = <&i2c8_pins>;
++	pinctrl-names = "default";
++	clock-frequency = <400000>;
++
++	status = "okay";
++
++	raa215300: pmic@12 {
++		compatible = "renesas,raa215300";
++		reg = <0x12>, <0x6f>;
++		reg-names = "main", "rtc";
++		clocks = <&x6>;
++		clock-names = "xin";
++	};
++
++	versa3: versa3@69 {
++		compatible = "renesas,5p35023";
++		reg = <0x69>;
++		#clock-cells = <1>;
++		clocks = <&x1_clk>;
++		clock-names = "x1";
++
++		assigned-clocks = <&versa3 0>, <&versa3 1>,
++				  <&versa3 2>, <&versa3 3>,
++				  <&versa3 4>, <&versa3 5>;
++		assigned-clock-rates =	<24000000>, <24576000>,
++					<32768>, <22579200>,
++					<100000000>, <100000000>;
++		clock-divider-read-only = <1>, <1>, <1>, <1>, <1>;
++		clock-flags = <2176>, <2176>, <2176>, <2052>, <2176>, <2048>;
++	};
++};
++
++&rcar_sound {
++	pinctrl-0 = <&sound_pins>;
++	pinctrl-names = "default";
++
++	status = "okay";
++
++	/* audio_clkout */
++	#clock-cells = <0>;
++	clock-frequency = <11289600>;
++
++	/* Multi DAI */
++	#sound-dai-cells = <0>;
++
++	ports {
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		rsnd_port0: port@0 {
++			reg = <0>;
++			rsnd_endpoint0: endpoint {
++				remote-endpoint = <&dsi_hdmi0_snd_in>;
++
++				dai-format = "i2s";
++				bitclock-master = <&rsnd_endpoint0>;
++				frame-master = <&rsnd_endpoint0>;
++
++				playback = <&ssi0>;
++			};
++		};
++
++		rsnd_port1: port@1 {
++			reg = <1>;
++			rsnd_endpoint1: endpoint {
++				remote-endpoint = <&da7212_endpoint>;
++
++				dai-format = "i2s";
++				bitclock-master = <&rsnd_endpoint1>;
++				frame-master = <&rsnd_endpoint1>;
++				mclk-fs = <256>;
++
++				playback = <&ssi3>, <&src0>, <&dvc0>;
++				capture = <&ssi4>, <&src1>, <&dvc1>;
++			};
++		};
++	};
++};
++
++&ssi4 {
++	shared-pin;
++};
++
++&mdio0 {
++	phy0: ethernet-phy@0 {
++		compatible = "ethernet-phy-ieee802.3-c22";
++		reg = <0>;
++		//max-speed = <1000>;
++		//reset-assert-us = <10000>;
++		//reset-deassert-us = <30000>;
++		//reset-gpios = <&pinctrl RZG2L_GPIO(7, 1) IRQ_TYPE_LEVEL_LOW>;
++
++		//interrupt-parent = <&pinctrl>;
++		//interrupts = <RZG2L_GPIO(7, 1) IRQ_TYPE_LEVEL_LOW>;
++	};
++};
++
++&mdio1 {
++	phy1: ethernet-phy@1 {
++		compatible = "ethernet-phy-ieee802.3-c22";
++		reg = <0>;
++		//max-speed = <1000>;
++		//reset-assert-us = <10000>;
++		//reset-deassert-us = <30000>;
++		//reset-gpios = <&pinctrl RZG2L_GPIO(7, 1) IRQ_TYPE_LEVEL_LOW>;
++
++		//interrupt-parent = <&pinctrl>;
++		//interrupts = <RZG2L_GPIO(7, 1) IRQ_TYPE_LEVEL_LOW>;
++	};
++};
++
++&ostm0 {
++	status = "okay";
++};
++
++&ostm1 {
++	status = "okay";
++};
++
++&ostm2 {
++	status = "okay";
++};
++
++&ostm3 {
++	status = "okay";
++};
++
++&ostm4 {
++	status = "okay";
++};
++
++&ostm5 {
++	status = "okay";
++};
++
++&ostm6 {
++	status = "okay";
++};
++
++&ostm7 {
++	status = "okay";
++};
++
++&pinctrl {
++	rspi0_pins: rspi0 {
++		pinmux = <RZV2H_PORT_PINMUX(9, 1, 1)>, /* MISO */
++			 <RZV2H_PORT_PINMUX(9, 0, 1)>, /* MOSI */
++			 <RZV2H_PORT_PINMUX(9, 3, 1)>, /* CS0 */
++			 <RZV2H_PORT_PINMUX(9, 5, 1)>, /* CS1 */
++			 <RZV2H_PORT_PINMUX(9, 2, 1)>; /* SCK */
++	};
++
++	rspi2_pins: rspi2 {
++		pinmux = <RZV2H_PORT_PINMUX(B, 3, 5)>, /* MISO */
++			 <RZV2H_PORT_PINMUX(B, 4, 5)>, /* MOSI */
++			 <RZV2H_PORT_PINMUX(A, 7, 5)>, /* CS0 */
++			 <RZV2H_PORT_PINMUX(A, 6, 5)>, /* CS1 */
++			 <RZV2H_PORT_PINMUX(B, 5, 5)>; /* SCK */
++	};
++
++	/* UART */
++	sci0_pins: sci0 {
++		pinmux = <RZV2H_PORT_PINMUX(5, 0, 1)>, /* SCI0_TXD_MOSI_SDA */
++			 <RZV2H_PORT_PINMUX(5, 1, 1)>, /* SCI0_RXD_MISO_SCL */
++			 <RZV2H_PORT_PINMUX(5, 2, 4)>, /* SCI0_CTS */
++			 <RZV2H_PORT_PINMUX(5, 3, 2)>; /* SCI0_RTS */
++		bias-pull-up;
++	};
++
++	sci2_pins: sci2 {
++		pinmux = <RZV2H_PORT_PINMUX(5, 4, 1)>, /* SCI2_TXD_MOSI_SDA */
++			 <RZV2H_PORT_PINMUX(5, 5, 1)>, /* SCI2_RXD_MISO_SCL */
++			 <RZV2H_PORT_PINMUX(5, 6, 1)>, /* SCI2_CTS */
++			 <RZV2H_PORT_PINMUX(5, 7, 1)>; /* CSI2_RTS */
++		bias-pull-up;
++	};
++
++	eth0_pins: eth0 {
++		pins = "ET0_TXC_TXCLK";
++		output-enable;
++	};
++
++	eth1_pins: eth1 {
++		pins = "ET1_TXC_TXCLK";
++		output-enable;
++	};
++
++	i2c0_pins: i2c0 {
++		pinmux = <RZV2H_PORT_PINMUX(3, 0, 1)>, /* I2C0_SDA */
++			 <RZV2H_PORT_PINMUX(3, 1, 1)>; /* I2C0_SCL */
++	};
++
++	i2c1_pins: i2c1 {
++		pinmux = <RZV2H_PORT_PINMUX(3, 2, 1)>, /* I2C1_SDA */
++			 <RZV2H_PORT_PINMUX(3, 3, 1)>; /* I2C1_SCL */
++	};
++
++	i2c2_pins: i2c2 {
++		pinmux = <RZV2H_PORT_PINMUX(2, 0, 4)>, /* I2C2_SDA */
++			 <RZV2H_PORT_PINMUX(2, 1, 4)>; /* I2C2_SCL */
++	};
++
++	i2c3_pins: i2c3 {
++		pinmux = <RZV2H_PORT_PINMUX(3, 6, 1)>, /* I2C3_SDA */
++			 <RZV2H_PORT_PINMUX(3, 7, 1)>; /* I2C3_SCL */
++	};
++
++	i2c6_pins: i2c6 {
++		pinmux = <RZV2H_PORT_PINMUX(4, 4, 1)>, /* I2C6_SDA */
++			 <RZV2H_PORT_PINMUX(4, 5, 1)>; /* I2C6_SCL */
++	};
++
++	i2c7_pins: i2c7 {
++		pinmux = <RZV2H_PORT_PINMUX(4, 6, 1)>, /* I2C7_SDA */
++			 <RZV2H_PORT_PINMUX(4, 7, 1)>; /* I2C7_SCL */
++	};
++
++	i2c8_pins: i2c8 {
++		pinmux = <RZV2H_PORT_PINMUX(0, 6, 1)>, /* I2C8_SDA */
++			 <RZV2H_PORT_PINMUX(0, 7, 1)>; /* I2C8_SCL */
++	};
++
++	sound_pins: sound {
++		/* hdmi */
++		ssi0_pins: ssi0 {
++			pinmux = <RZV2H_PORT_PINMUX(4, 0, 7)>, /* SSI0_SCK */
++				 <RZV2H_PORT_PINMUX(4, 1, 7)>, /* SSI0_WS */
++				 <RZV2H_PORT_PINMUX(4, 2, 7)>; /* SSI0_SDATA */
++		};
++
++		sound_clk_pins: sound_clk {
++			pinmux = <RZV2H_PORT_PINMUX(1, 0, 7)>, /* AUDIO_CLKB */
++				 <RZV2H_PORT_PINMUX(1, 1, 7)>; /* AUDIO_CLKC */
++		};
++	};
++
++	scif_pins: scif {
++		pins = "SCIF_TXD", "SCIF_RXD";
++		renesas,output-impedance = <1>;
++	};
++
++	/* SD PWEN */
++	sd1-pwr-en-hog {
++		gpio-hog;
++		gpios = <RZV2H_GPIO(A, 3) GPIO_ACTIVE_HIGH>;
++		output-high;
++		line-name = "sd1_pwr_en";
++	};
++
++	sdhi0_emmc_pins: emmc-pins {
++		sd0-clk {
++			pins = "SD0CLK";
++			renesas,output-impedance = <3>;
++			slew-rate = <0>;
++		};
++
++		sd0-dat-cmd {
++			pins = "SD0DAT0", "SD0DAT1", "SD0DAT2", "SD0DAT3", "SD0DAT4",
++				"SD0DAT5", "SD0DAT6", "SD0DAT7", "SD0CMD";
++			input-enable;
++			renesas,output-impedance = <3>;
++			slew-rate = <0>;
++		};
++	};
++
++	sdhi1_pins: sd1 {
++		sd1_dat_cmd {
++			pins = "SD1DAT0", "SD1DAT1", "SD1DAT2", "SD1DAT3", "SD1CMD";
++			input-enable;
++			renesas,output-impedance = <3>;
++			slew-rate = <0>;
++		};
++
++		sd1_clk {
++			pins = "SD1CLK";
++			renesas,output-impedance = <3>;
++			slew-rate = <0>;
++		};
++
++		sd1_cd {
++			pinmux = <RZV2H_PORT_PINMUX(9, 4, 14)>; /* SD1_CD */
++		};
++	};
++
++	gpt0_3_pins: gpt0_3 {
++		pinmux = <RZV2H_PORT_PINMUX(8, 2, 9)>; /* Channel A */
++	};
++
++	gpt0_5_pins: gpt0_5 {
++		pinmux = <RZV2H_PORT_PINMUX(8, 4, 9)>, /* Channel A */
++			 <RZV2H_PORT_PINMUX(8, 5, 9)>; /* Channel B */
++	};
++
++	xspi_pins: xspi0 {
++		ctrl {
++			pins = "XSPI0_RESET0N", "XSPI0_CS0N", "XSPI0_CKP";
++			output-enable;
++		};
++
++		io {
++			pins = "XSPI0_IO0", "XSPI0_IO1", "XSPI0_IO2", "XSPI0_IO3";
++			renesas,output-impedance = <3>;
++		};
++	};
++};
++
++&audio_clka {
++	clock-frequency = <22579200>;
++};
++
++&audio_clkb {
++	clock-frequency = <24576000>;
++};
++
++&audio_clkc {
++	clock-frequency = <22579200>;
++};
++
++&qextal_clk {
++	clock-frequency = <24000000>;
++};
++
++&rtxin_clk {
++	clock-frequency = <32768>;
++};
++
++&scif {
++	pinctrl-0 = <&scif_pins>;
++	pinctrl-names = "default";
++
++	status = "okay";
++};
++
++/* eMMC */
++&sdhi0 {
++	pinctrl-0 = <&sdhi0_emmc_pins>;
++	pinctrl-1 = <&sdhi0_emmc_pins>;
++	pinctrl-names = "default", "state_uhs";
++	vmmc-supply = <&reg_3p3v>;
++	vqmmc-supply = <&reg_1p8v>;
++	bus-width = <8>;
++	mmc-hs200-1_8v;
++	non-removable;
++	fixed-emmc-driver-type = <1>;
++	status = "okay";
++};
++
++/* SD */
++&sdhi1 {
++	pinctrl-0 = <&sdhi1_pins>;
++	pinctrl-1 = <&sdhi1_pins>;
++	pinctrl-names = "default", "state_uhs";
++	vmmc-supply = <&vmmc_sdhi1>;
++	vqmmc-supply = <&vccq_sdhi1>;
++	bus-width = <4>;
++	sd-uhs-sdr50;
++	sd-uhs-sdr104;
++	status = "okay";
++};
++
++&usb20phyrst {
++	status = "okay";
++};
++
++&usb21phyrst {
++	status = "okay";
++};
++
++&usb2_phy0_vbus_otg {
++	status = "okay";
++};
++
++&usb2_phy0 {
++	vbus-supply = <&usb2_phy0_vbus_otg>;
++	status = "okay";
++};
++
++&usb2_phy1 {
++	status = "okay";
++};
++
++&usb3_phy0 {
++	status = "okay";
++};
++
++&usb3_phy1 {
++	status = "okay";
++};
++
++&ehci0 {
++	memory-region = <&global_cma>;
++	dr_mode = "otg";
++	status = "okay";
++};
++
++&ehci1 {
++	memory-region = <&global_cma>;
++	status = "okay";
++};
++
++&ohci0 {
++	memory-region = <&global_cma>;
++	dr_mode = "otg";
++	status = "okay";
++};
++
++&ohci1 {
++	memory-region = <&global_cma>;
++	status = "okay";
++};
++
++&xhci0 {
++	memory-region = <&global_cma>;
++	status = "okay";
++};
++
++&xhci1 {
++	memory-region = <&global_cma>;
++	status = "okay";
++};
++
++&wdt1 {
++	status = "okay";
++};
++
++&adc {
++	status = "okay";
++};
++
++&gpt0_3 {
++	pinctrl-0 = <&gpt0_3_pins>;
++	pinctrl-names = "default";
++	channel = "channel_A";
++	status = "disabled";
++};
++
++&gpt0_5 {
++	pinctrl-0 = <&gpt0_5_pins>;
++	pinctrl-names = "default";
++	channel = "channel_A"; /* 40pin pin.7*/
++	//channel = "channel_B"; /* pwmfan */
++	//channel = "both_AB";
++
++	status = "disabled";
++};
++
++&xspi {
++	pinctrl-0 = <&xspi_pins>;
++	pinctrl-names = "default";
++	/*
++	 * MT25QU512ABB8E12 flash chip is capable of running at 166MHz
++	 * clock frequency. Set the clock frequency to the maximum 133MHz
++	 * supported by the RZ/V2H SoC.
++	 */
++	assigned-clocks = <&cpg CPG_CORE R9A09G057_SPI_CLK_SPI>;
++	assigned-clock-rates = <133333334>;
++	status = "okay";
++
++	flash@0 {
++		compatible = "jedec,spi-nor";
++		reg = <0>;
++		vcc-supply = <&reg_1p8v>;
++		m25p,fast-read;
++		spi-tx-bus-width = <4>;
++		spi-rx-bus-width = <4>;
++
++		partitions {
++			compatible = "fixed-partitions";
++			#address-cells = <1>;
++			#size-cells = <1>;
++
++			partition@0 {
++				label = "bl2";
++				reg = <0x00000000 0x00060000>;
++			};
++
++			partition@60000 {
++				label = "fip";
++				reg = <0x00060000 0x00780000>;
++			};
++
++			partition@7E0000 {
++				label = "env";
++				reg = <0x007E0000 0x00020000>;
++			};
++
++			partition@800000 {
++				label = "user";
++				reg = <0x00800000 0x03800000>;
++			};
++		};
++	};
++};
++
++/* 40pin uart0 */
++&sci0 {
++	pinctrl-0 = <&sci0_pins>;
++	pinctrl-names = "default";
++
++	uart-has-rtscts;
++	status = "disabled";
++};
++
++/* 40pin uart2 */
++&sci2 {
++	pinctrl-0 = <&sci2_pins>;
++	pinctrl-names = "default";
++
++	uart-has-rtscts;
++	status = "disabled";
++};
++
++&cmtw0 {
++	status = "okay";
++};
++
++&cmtw1 {
++	status = "okay";
++};
++
++&rtc_clk {
++	clock-frequency = <32768>;
++};
++
++&rtc {
++	status = "disabled";
++};
++
++/* 40pin spi0 */
++&rspi0 {
++	pinctrl-0 = <&rspi0_pins>;
++	pinctrl-names = "default";
++	num-cs = <2>;
++
++	status = "disabled";
++};
++
++/* 40pin spi2 */
++&rspi2 {
++	pinctrl-0 = <&rspi2_pins>;
++	pinctrl-names = "default";
++	num-cs = <2>;
++
++	status = "disabled";
++};
++
++&pcie0 {
++	/* First 128MB is reserved for secure area. */
++	dma-ranges = <0x42000000 0 0x48000000 0 0x48000000 0x3 0xF8000000>;
++	status = "okay";
++};
++
++&drp1 {
++	memory-region = <&drp_codec>;
++	memory-oca-region = <&opencva_reserved>;
++	status = "okay";
++};
++
++&drpai0 {
++	memory-region = <&drp_reserved>;
++	status = "okay";
++};
+diff --git a/arch/arm64/boot/dts/renesas/overlay/Makefile b/arch/arm64/boot/dts/renesas/overlay/Makefile
+new file mode 100644
+index 000000000000..8a4a6967b99f
+--- /dev/null
++++ b/arch/arm64/boot/dts/renesas/overlay/Makefile
+@@ -0,0 +1,52 @@
++# SPDX-License-Identifier: GPL-2.0
++dtbo-$(CONFIG_ARCH_RENESAS) += \
++	bpi-ai2h-i2c1.dtbo \
++	bpi-ai2h-i2c1-flash.dtbo \
++	bpi-ai2h-i2c1-rtc.dtbo \
++	bpi-ai2h-i2c2.dtbo \
++	bpi-ai2h-uart0.dtbo \
++	bpi-ai2h-uart2.dtbo \
++	bpi-ai2h-pwm.dtbo \
++	bpi-ai2h-pwmfan.dtbo \
++	bpi-ai2h-spi0.dtbo \
++	bpi-ai2h-spi2.dtbo \
++	bpi-ai2h-spi2-flash.dtbo \
++	bpi-ai2h-spi2-waveshare-st7789v.dtbo \
++	bpi-ai2h-spi2-waveshare-tft24.dtbo \
++	bpi-ai2h-spi2-waveshare-tft35c.dtbo \
++	bpi-ai2h-i2s3-nxez-pcm512x.dtbo \
++	bpi-ai2h-i2s3-waveshare-wm8960.dtbo \
++	bpi-ai2h-i2c0-mux.dtbo \
++	bpi-ai2h-camA-imx415.dtbo \
++	bpi-ai2h-camB-imx415.dtbo \
++	bpi-ai2h-camC-imx415.dtbo \
++	bpi-ai2h-camD-imx415.dtbo \
++	bpi-ai2h-camA-imx415-74M.dtbo \
++	bpi-ai2h-camB-imx415-74M.dtbo \
++	bpi-ai2h-camC-imx415-74M.dtbo \
++	bpi-ai2h-camD-imx415-74M.dtbo \
++	bpi-ai2h-camAB-imx415-dual.dtbo \
++	bpi-ai2h-camCD-imx415-dual.dtbo \
++	bpi-ai2h-camAB-imx415-74M-dual.dtbo \
++	bpi-ai2h-camCD-imx415-74M-dual.dtbo \
++	bpi-ai2h-camAB-imx415-74M-dual-master.dtbo \
++	bpi-ai2h-camCD-imx415-74M-dual-master.dtbo \
++	bpi-ai2h-panel-hc070iy30025.dtbo
++
++dtbo-$(CONFIG_ARCH_RENESAS) += \
++	bpi-ai2h-waveshare-jetson-io-cam0-ov5640.dtbo \
++	bpi-ai2h-waveshare-jetson-io-cam0-imx415.dtbo \
++	bpi-ai2h-waveshare-jetson-io-cam0-waveshare-imx415.dtbo \
++	bpi-ai2h-waveshare-jetson-io-cam1-waveshare-imx415.dtbo \
++	bpi-ai2h-waveshare-jetson-io-cam0-luckfox-imx415.dtbo
++
++scr-$(CONFIG_ARCH_RENESAS) += \
++	renesas-fixup.scr
++
++dtbotxt-$(CONFIG_ARCH_RENESAS) += \
++	README.renesas-overlays
++
++targets += $(dtbo-y) $(scr-y) $(dtbotxt-y)
++
++always-y       := $(dtbo-y) $(scr-y) $(dtbotxt-y)
++clean-files    := *.dtbo *.scr
+diff --git a/arch/arm64/boot/dts/renesas/overlay/README.renesas-overlays b/arch/arm64/boot/dts/renesas/overlay/README.renesas-overlays
+new file mode 100644
+index 000000000000..2bb149616d0a
+--- /dev/null
++++ b/arch/arm64/boot/dts/renesas/overlay/README.renesas-overlays
+@@ -0,0 +1,18 @@
++This document describes overlays provided in the kernel packages
++For generic Renesas overlays
++
++### Platform:
++
++rzv2h (Renesas)
++
++### Provided overlays:
++
++- i2c4
++
++### Overlay details:
++
++### i2c4
++
++Activates TWI/I2C bus 4
++
++I2C4 pins (SCL, SDA): GPIO PIN.3, GPIO PIN.5
+diff --git a/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camA-imx415-74M.dts b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camA-imx415-74M.dts
+new file mode 100644
+index 000000000000..12124baa89e8
+--- /dev/null
++++ b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camA-imx415-74M.dts
+@@ -0,0 +1,199 @@
++/dts-v1/;
++/plugin/;
++#include <dt-bindings/interrupt-controller/arm-gic.h>
++#include <dt-bindings/pinctrl/renesas,r9a09g057-pinctrl.h>
++#include <dt-bindings/gpio/gpio.h>
++
++/ {
++	compatible = "renesas,r9a09g057";
++
++	fragment@0 {
++		target-path = "/aliases";
++		__overlay__ {
++			i2c9 = &i2c_mux0;
++			i2c10 = &i2c_mux1;
++			i2c11 = &i2c_mux2;
++			i2c12 = &i2c_mux3;
++		};
++	};
++
++	fragment@1 {
++		target = <&i2c0>;
++		__overlay__ {
++			status = "okay";
++
++			pca9545: i2c-mux@70 {
++				compatible = "nxp,pca9545";
++				reg = <0x70>;
++				#address-cells = <1>;
++				#size-cells = <0>;
++				reset-gpios = <&pinctrl RZV2H_GPIO(7, 4) GPIO_ACTIVE_HIGH>;
++
++				i2c_mux0: i2c@0 {
++				    reg = <0>;
++				    #address-cells = <1>;
++				    #size-cells = <0>;
++				};
++
++				i2c_mux1: i2c@1 {
++				    reg = <1>;
++				    #address-cells = <1>;
++				    #size-cells = <0>;
++				};
++
++				i2c_mux2: i2c@2 {
++				    reg = <2>;
++				    #address-cells = <1>;
++				    #size-cells = <0>;
++				};
++
++				i2c_mux3: i2c@3 {
++				    reg = <3>;
++				    #address-cells = <1>;
++				    #size-cells = <0>;
++				};
++			};
++		};	
++	};
++
++	fragment@2 {
++		target-path = "/";
++
++		__overlay__ {
++			clk_ext_camera: clk_ext_camera {
++				compatible = "fixed-clock";
++				#clock-cells = <0>;
++				clock-frequency = <74250000>;
++			};
++
++			imx415_ovdd_1v8: 1p8v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_ovdd";
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <1800000>;
++				regulator-always-on;
++			};
++
++			imx415_avdd_2v9: 2p9v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_avdd";
++				regulator-min-microvolt = <2800000>;
++				regulator-max-microvolt = <2800000>;
++				regulator-always-on;
++			};
++
++			imx415_dvdd_1v1: 1p1v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_dvdd";
++				regulator-min-microvolt = <1100000>;
++				regulator-max-microvolt = <1100000>;
++				regulator-always-on;
++			};
++		};
++	};
++
++	fragment@3 {
++		target = <&pinctrl>;
++		__overlay__ {
++			cam0_pwr_en {
++				gpio-hog;
++				gpios = <RZV2H_GPIO(6, 1) GPIO_ACTIVE_HIGH>;
++				output-high;
++				line-name = "cam0_pwr_en";
++			};
++		};
++	};
++
++	fragment@4 {
++		target = <&i2c_mux0>;
++		__overlay__ {
++			status = "okay";
++
++			imx415a: imx415@1a {
++				compatible = "sony,imx415";
++				reg = <0x1a>;
++				clock-names = "inck";
++				clocks = <&clk_ext_camera>;
++				ovdd-supply = <&imx415_ovdd_1v8>;
++				avdd-supply = <&imx415_avdd_2v9>;
++				dvdd-supply = <&imx415_dvdd_1v1>;
++				reset-gpios = <&pinctrl RZV2H_GPIO(6, 0) GPIO_ACTIVE_LOW>;
++
++				port {
++					imx415a_to_csi20: endpoint {
++						clock-lanes = <0>;
++						data-lanes = <1 2 3 4>;
++						link-frequencies = /bits/ 64 <445500000 445500000 445500000 445500000>;
++						remote-endpoint = <&csi20_in>;
++					};
++				};
++			};
++		};
++	};
++
++	fragment@5 {
++		target = <&cru0>;
++		__overlay__ {
++			status = "okay";
++
++			memory-region = <&cru_func>;
++		};
++	};
++
++	fragment@6 {
++		target = <&csi20>;
++		__overlay__ {
++			status = "okay";
++			ports {
++				port@0 {
++					reg = <0>;
++					csi20_in: endpoint {
++						clock-lanes = <0>;
++						data-lanes = <1 2 3 4>;
++						remote-endpoint = <&imx415a_to_csi20>;
++					};
++				};
++			};
++		};
++	};
++
++	fragment@7 {
++		target = <&input_video_control>;
++		__overlay__ {
++			status = "okay";
++
++			crus = <&cru0>;
++		};
++	};
++
++	fragment@8 {
++		target = <&isp>;
++		__overlay__ {
++			status = "okay";
++
++			sensor-i2c = <&imx415a>;
++			sensor-default-preset-mode = <0>;
++		};
++	};
++
++	fragment@9 {
++		target = <&sensor>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@10 {
++		target = <&lens>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@11 {
++		target = <&iq>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camA-imx415.dts b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camA-imx415.dts
+new file mode 100644
+index 000000000000..a0a1834dde9a
+--- /dev/null
++++ b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camA-imx415.dts
+@@ -0,0 +1,199 @@
++/dts-v1/;
++/plugin/;
++#include <dt-bindings/interrupt-controller/arm-gic.h>
++#include <dt-bindings/pinctrl/renesas,r9a09g057-pinctrl.h>
++#include <dt-bindings/gpio/gpio.h>
++
++/ {
++	compatible = "renesas,r9a09g057";
++
++	fragment@0 {
++		target-path = "/aliases";
++		__overlay__ {
++			i2c9 = &i2c_mux0;
++			i2c10 = &i2c_mux1;
++			i2c11 = &i2c_mux2;
++			i2c12 = &i2c_mux3;
++		};
++	};
++
++	fragment@1 {
++		target = <&i2c0>;
++		__overlay__ {
++			status = "okay";
++
++			pca9545: i2c-mux@70 {
++				compatible = "nxp,pca9545";
++				reg = <0x70>;
++				#address-cells = <1>;
++				#size-cells = <0>;
++				reset-gpios = <&pinctrl RZV2H_GPIO(7, 4) GPIO_ACTIVE_HIGH>;
++
++				i2c_mux0: i2c@0 {
++				    reg = <0>;
++				    #address-cells = <1>;
++				    #size-cells = <0>;
++				};
++
++				i2c_mux1: i2c@1 {
++				    reg = <1>;
++				    #address-cells = <1>;
++				    #size-cells = <0>;
++				};
++
++				i2c_mux2: i2c@2 {
++				    reg = <2>;
++				    #address-cells = <1>;
++				    #size-cells = <0>;
++				};
++
++				i2c_mux3: i2c@3 {
++				    reg = <3>;
++				    #address-cells = <1>;
++				    #size-cells = <0>;
++				};
++			};
++		};	
++	};
++
++	fragment@2 {
++		target-path = "/";
++
++		__overlay__ {
++			clk_ext_camera: clk_ext_camera {
++				compatible = "fixed-clock";
++				#clock-cells = <0>;
++				clock-frequency = <24000000>;
++			};
++
++			imx415_ovdd_1v8: 1p8v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_ovdd";
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <1800000>;
++				regulator-always-on;
++			};
++
++			imx415_avdd_2v9: 2p9v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_avdd";
++				regulator-min-microvolt = <2800000>;
++				regulator-max-microvolt = <2800000>;
++				regulator-always-on;
++			};
++
++			imx415_dvdd_1v1: 1p1v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_dvdd";
++				regulator-min-microvolt = <1100000>;
++				regulator-max-microvolt = <1100000>;
++				regulator-always-on;
++			};
++		};
++	};
++
++	fragment@3 {
++		target = <&pinctrl>;
++		__overlay__ {
++			cam0_pwr_en {
++				gpio-hog;
++				gpios = <RZV2H_GPIO(6, 1) GPIO_ACTIVE_HIGH>;
++				output-high;
++				line-name = "cam0_pwr_en";
++			};
++		};
++	};
++
++	fragment@4 {
++		target = <&i2c_mux0>;
++		__overlay__ {
++			status = "okay";
++
++			imx415a: imx415@1a {
++				compatible = "sony,imx415";
++				reg = <0x1a>;
++				clock-names = "inck";
++				clocks = <&clk_ext_camera>;
++				ovdd-supply = <&imx415_ovdd_1v8>;
++				avdd-supply = <&imx415_avdd_2v9>;
++				dvdd-supply = <&imx415_dvdd_1v1>;
++				reset-gpios = <&pinctrl RZV2H_GPIO(6, 0) GPIO_ACTIVE_LOW>;
++
++				port {
++					imx415a_to_csi20: endpoint {
++						clock-lanes = <0>;
++						data-lanes = <1 2 3 4>;
++						link-frequencies = /bits/ 64 <360000000 360000000 360000000 360000000>;
++						remote-endpoint = <&csi20_in>;
++					};
++				};
++			};
++		};
++	};
++
++	fragment@5 {
++		target = <&cru0>;
++		__overlay__ {
++			status = "okay";
++
++			memory-region = <&cru_func>;
++		};
++	};
++
++	fragment@6 {
++		target = <&csi20>;
++		__overlay__ {
++			status = "okay";
++			ports {
++				port@0 {
++					reg = <0>;
++					csi20_in: endpoint {
++						clock-lanes = <0>;
++						data-lanes = <1 2 3 4>;
++						remote-endpoint = <&imx415a_to_csi20>;
++					};
++				};
++			};
++		};
++	};
++
++	fragment@7 {
++		target = <&input_video_control>;
++		__overlay__ {
++			status = "okay";
++
++			crus = <&cru0>;
++		};
++	};
++
++	fragment@8 {
++		target = <&isp>;
++		__overlay__ {
++			status = "okay";
++
++			sensor-i2c = <&imx415a>;
++			sensor-default-preset-mode = <0>;
++		};
++	};
++
++	fragment@9 {
++		target = <&sensor>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@10 {
++		target = <&lens>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@11 {
++		target = <&iq>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camAB-imx415-74M-dual-master.dts b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camAB-imx415-74M-dual-master.dts
+new file mode 100644
+index 000000000000..2126eeaa7188
+--- /dev/null
++++ b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camAB-imx415-74M-dual-master.dts
+@@ -0,0 +1,260 @@
++/dts-v1/;
++/plugin/;
++#include <dt-bindings/interrupt-controller/arm-gic.h>
++#include <dt-bindings/pinctrl/renesas,r9a09g057-pinctrl.h>
++#include <dt-bindings/gpio/gpio.h>
++
++/ {
++	compatible = "renesas,r9a09g057";
++
++	fragment@0 {
++		target-path = "/aliases";
++		__overlay__ {
++			i2c9 = &i2c_mux0;
++			i2c10 = &i2c_mux1;
++			i2c11 = &i2c_mux2;
++			i2c12 = &i2c_mux3;
++		};
++	};
++
++	fragment@1 {
++		target = <&i2c0>;
++		__overlay__ {
++			status = "okay";
++
++			pca9545: i2c-mux@70 {
++				compatible = "nxp,pca9545";
++				reg = <0x70>;
++				#address-cells = <1>;
++				#size-cells = <0>;
++				reset-gpios = <&pinctrl RZV2H_GPIO(7, 4) GPIO_ACTIVE_HIGH>;
++
++				i2c_mux0: i2c@0 {
++				    reg = <0>;
++				    #address-cells = <1>;
++				    #size-cells = <0>;
++				};
++
++				i2c_mux1: i2c@1 {
++				    reg = <1>;
++				    #address-cells = <1>;
++				    #size-cells = <0>;
++				};
++
++				i2c_mux2: i2c@2 {
++				    reg = <2>;
++				    #address-cells = <1>;
++				    #size-cells = <0>;
++				};
++
++				i2c_mux3: i2c@3 {
++				    reg = <3>;
++				    #address-cells = <1>;
++				    #size-cells = <0>;
++				};
++			};
++		};	
++	};
++
++	fragment@2 {
++		target-path = "/";
++
++		__overlay__ {
++			clk_ext_camera: clk_ext_camera {
++				compatible = "fixed-clock";
++				#clock-cells = <0>;
++				clock-frequency = <74250000>;
++			};
++
++			imx415_ovdd_1v8: 1p8v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_ovdd";
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <1800000>;
++				regulator-always-on;
++			};
++
++			imx415_avdd_2v9: 2p9v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_avdd";
++				regulator-min-microvolt = <2800000>;
++				regulator-max-microvolt = <2800000>;
++				regulator-always-on;
++			};
++
++			imx415_dvdd_1v1: 1p1v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_dvdd";
++				regulator-min-microvolt = <1100000>;
++				regulator-max-microvolt = <1100000>;
++				regulator-always-on;
++			};
++		};
++	};
++
++	fragment@3 {
++		target = <&pinctrl>;
++		__overlay__ {
++			cam0_pwr_en {
++				gpio-hog;
++				gpios = <RZV2H_GPIO(6, 1) GPIO_ACTIVE_HIGH>;
++				output-high;
++				line-name = "cam0_pwr_en";
++			};
++
++			cam1_pwr_en {
++				gpio-hog;
++				gpios = <RZV2H_GPIO(6, 3) GPIO_ACTIVE_HIGH>;
++				output-high;
++				line-name = "cam1_pwr_en";
++			};
++		};
++	};
++
++	fragment@4 {
++		target = <&i2c_mux0>;
++		__overlay__ {
++			status = "okay";
++
++			imx415a: imx415@1a {
++				compatible = "sony,imx415";
++				reg = <0x1a>;
++				clock-names = "inck";
++				clocks = <&clk_ext_camera>;
++				ovdd-supply = <&imx415_ovdd_1v8>;
++				avdd-supply = <&imx415_avdd_2v9>;
++				dvdd-supply = <&imx415_dvdd_1v1>;
++				reset-gpios = <&pinctrl RZV2H_GPIO(6, 0) GPIO_ACTIVE_LOW>;
++
++				port {
++					imx415a_to_csi20: endpoint {
++						clock-lanes = <0>;
++						data-lanes = <1 2 3 4>;
++						link-frequencies = /bits/ 64 <445500000 445500000 445500000 445500000>;
++						remote-endpoint = <&csi20_in>;
++					};
++				};
++			};
++		};
++	};
++
++	fragment@5 {
++		target = <&i2c_mux2>;
++		__overlay__ {
++			status = "okay";
++
++			imx415b: imx415@1a {
++				compatible = "sony,imx415";
++				reg = <0x1a>;
++				//slave-mode;
++				clock-names = "inck";
++				clocks = <&clk_ext_camera>;
++				ovdd-supply = <&imx415_ovdd_1v8>;
++				avdd-supply = <&imx415_avdd_2v9>;
++				dvdd-supply = <&imx415_dvdd_1v1>;
++				reset-gpios = <&pinctrl RZV2H_GPIO(6, 2) GPIO_ACTIVE_LOW>;
++
++				port {
++					imx415b_to_csi21: endpoint {
++						clock-lanes = <0>;
++						data-lanes = <1 2 3 4>;
++						link-frequencies = /bits/ 64 <445500000 445500000 445500000 445500000>;
++						remote-endpoint = <&csi21_in>;
++					};
++				};
++			};
++		};
++	};
++
++	fragment@6 {
++		target = <&cru0>;
++		__overlay__ {
++			status = "okay";
++
++			memory-region = <&cru_func>;
++		};
++	};
++
++	fragment@7 {
++		target = <&csi20>;
++		__overlay__ {
++			status = "okay";
++			ports {
++				port@0 {
++					reg = <0>;
++					csi20_in: endpoint {
++						clock-lanes = <0>;
++						data-lanes = <1 2 3 4>;
++						remote-endpoint = <&imx415a_to_csi20>;
++					};
++				};
++			};
++		};
++	};
++
++	fragment@8 {
++		target = <&cru1>;
++		__overlay__ {
++			status = "okay";
++
++			memory-region = <&cru_func>;
++		};
++	};
++
++	fragment@9 {
++		target = <&csi21>;
++		__overlay__ {
++			status = "okay";
++			ports {
++				port@0 {
++					reg = <0>;
++					csi21_in: endpoint {
++						clock-lanes = <0>;
++						data-lanes = <1 2 3 4>;
++						remote-endpoint = <&imx415b_to_csi21>;
++					};
++				};
++			};
++		};
++	};
++
++	fragment@10 {
++		target = <&input_video_control>;
++		__overlay__ {
++			status = "okay";
++
++			crus = <&cru0 &cru1>;
++		};
++	};
++
++	fragment@11 {
++		target = <&isp>;
++		__overlay__ {
++			status = "okay";
++
++			sensor-i2c = <&imx415a &imx415b>;
++			sensor-default-preset-mode = <0 1>;
++		};
++	};
++
++	fragment@12 {
++		target = <&sensor>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@13 {
++		target = <&lens>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@14 {
++		target = <&iq>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camAB-imx415-74M-dual.dts b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camAB-imx415-74M-dual.dts
+new file mode 100644
+index 000000000000..20ffe2d2f0d0
+--- /dev/null
++++ b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camAB-imx415-74M-dual.dts
+@@ -0,0 +1,260 @@
++/dts-v1/;
++/plugin/;
++#include <dt-bindings/interrupt-controller/arm-gic.h>
++#include <dt-bindings/pinctrl/renesas,r9a09g057-pinctrl.h>
++#include <dt-bindings/gpio/gpio.h>
++
++/ {
++	compatible = "renesas,r9a09g057";
++
++	fragment@0 {
++		target-path = "/aliases";
++		__overlay__ {
++			i2c9 = &i2c_mux0;
++			i2c10 = &i2c_mux1;
++			i2c11 = &i2c_mux2;
++			i2c12 = &i2c_mux3;
++		};
++	};
++
++	fragment@1 {
++		target = <&i2c0>;
++		__overlay__ {
++			status = "okay";
++
++			pca9545: i2c-mux@70 {
++				compatible = "nxp,pca9545";
++				reg = <0x70>;
++				#address-cells = <1>;
++				#size-cells = <0>;
++				reset-gpios = <&pinctrl RZV2H_GPIO(7, 4) GPIO_ACTIVE_HIGH>;
++
++				i2c_mux0: i2c@0 {
++				    reg = <0>;
++				    #address-cells = <1>;
++				    #size-cells = <0>;
++				};
++
++				i2c_mux1: i2c@1 {
++				    reg = <1>;
++				    #address-cells = <1>;
++				    #size-cells = <0>;
++				};
++
++				i2c_mux2: i2c@2 {
++				    reg = <2>;
++				    #address-cells = <1>;
++				    #size-cells = <0>;
++				};
++
++				i2c_mux3: i2c@3 {
++				    reg = <3>;
++				    #address-cells = <1>;
++				    #size-cells = <0>;
++				};
++			};
++		};	
++	};
++
++	fragment@2 {
++		target-path = "/";
++
++		__overlay__ {
++			clk_ext_camera: clk_ext_camera {
++				compatible = "fixed-clock";
++				#clock-cells = <0>;
++				clock-frequency = <74250000>;
++			};
++
++			imx415_ovdd_1v8: 1p8v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_ovdd";
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <1800000>;
++				regulator-always-on;
++			};
++
++			imx415_avdd_2v9: 2p9v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_avdd";
++				regulator-min-microvolt = <2800000>;
++				regulator-max-microvolt = <2800000>;
++				regulator-always-on;
++			};
++
++			imx415_dvdd_1v1: 1p1v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_dvdd";
++				regulator-min-microvolt = <1100000>;
++				regulator-max-microvolt = <1100000>;
++				regulator-always-on;
++			};
++		};
++	};
++
++	fragment@3 {
++		target = <&pinctrl>;
++		__overlay__ {
++			cam0_pwr_en {
++				gpio-hog;
++				gpios = <RZV2H_GPIO(6, 1) GPIO_ACTIVE_HIGH>;
++				output-high;
++				line-name = "cam0_pwr_en";
++			};
++
++			cam1_pwr_en {
++				gpio-hog;
++				gpios = <RZV2H_GPIO(6, 3) GPIO_ACTIVE_HIGH>;
++				output-high;
++				line-name = "cam1_pwr_en";
++			};
++		};
++	};
++
++	fragment@4 {
++		target = <&i2c_mux0>;
++		__overlay__ {
++			status = "okay";
++
++			imx415a: imx415@1a {
++				compatible = "sony,imx415";
++				reg = <0x1a>;
++				clock-names = "inck";
++				clocks = <&clk_ext_camera>;
++				ovdd-supply = <&imx415_ovdd_1v8>;
++				avdd-supply = <&imx415_avdd_2v9>;
++				dvdd-supply = <&imx415_dvdd_1v1>;
++				reset-gpios = <&pinctrl RZV2H_GPIO(6, 0) GPIO_ACTIVE_LOW>;
++
++				port {
++					imx415a_to_csi20: endpoint {
++						clock-lanes = <0>;
++						data-lanes = <1 2 3 4>;
++						link-frequencies = /bits/ 64 <445500000 445500000 445500000 445500000>;
++						remote-endpoint = <&csi20_in>;
++					};
++				};
++			};
++		};
++	};
++
++	fragment@5 {
++		target = <&i2c_mux2>;
++		__overlay__ {
++			status = "okay";
++
++			imx415b: imx415@1a {
++				compatible = "sony,imx415";
++				reg = <0x1a>;
++				slave-mode;
++				clock-names = "inck";
++				clocks = <&clk_ext_camera>;
++				ovdd-supply = <&imx415_ovdd_1v8>;
++				avdd-supply = <&imx415_avdd_2v9>;
++				dvdd-supply = <&imx415_dvdd_1v1>;
++				reset-gpios = <&pinctrl RZV2H_GPIO(6, 2) GPIO_ACTIVE_LOW>;
++
++				port {
++					imx415b_to_csi21: endpoint {
++						clock-lanes = <0>;
++						data-lanes = <1 2 3 4>;
++						link-frequencies = /bits/ 64 <445500000 445500000 445500000 445500000>;
++						remote-endpoint = <&csi21_in>;
++					};
++				};
++			};
++		};
++	};
++
++	fragment@6 {
++		target = <&cru0>;
++		__overlay__ {
++			status = "okay";
++
++			memory-region = <&cru_func>;
++		};
++	};
++
++	fragment@7 {
++		target = <&csi20>;
++		__overlay__ {
++			status = "okay";
++			ports {
++				port@0 {
++					reg = <0>;
++					csi20_in: endpoint {
++						clock-lanes = <0>;
++						data-lanes = <1 2 3 4>;
++						remote-endpoint = <&imx415a_to_csi20>;
++					};
++				};
++			};
++		};
++	};
++
++	fragment@8 {
++		target = <&cru1>;
++		__overlay__ {
++			status = "okay";
++
++			memory-region = <&cru_func>;
++		};
++	};
++
++	fragment@9 {
++		target = <&csi21>;
++		__overlay__ {
++			status = "okay";
++			ports {
++				port@0 {
++					reg = <0>;
++					csi21_in: endpoint {
++						clock-lanes = <0>;
++						data-lanes = <1 2 3 4>;
++						remote-endpoint = <&imx415b_to_csi21>;
++					};
++				};
++			};
++		};
++	};
++
++	fragment@10 {
++		target = <&input_video_control>;
++		__overlay__ {
++			status = "okay";
++
++			crus = <&cru0 &cru1>;
++		};
++	};
++
++	fragment@11 {
++		target = <&isp>;
++		__overlay__ {
++			status = "okay";
++
++			sensor-i2c = <&imx415a &imx415b>;
++			sensor-default-preset-mode = <0 1>;
++		};
++	};
++
++	fragment@12 {
++		target = <&sensor>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@13 {
++		target = <&lens>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@14 {
++		target = <&iq>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camAB-imx415-dual-master.dts b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camAB-imx415-dual-master.dts
+new file mode 100644
+index 000000000000..78e023ff9f66
+--- /dev/null
++++ b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camAB-imx415-dual-master.dts
+@@ -0,0 +1,260 @@
++/dts-v1/;
++/plugin/;
++#include <dt-bindings/interrupt-controller/arm-gic.h>
++#include <dt-bindings/pinctrl/renesas,r9a09g057-pinctrl.h>
++#include <dt-bindings/gpio/gpio.h>
++
++/ {
++	compatible = "renesas,r9a09g057";
++
++	fragment@0 {
++		target-path = "/aliases";
++		__overlay__ {
++			i2c9 = &i2c_mux0;
++			i2c10 = &i2c_mux1;
++			i2c11 = &i2c_mux2;
++			i2c12 = &i2c_mux3;
++		};
++	};
++
++	fragment@1 {
++		target = <&i2c0>;
++		__overlay__ {
++			status = "okay";
++
++			pca9545: i2c-mux@70 {
++				compatible = "nxp,pca9545";
++				reg = <0x70>;
++				#address-cells = <1>;
++				#size-cells = <0>;
++				reset-gpios = <&pinctrl RZV2H_GPIO(7, 4) GPIO_ACTIVE_HIGH>;
++
++				i2c_mux0: i2c@0 {
++				    reg = <0>;
++				    #address-cells = <1>;
++				    #size-cells = <0>;
++				};
++
++				i2c_mux1: i2c@1 {
++				    reg = <1>;
++				    #address-cells = <1>;
++				    #size-cells = <0>;
++				};
++
++				i2c_mux2: i2c@2 {
++				    reg = <2>;
++				    #address-cells = <1>;
++				    #size-cells = <0>;
++				};
++
++				i2c_mux3: i2c@3 {
++				    reg = <3>;
++				    #address-cells = <1>;
++				    #size-cells = <0>;
++				};
++			};
++		};	
++	};
++
++	fragment@2 {
++		target-path = "/";
++
++		__overlay__ {
++			clk_ext_camera: clk_ext_camera {
++				compatible = "fixed-clock";
++				#clock-cells = <0>;
++				clock-frequency = <24000000>;
++			};
++
++			imx415_ovdd_1v8: 1p8v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_ovdd";
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <1800000>;
++				regulator-always-on;
++			};
++
++			imx415_avdd_2v9: 2p9v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_avdd";
++				regulator-min-microvolt = <2800000>;
++				regulator-max-microvolt = <2800000>;
++				regulator-always-on;
++			};
++
++			imx415_dvdd_1v1: 1p1v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_dvdd";
++				regulator-min-microvolt = <1100000>;
++				regulator-max-microvolt = <1100000>;
++				regulator-always-on;
++			};
++		};
++	};
++
++	fragment@3 {
++		target = <&pinctrl>;
++		__overlay__ {
++			cam0_pwr_en {
++				gpio-hog;
++				gpios = <RZV2H_GPIO(6, 1) GPIO_ACTIVE_HIGH>;
++				output-high;
++				line-name = "cam0_pwr_en";
++			};
++
++			cam1_pwr_en {
++				gpio-hog;
++				gpios = <RZV2H_GPIO(6, 3) GPIO_ACTIVE_HIGH>;
++				output-high;
++				line-name = "cam1_pwr_en";
++			};
++		};
++	};
++
++	fragment@4 {
++		target = <&i2c_mux0>;
++		__overlay__ {
++			status = "okay";
++
++			imx415a: imx415@1a {
++				compatible = "sony,imx415";
++				reg = <0x1a>;
++				clock-names = "inck";
++				clocks = <&clk_ext_camera>;
++				ovdd-supply = <&imx415_ovdd_1v8>;
++				avdd-supply = <&imx415_avdd_2v9>;
++				dvdd-supply = <&imx415_dvdd_1v1>;
++				reset-gpios = <&pinctrl RZV2H_GPIO(6, 0) GPIO_ACTIVE_LOW>;
++
++				port {
++					imx415a_to_csi20: endpoint {
++						clock-lanes = <0>;
++						data-lanes = <1 2 3 4>;
++						link-frequencies = /bits/ 64 <360000000 360000000 360000000 360000000>;
++						remote-endpoint = <&csi20_in>;
++					};
++				};
++			};
++		};
++	};
++
++	fragment@5 {
++		target = <&i2c_mux2>;
++		__overlay__ {
++			status = "okay";
++
++			imx415b: imx415@1a {
++				compatible = "sony,imx415";
++				reg = <0x1a>;
++				//slave-mode;
++				clock-names = "inck";
++				clocks = <&clk_ext_camera>;
++				ovdd-supply = <&imx415_ovdd_1v8>;
++				avdd-supply = <&imx415_avdd_2v9>;
++				dvdd-supply = <&imx415_dvdd_1v1>;
++				reset-gpios = <&pinctrl RZV2H_GPIO(6, 2) GPIO_ACTIVE_LOW>;
++
++				port {
++					imx415b_to_csi21: endpoint {
++						clock-lanes = <0>;
++						data-lanes = <1 2 3 4>;
++						link-frequencies = /bits/ 64 <360000000 360000000 360000000 360000000>;
++						remote-endpoint = <&csi21_in>;
++					};
++				};
++			};
++		};
++	};
++
++	fragment@6 {
++		target = <&cru0>;
++		__overlay__ {
++			status = "okay";
++
++			memory-region = <&cru_func>;
++		};
++	};
++
++	fragment@7 {
++		target = <&csi20>;
++		__overlay__ {
++			status = "okay";
++			ports {
++				port@0 {
++					reg = <0>;
++					csi20_in: endpoint {
++						clock-lanes = <0>;
++						data-lanes = <1 2 3 4>;
++						remote-endpoint = <&imx415a_to_csi20>;
++					};
++				};
++			};
++		};
++	};
++
++	fragment@8 {
++		target = <&cru1>;
++		__overlay__ {
++			status = "okay";
++
++			memory-region = <&cru_func>;
++		};
++	};
++
++	fragment@9 {
++		target = <&csi21>;
++		__overlay__ {
++			status = "okay";
++			ports {
++				port@0 {
++					reg = <0>;
++					csi21_in: endpoint {
++						clock-lanes = <0>;
++						data-lanes = <1 2 3 4>;
++						remote-endpoint = <&imx415b_to_csi21>;
++					};
++				};
++			};
++		};
++	};
++
++	fragment@10 {
++		target = <&input_video_control>;
++		__overlay__ {
++			status = "okay";
++
++			crus = <&cru0 &cru1>;
++		};
++	};
++
++	fragment@11 {
++		target = <&isp>;
++		__overlay__ {
++			status = "okay";
++
++			sensor-i2c = <&imx415a &imx415b>;
++			sensor-default-preset-mode = <0 1>;
++		};
++	};
++
++	fragment@12 {
++		target = <&sensor>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@13 {
++		target = <&lens>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@14 {
++		target = <&iq>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camAB-imx415-dual.dts b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camAB-imx415-dual.dts
+new file mode 100644
+index 000000000000..620e5663a7ab
+--- /dev/null
++++ b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camAB-imx415-dual.dts
+@@ -0,0 +1,260 @@
++/dts-v1/;
++/plugin/;
++#include <dt-bindings/interrupt-controller/arm-gic.h>
++#include <dt-bindings/pinctrl/renesas,r9a09g057-pinctrl.h>
++#include <dt-bindings/gpio/gpio.h>
++
++/ {
++	compatible = "renesas,r9a09g057";
++
++	fragment@0 {
++		target-path = "/aliases";
++		__overlay__ {
++			i2c9 = &i2c_mux0;
++			i2c10 = &i2c_mux1;
++			i2c11 = &i2c_mux2;
++			i2c12 = &i2c_mux3;
++		};
++	};
++
++	fragment@1 {
++		target = <&i2c0>;
++		__overlay__ {
++			status = "okay";
++
++			pca9545: i2c-mux@70 {
++				compatible = "nxp,pca9545";
++				reg = <0x70>;
++				#address-cells = <1>;
++				#size-cells = <0>;
++				reset-gpios = <&pinctrl RZV2H_GPIO(7, 4) GPIO_ACTIVE_HIGH>;
++
++				i2c_mux0: i2c@0 {
++				    reg = <0>;
++				    #address-cells = <1>;
++				    #size-cells = <0>;
++				};
++
++				i2c_mux1: i2c@1 {
++				    reg = <1>;
++				    #address-cells = <1>;
++				    #size-cells = <0>;
++				};
++
++				i2c_mux2: i2c@2 {
++				    reg = <2>;
++				    #address-cells = <1>;
++				    #size-cells = <0>;
++				};
++
++				i2c_mux3: i2c@3 {
++				    reg = <3>;
++				    #address-cells = <1>;
++				    #size-cells = <0>;
++				};
++			};
++		};	
++	};
++
++	fragment@2 {
++		target-path = "/";
++
++		__overlay__ {
++			clk_ext_camera: clk_ext_camera {
++				compatible = "fixed-clock";
++				#clock-cells = <0>;
++				clock-frequency = <24000000>;
++			};
++
++			imx415_ovdd_1v8: 1p8v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_ovdd";
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <1800000>;
++				regulator-always-on;
++			};
++
++			imx415_avdd_2v9: 2p9v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_avdd";
++				regulator-min-microvolt = <2800000>;
++				regulator-max-microvolt = <2800000>;
++				regulator-always-on;
++			};
++
++			imx415_dvdd_1v1: 1p1v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_dvdd";
++				regulator-min-microvolt = <1100000>;
++				regulator-max-microvolt = <1100000>;
++				regulator-always-on;
++			};
++		};
++	};
++
++	fragment@3 {
++		target = <&pinctrl>;
++		__overlay__ {
++			cam0_pwr_en {
++				gpio-hog;
++				gpios = <RZV2H_GPIO(6, 1) GPIO_ACTIVE_HIGH>;
++				output-high;
++				line-name = "cam0_pwr_en";
++			};
++
++			cam1_pwr_en {
++				gpio-hog;
++				gpios = <RZV2H_GPIO(6, 3) GPIO_ACTIVE_HIGH>;
++				output-high;
++				line-name = "cam1_pwr_en";
++			};
++		};
++	};
++
++	fragment@4 {
++		target = <&i2c_mux0>;
++		__overlay__ {
++			status = "okay";
++
++			imx415a: imx415@1a {
++				compatible = "sony,imx415";
++				reg = <0x1a>;
++				clock-names = "inck";
++				clocks = <&clk_ext_camera>;
++				ovdd-supply = <&imx415_ovdd_1v8>;
++				avdd-supply = <&imx415_avdd_2v9>;
++				dvdd-supply = <&imx415_dvdd_1v1>;
++				reset-gpios = <&pinctrl RZV2H_GPIO(6, 0) GPIO_ACTIVE_LOW>;
++
++				port {
++					imx415a_to_csi20: endpoint {
++						clock-lanes = <0>;
++						data-lanes = <1 2 3 4>;
++						link-frequencies = /bits/ 64 <360000000 360000000 360000000 360000000>;
++						remote-endpoint = <&csi20_in>;
++					};
++				};
++			};
++		};
++	};
++
++	fragment@5 {
++		target = <&i2c_mux2>;
++		__overlay__ {
++			status = "okay";
++
++			imx415b: imx415@1a {
++				compatible = "sony,imx415";
++				reg = <0x1a>;
++				slave-mode;
++				clock-names = "inck";
++				clocks = <&clk_ext_camera>;
++				ovdd-supply = <&imx415_ovdd_1v8>;
++				avdd-supply = <&imx415_avdd_2v9>;
++				dvdd-supply = <&imx415_dvdd_1v1>;
++				reset-gpios = <&pinctrl RZV2H_GPIO(6, 2) GPIO_ACTIVE_LOW>;
++
++				port {
++					imx415b_to_csi21: endpoint {
++						clock-lanes = <0>;
++						data-lanes = <1 2 3 4>;
++						link-frequencies = /bits/ 64 <360000000 360000000 360000000 360000000>;
++						remote-endpoint = <&csi21_in>;
++					};
++				};
++			};
++		};
++	};
++
++	fragment@6 {
++		target = <&cru0>;
++		__overlay__ {
++			status = "okay";
++
++			memory-region = <&cru_func>;
++		};
++	};
++
++	fragment@7 {
++		target = <&csi20>;
++		__overlay__ {
++			status = "okay";
++			ports {
++				port@0 {
++					reg = <0>;
++					csi20_in: endpoint {
++						clock-lanes = <0>;
++						data-lanes = <1 2 3 4>;
++						remote-endpoint = <&imx415a_to_csi20>;
++					};
++				};
++			};
++		};
++	};
++
++	fragment@8 {
++		target = <&cru1>;
++		__overlay__ {
++			status = "okay";
++
++			memory-region = <&cru_func>;
++		};
++	};
++
++	fragment@9 {
++		target = <&csi21>;
++		__overlay__ {
++			status = "okay";
++			ports {
++				port@0 {
++					reg = <0>;
++					csi21_in: endpoint {
++						clock-lanes = <0>;
++						data-lanes = <1 2 3 4>;
++						remote-endpoint = <&imx415b_to_csi21>;
++					};
++				};
++			};
++		};
++	};
++
++	fragment@10 {
++		target = <&input_video_control>;
++		__overlay__ {
++			status = "okay";
++
++			crus = <&cru0 &cru1>;
++		};
++	};
++
++	fragment@11 {
++		target = <&isp>;
++		__overlay__ {
++			status = "okay";
++
++			sensor-i2c = <&imx415a &imx415b>;
++			sensor-default-preset-mode = <0 1>;
++		};
++	};
++
++	fragment@12 {
++		target = <&sensor>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@13 {
++		target = <&lens>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@14 {
++		target = <&iq>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camB-imx415-74M.dts b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camB-imx415-74M.dts
+new file mode 100644
+index 000000000000..4888376c9fa8
+--- /dev/null
++++ b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camB-imx415-74M.dts
+@@ -0,0 +1,199 @@
++/dts-v1/;
++/plugin/;
++#include <dt-bindings/interrupt-controller/arm-gic.h>
++#include <dt-bindings/pinctrl/renesas,r9a09g057-pinctrl.h>
++#include <dt-bindings/gpio/gpio.h>
++
++/ {
++	compatible = "renesas,r9a09g057";
++
++	fragment@0 {
++		target-path = "/aliases";
++		__overlay__ {
++			i2c9 = &i2c_mux0;
++			i2c10 = &i2c_mux1;
++			i2c11 = &i2c_mux2;
++			i2c12 = &i2c_mux3;
++		};
++	};
++
++	fragment@1 {
++		target = <&i2c0>;
++		__overlay__ {
++			status = "okay";
++
++			pca9545: i2c-mux@70 {
++				compatible = "nxp,pca9545";
++				reg = <0x70>;
++				#address-cells = <1>;
++				#size-cells = <0>;
++				reset-gpios = <&pinctrl RZV2H_GPIO(7, 4) GPIO_ACTIVE_HIGH>;
++
++				i2c_mux0: i2c@0 {
++				    reg = <0>;
++				    #address-cells = <1>;
++				    #size-cells = <0>;
++				};
++
++				i2c_mux1: i2c@1 {
++				    reg = <1>;
++				    #address-cells = <1>;
++				    #size-cells = <0>;
++				};
++
++				i2c_mux2: i2c@2 {
++				    reg = <2>;
++				    #address-cells = <1>;
++				    #size-cells = <0>;
++				};
++
++				i2c_mux3: i2c@3 {
++				    reg = <3>;
++				    #address-cells = <1>;
++				    #size-cells = <0>;
++				};
++			};
++		};	
++	};
++
++	fragment@2 {
++		target-path = "/";
++
++		__overlay__ {
++			clk_ext_camera: clk_ext_camera {
++				compatible = "fixed-clock";
++				#clock-cells = <0>;
++				clock-frequency = <74250000>;
++			};
++
++			imx415_ovdd_1v8: 1p8v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_ovdd";
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <1800000>;
++				regulator-always-on;
++			};
++
++			imx415_avdd_2v9: 2p9v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_avdd";
++				regulator-min-microvolt = <2800000>;
++				regulator-max-microvolt = <2800000>;
++				regulator-always-on;
++			};
++
++			imx415_dvdd_1v1: 1p1v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_dvdd";
++				regulator-min-microvolt = <1100000>;
++				regulator-max-microvolt = <1100000>;
++				regulator-always-on;
++			};
++		};
++	};
++
++	fragment@3 {
++		target = <&pinctrl>;
++		__overlay__ {
++			cam1_pwr_en {
++				gpio-hog;
++				gpios = <RZV2H_GPIO(6, 3) GPIO_ACTIVE_HIGH>;
++				output-high;
++				line-name = "cam1_pwr_en";
++			};
++		};
++	};
++
++	fragment@4 {
++		target = <&i2c_mux2>;
++		__overlay__ {
++			status = "okay";
++
++			imx415b: imx415@1a {
++				compatible = "sony,imx415";
++				reg = <0x1a>;
++				clock-names = "inck";
++				clocks = <&clk_ext_camera>;
++				ovdd-supply = <&imx415_ovdd_1v8>;
++				avdd-supply = <&imx415_avdd_2v9>;
++				dvdd-supply = <&imx415_dvdd_1v1>;
++				reset-gpios = <&pinctrl RZV2H_GPIO(6, 2) GPIO_ACTIVE_LOW>;
++
++				port {
++					imx415b_to_csi21: endpoint {
++						clock-lanes = <0>;
++						data-lanes = <1 2 3 4>;
++						link-frequencies = /bits/ 64 <445500000 445500000 445500000 445500000>;
++						remote-endpoint = <&csi21_in>;
++					};
++				};
++			};
++		};
++	};
++
++	fragment@5 {
++		target = <&cru1>;
++		__overlay__ {
++			status = "okay";
++
++			memory-region = <&cru_func>;
++		};
++	};
++
++	fragment@6 {
++		target = <&csi21>;
++		__overlay__ {
++			status = "okay";
++			ports {
++				port@0 {
++					reg = <0>;
++					csi21_in: endpoint {
++						clock-lanes = <0>;
++						data-lanes = <1 2 3 4>;
++						remote-endpoint = <&imx415b_to_csi21>;
++					};
++				};
++			};
++		};
++	};
++
++	fragment@7 {
++		target = <&input_video_control>;
++		__overlay__ {
++			status = "okay";
++
++			crus = <&cru1>;
++		};
++	};
++
++	fragment@8 {
++		target = <&isp>;
++		__overlay__ {
++			status = "okay";
++
++			sensor-i2c = <&imx415b>;
++			sensor-default-preset-mode = <1>;
++		};
++	};
++
++	fragment@9 {
++		target = <&sensor>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@10 {
++		target = <&lens>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@11 {
++		target = <&iq>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camB-imx415.dts b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camB-imx415.dts
+new file mode 100644
+index 000000000000..5f14afb8d1f6
+--- /dev/null
++++ b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camB-imx415.dts
+@@ -0,0 +1,199 @@
++/dts-v1/;
++/plugin/;
++#include <dt-bindings/interrupt-controller/arm-gic.h>
++#include <dt-bindings/pinctrl/renesas,r9a09g057-pinctrl.h>
++#include <dt-bindings/gpio/gpio.h>
++
++/ {
++	compatible = "renesas,r9a09g057";
++
++	fragment@0 {
++		target-path = "/aliases";
++		__overlay__ {
++			i2c9 = &i2c_mux0;
++			i2c10 = &i2c_mux1;
++			i2c11 = &i2c_mux2;
++			i2c12 = &i2c_mux3;
++		};
++	};
++
++	fragment@1 {
++		target = <&i2c0>;
++		__overlay__ {
++			status = "okay";
++
++			pca9545: i2c-mux@70 {
++				compatible = "nxp,pca9545";
++				reg = <0x70>;
++				#address-cells = <1>;
++				#size-cells = <0>;
++				reset-gpios = <&pinctrl RZV2H_GPIO(7, 4) GPIO_ACTIVE_HIGH>;
++
++				i2c_mux0: i2c@0 {
++				    reg = <0>;
++				    #address-cells = <1>;
++				    #size-cells = <0>;
++				};
++
++				i2c_mux1: i2c@1 {
++				    reg = <1>;
++				    #address-cells = <1>;
++				    #size-cells = <0>;
++				};
++
++				i2c_mux2: i2c@2 {
++				    reg = <2>;
++				    #address-cells = <1>;
++				    #size-cells = <0>;
++				};
++
++				i2c_mux3: i2c@3 {
++				    reg = <3>;
++				    #address-cells = <1>;
++				    #size-cells = <0>;
++				};
++			};
++		};	
++	};
++
++	fragment@2 {
++		target-path = "/";
++
++		__overlay__ {
++			clk_ext_camera: clk_ext_camera {
++				compatible = "fixed-clock";
++				#clock-cells = <0>;
++				clock-frequency = <24000000>;
++			};
++
++			imx415_ovdd_1v8: 1p8v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_ovdd";
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <1800000>;
++				regulator-always-on;
++			};
++
++			imx415_avdd_2v9: 2p9v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_avdd";
++				regulator-min-microvolt = <2800000>;
++				regulator-max-microvolt = <2800000>;
++				regulator-always-on;
++			};
++
++			imx415_dvdd_1v1: 1p1v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_dvdd";
++				regulator-min-microvolt = <1100000>;
++				regulator-max-microvolt = <1100000>;
++				regulator-always-on;
++			};
++		};
++	};
++
++	fragment@3 {
++		target = <&pinctrl>;
++		__overlay__ {
++			cam1_pwr_en {
++				gpio-hog;
++				gpios = <RZV2H_GPIO(6, 3) GPIO_ACTIVE_HIGH>;
++				output-high;
++				line-name = "cam1_pwr_en";
++			};
++		};
++	};
++
++	fragment@4 {
++		target = <&i2c_mux2>;
++		__overlay__ {
++			status = "okay";
++
++			imx415b: imx415@1a {
++				compatible = "sony,imx415";
++				reg = <0x1a>;
++				clock-names = "inck";
++				clocks = <&clk_ext_camera>;
++				ovdd-supply = <&imx415_ovdd_1v8>;
++				avdd-supply = <&imx415_avdd_2v9>;
++				dvdd-supply = <&imx415_dvdd_1v1>;
++				reset-gpios = <&pinctrl RZV2H_GPIO(6, 2) GPIO_ACTIVE_LOW>;
++
++				port {
++					imx415b_to_csi21: endpoint {
++						clock-lanes = <0>;
++						data-lanes = <1 2 3 4>;
++						link-frequencies = /bits/ 64 <360000000 360000000 360000000 360000000>;
++						remote-endpoint = <&csi21_in>;
++					};
++				};
++			};
++		};
++	};
++
++	fragment@5 {
++		target = <&cru1>;
++		__overlay__ {
++			status = "okay";
++
++			memory-region = <&cru_func>;
++		};
++	};
++
++	fragment@6 {
++		target = <&csi21>;
++		__overlay__ {
++			status = "okay";
++			ports {
++				port@0 {
++					reg = <0>;
++					csi21_in: endpoint {
++						clock-lanes = <0>;
++						data-lanes = <1 2 3 4>;
++						remote-endpoint = <&imx415b_to_csi21>;
++					};
++				};
++			};
++		};
++	};
++
++	fragment@7 {
++		target = <&input_video_control>;
++		__overlay__ {
++			status = "okay";
++
++			crus = <&cru1>;
++		};
++	};
++
++	fragment@8 {
++		target = <&isp>;
++		__overlay__ {
++			status = "okay";
++
++			sensor-i2c = <&imx415b>;
++			sensor-default-preset-mode = <1>;
++		};
++	};
++
++	fragment@9 {
++		target = <&sensor>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@10 {
++		target = <&lens>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@11 {
++		target = <&iq>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camC-imx415-74M.dts b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camC-imx415-74M.dts
+new file mode 100644
+index 000000000000..4c35f70fc09e
+--- /dev/null
++++ b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camC-imx415-74M.dts
+@@ -0,0 +1,150 @@
++/dts-v1/;
++/plugin/;
++#include <dt-bindings/interrupt-controller/arm-gic.h>
++#include <dt-bindings/pinctrl/renesas,r9a09g057-pinctrl.h>
++#include <dt-bindings/gpio/gpio.h>
++
++/ {
++	compatible = "renesas,r9a09g057";
++
++	fragment@0 {
++		target-path = "/";
++
++		__overlay__ {
++			clk_ext_camera: clk_ext_camera {
++				compatible = "fixed-clock";
++				#clock-cells = <0>;
++				clock-frequency = <74250000>;
++			};
++
++			imx415_ovdd_1v8: 1p8v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_ovdd";
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <1800000>;
++				regulator-always-on;
++			};
++
++			imx415_avdd_2v9: 2p9v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_avdd";
++				regulator-min-microvolt = <2800000>;
++				regulator-max-microvolt = <2800000>;
++				regulator-always-on;
++			};
++
++			imx415_dvdd_1v1: 1p1v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_dvdd";
++				regulator-min-microvolt = <1100000>;
++				regulator-max-microvolt = <1100000>;
++				regulator-always-on;
++			};
++		};
++	};
++
++	fragment@1 {
++		target = <&pinctrl>;
++		__overlay__ {
++			cam2_pwr_en {
++				gpio-hog;
++				gpios = <RZV2H_GPIO(6, 5) GPIO_ACTIVE_HIGH>;
++				output-high;
++				line-name = "cam2_pwr_en";
++			};
++		};
++	};
++
++	fragment@2 {
++		target = <&i2c6>;
++		__overlay__ {
++			status = "okay";
++
++			imx415c: imx415@1a {
++				compatible = "sony,imx415";
++				reg = <0x1a>;
++				clock-names = "inck";
++				clocks = <&clk_ext_camera>;
++				ovdd-supply = <&imx415_ovdd_1v8>;
++				avdd-supply = <&imx415_avdd_2v9>;
++				dvdd-supply = <&imx415_dvdd_1v1>;
++				reset-gpios = <&pinctrl RZV2H_GPIO(6, 4) GPIO_ACTIVE_LOW>;
++
++				port {
++					imx415c_to_csi22: endpoint {
++						clock-lanes = <0>;
++						data-lanes = <1 2 3 4>;
++						link-frequencies = /bits/ 64 <445500000 445500000 445500000 445500000>;
++						remote-endpoint = <&csi22_in>;
++					};
++				};
++			};
++		};
++	};
++
++	fragment@3 {
++		target = <&cru2>;
++		__overlay__ {
++			status = "okay";
++
++			memory-region = <&cru_func>;
++		};
++	};
++
++	fragment@4 {
++		target = <&csi22>;
++		__overlay__ {
++			status = "okay";
++			ports {
++				port@0 {
++					reg = <0>;
++					csi22_in: endpoint {
++						clock-lanes = <0>;
++						data-lanes = <1 2 3 4>;
++						remote-endpoint = <&imx415c_to_csi22>;
++					};
++				};
++			};
++		};
++	};
++
++	fragment@5 {
++		target = <&input_video_control>;
++		__overlay__ {
++			status = "okay";
++
++			crus = <&cru2>;
++		};
++	};
++
++	fragment@6 {
++		target = <&isp>;
++		__overlay__ {
++			status = "okay";
++
++			sensor-i2c = <&imx415c>;
++			sensor-default-preset-mode = <0>;
++		};
++	};
++
++	fragment@7 {
++		target = <&sensor>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@8 {
++		target = <&lens>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@9 {
++		target = <&iq>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camC-imx415.dts b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camC-imx415.dts
+new file mode 100644
+index 000000000000..e48efbd8d8d7
+--- /dev/null
++++ b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camC-imx415.dts
+@@ -0,0 +1,150 @@
++/dts-v1/;
++/plugin/;
++#include <dt-bindings/interrupt-controller/arm-gic.h>
++#include <dt-bindings/pinctrl/renesas,r9a09g057-pinctrl.h>
++#include <dt-bindings/gpio/gpio.h>
++
++/ {
++	compatible = "renesas,r9a09g057";
++
++	fragment@0 {
++		target-path = "/";
++
++		__overlay__ {
++			clk_ext_camera: clk_ext_camera {
++				compatible = "fixed-clock";
++				#clock-cells = <0>;
++				clock-frequency = <24000000>;
++			};
++
++			imx415_ovdd_1v8: 1p8v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_ovdd";
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <1800000>;
++				regulator-always-on;
++			};
++
++			imx415_avdd_2v9: 2p9v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_avdd";
++				regulator-min-microvolt = <2800000>;
++				regulator-max-microvolt = <2800000>;
++				regulator-always-on;
++			};
++
++			imx415_dvdd_1v1: 1p1v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_dvdd";
++				regulator-min-microvolt = <1100000>;
++				regulator-max-microvolt = <1100000>;
++				regulator-always-on;
++			};
++		};
++	};
++
++	fragment@1 {
++		target = <&pinctrl>;
++		__overlay__ {
++			cam2_pwr_en {
++				gpio-hog;
++				gpios = <RZV2H_GPIO(6, 5) GPIO_ACTIVE_HIGH>;
++				output-high;
++				line-name = "cam2_pwr_en";
++			};
++		};
++	};
++
++	fragment@2 {
++		target = <&i2c6>;
++		__overlay__ {
++			status = "okay";
++
++			imx415c: imx415@1a {
++				compatible = "sony,imx415";
++				reg = <0x1a>;
++				clock-names = "inck";
++				clocks = <&clk_ext_camera>;
++				ovdd-supply = <&imx415_ovdd_1v8>;
++				avdd-supply = <&imx415_avdd_2v9>;
++				dvdd-supply = <&imx415_dvdd_1v1>;
++				reset-gpios = <&pinctrl RZV2H_GPIO(6, 4) GPIO_ACTIVE_LOW>;
++
++				port {
++					imx415c_to_csi22: endpoint {
++						clock-lanes = <0>;
++						data-lanes = <1 2 3 4>;
++						link-frequencies = /bits/ 64 <360000000 360000000 360000000 360000000>;
++						remote-endpoint = <&csi22_in>;
++					};
++				};
++			};
++		};
++	};
++
++	fragment@3 {
++		target = <&cru2>;
++		__overlay__ {
++			status = "okay";
++
++			memory-region = <&cru_func>;
++		};
++	};
++
++	fragment@4 {
++		target = <&csi22>;
++		__overlay__ {
++			status = "okay";
++			ports {
++				port@0 {
++					reg = <0>;
++					csi22_in: endpoint {
++						clock-lanes = <0>;
++						data-lanes = <1 2 3 4>;
++						remote-endpoint = <&imx415c_to_csi22>;
++					};
++				};
++			};
++		};
++	};
++
++	fragment@5 {
++		target = <&input_video_control>;
++		__overlay__ {
++			status = "okay";
++
++			crus = <&cru2>;
++		};
++	};
++
++	fragment@6 {
++		target = <&isp>;
++		__overlay__ {
++			status = "okay";
++
++			sensor-i2c = <&imx415c>;
++			sensor-default-preset-mode = <0>;
++		};
++	};
++
++	fragment@7 {
++		target = <&sensor>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@8 {
++		target = <&lens>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@9 {
++		target = <&iq>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camCD-imx415-74M-dual-master.dts b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camCD-imx415-74M-dual-master.dts
+new file mode 100644
+index 000000000000..2d417315382f
+--- /dev/null
++++ b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camCD-imx415-74M-dual-master.dts
+@@ -0,0 +1,211 @@
++/dts-v1/;
++/plugin/;
++#include <dt-bindings/interrupt-controller/arm-gic.h>
++#include <dt-bindings/pinctrl/renesas,r9a09g057-pinctrl.h>
++#include <dt-bindings/gpio/gpio.h>
++
++/ {
++	compatible = "renesas,r9a09g057";
++
++	fragment@0 {
++		target-path = "/";
++
++		__overlay__ {
++			clk_ext_camera: clk_ext_camera {
++				compatible = "fixed-clock";
++				#clock-cells = <0>;
++				clock-frequency = <74250000>;
++			};
++
++			imx415_ovdd_1v8: 1p8v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_ovdd";
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <1800000>;
++				regulator-always-on;
++			};
++
++			imx415_avdd_2v9: 2p9v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_avdd";
++				regulator-min-microvolt = <2800000>;
++				regulator-max-microvolt = <2800000>;
++				regulator-always-on;
++			};
++
++			imx415_dvdd_1v1: 1p1v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_dvdd";
++				regulator-min-microvolt = <1100000>;
++				regulator-max-microvolt = <1100000>;
++				regulator-always-on;
++			};
++		};
++	};
++
++	fragment@1 {
++		target = <&pinctrl>;
++		__overlay__ {
++			cam2_pwr_en {
++				gpio-hog;
++				gpios = <RZV2H_GPIO(6, 5) GPIO_ACTIVE_HIGH>;
++				output-high;
++				line-name = "cam2_pwr_en";
++			};
++
++			cam3_pwr_en {
++				gpio-hog;
++				gpios = <RZV2H_GPIO(6, 7) GPIO_ACTIVE_HIGH>;
++				output-high;
++				line-name = "cam3_pwr_en";
++			};
++		};
++	};
++
++	fragment@2 {
++		target = <&i2c6>;
++		__overlay__ {
++			status = "okay";
++
++			imx415c: imx415@1a {
++				compatible = "sony,imx415";
++				reg = <0x1a>;
++				clock-names = "inck";
++				clocks = <&clk_ext_camera>;
++				ovdd-supply = <&imx415_ovdd_1v8>;
++				avdd-supply = <&imx415_avdd_2v9>;
++				dvdd-supply = <&imx415_dvdd_1v1>;
++				reset-gpios = <&pinctrl RZV2H_GPIO(6, 4) GPIO_ACTIVE_LOW>;
++
++				port {
++					imx415c_to_csi22: endpoint {
++						clock-lanes = <0>;
++						data-lanes = <1 2 3 4>;
++						link-frequencies = /bits/ 64 <445500000 445500000 445500000 445500000>;
++						remote-endpoint = <&csi22_in>;
++					};
++				};
++			};
++		};
++	};
++
++	fragment@3 {
++		target = <&i2c7>;
++		__overlay__ {
++			status = "okay";
++
++			imx415d: imx415@1a {
++				compatible = "sony,imx415";
++				reg = <0x1a>;
++				//slave-mode;
++				clock-names = "inck";
++				clocks = <&clk_ext_camera>;
++				ovdd-supply = <&imx415_ovdd_1v8>;
++				avdd-supply = <&imx415_avdd_2v9>;
++				dvdd-supply = <&imx415_dvdd_1v1>;
++				reset-gpios = <&pinctrl RZV2H_GPIO(6, 6) GPIO_ACTIVE_LOW>;
++
++				port {
++					imx415d_to_csi23: endpoint {
++						clock-lanes = <0>;
++						data-lanes = <1 2 3 4>;
++						link-frequencies = /bits/ 64 <445500000 445500000 445500000 445500000>;
++						remote-endpoint = <&csi23_in>;
++					};
++				};
++			};
++		};
++	};
++
++	fragment@4 {
++		target = <&cru2>;
++		__overlay__ {
++			status = "okay";
++
++			memory-region = <&cru_func>;
++		};
++	};
++
++	fragment@5 {
++		target = <&csi22>;
++		__overlay__ {
++			status = "okay";
++			ports {
++				port@0 {
++					reg = <0>;
++					csi22_in: endpoint {
++						clock-lanes = <0>;
++						data-lanes = <1 2 3 4>;
++						remote-endpoint = <&imx415c_to_csi22>;
++					};
++				};
++			};
++		};
++	};
++
++	fragment@6 {
++		target = <&cru3>;
++		__overlay__ {
++			status = "okay";
++
++			memory-region = <&cru_func>;
++		};
++	};
++
++	fragment@7 {
++		target = <&csi23>;
++		__overlay__ {
++			status = "okay";
++			ports {
++				port@0 {
++					reg = <0>;
++					csi23_in: endpoint {
++						clock-lanes = <0>;
++						data-lanes = <1 2 3 4>;
++						remote-endpoint = <&imx415d_to_csi23>;
++					};
++				};
++			};
++		};
++	};
++
++	fragment@8 {
++		target = <&input_video_control>;
++		__overlay__ {
++			status = "okay";
++
++			crus = <&cru2 &cru3>;
++		};
++	};
++
++	fragment@9 {
++		target = <&isp>;
++		__overlay__ {
++			status = "okay";
++
++			sensor-i2c = <&imx415c &imx415d>;
++			sensor-default-preset-mode = <0 1>;
++		};
++	};
++
++	fragment@10 {
++		target = <&sensor>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@11 {
++		target = <&lens>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@12 {
++		target = <&iq>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camCD-imx415-74M-dual.dts b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camCD-imx415-74M-dual.dts
+new file mode 100644
+index 000000000000..4b8c5ccdc0a7
+--- /dev/null
++++ b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camCD-imx415-74M-dual.dts
+@@ -0,0 +1,211 @@
++/dts-v1/;
++/plugin/;
++#include <dt-bindings/interrupt-controller/arm-gic.h>
++#include <dt-bindings/pinctrl/renesas,r9a09g057-pinctrl.h>
++#include <dt-bindings/gpio/gpio.h>
++
++/ {
++	compatible = "renesas,r9a09g057";
++
++	fragment@0 {
++		target-path = "/";
++
++		__overlay__ {
++			clk_ext_camera: clk_ext_camera {
++				compatible = "fixed-clock";
++				#clock-cells = <0>;
++				clock-frequency = <74250000>;
++			};
++
++			imx415_ovdd_1v8: 1p8v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_ovdd";
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <1800000>;
++				regulator-always-on;
++			};
++
++			imx415_avdd_2v9: 2p9v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_avdd";
++				regulator-min-microvolt = <2800000>;
++				regulator-max-microvolt = <2800000>;
++				regulator-always-on;
++			};
++
++			imx415_dvdd_1v1: 1p1v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_dvdd";
++				regulator-min-microvolt = <1100000>;
++				regulator-max-microvolt = <1100000>;
++				regulator-always-on;
++			};
++		};
++	};
++
++	fragment@1 {
++		target = <&pinctrl>;
++		__overlay__ {
++			cam2_pwr_en {
++				gpio-hog;
++				gpios = <RZV2H_GPIO(6, 5) GPIO_ACTIVE_HIGH>;
++				output-high;
++				line-name = "cam2_pwr_en";
++			};
++
++			cam3_pwr_en {
++				gpio-hog;
++				gpios = <RZV2H_GPIO(6, 7) GPIO_ACTIVE_HIGH>;
++				output-high;
++				line-name = "cam3_pwr_en";
++			};
++		};
++	};
++
++	fragment@2 {
++		target = <&i2c6>;
++		__overlay__ {
++			status = "okay";
++
++			imx415c: imx415@1a {
++				compatible = "sony,imx415";
++				reg = <0x1a>;
++				clock-names = "inck";
++				clocks = <&clk_ext_camera>;
++				ovdd-supply = <&imx415_ovdd_1v8>;
++				avdd-supply = <&imx415_avdd_2v9>;
++				dvdd-supply = <&imx415_dvdd_1v1>;
++				reset-gpios = <&pinctrl RZV2H_GPIO(6, 4) GPIO_ACTIVE_LOW>;
++
++				port {
++					imx415c_to_csi22: endpoint {
++						clock-lanes = <0>;
++						data-lanes = <1 2 3 4>;
++						link-frequencies = /bits/ 64 <445500000 445500000 445500000 445500000>;
++						remote-endpoint = <&csi22_in>;
++					};
++				};
++			};
++		};
++	};
++
++	fragment@3 {
++		target = <&i2c7>;
++		__overlay__ {
++			status = "okay";
++
++			imx415d: imx415@1a {
++				compatible = "sony,imx415";
++				reg = <0x1a>;
++				slave-mode;
++				clock-names = "inck";
++				clocks = <&clk_ext_camera>;
++				ovdd-supply = <&imx415_ovdd_1v8>;
++				avdd-supply = <&imx415_avdd_2v9>;
++				dvdd-supply = <&imx415_dvdd_1v1>;
++				reset-gpios = <&pinctrl RZV2H_GPIO(6, 6) GPIO_ACTIVE_LOW>;
++
++				port {
++					imx415d_to_csi23: endpoint {
++						clock-lanes = <0>;
++						data-lanes = <1 2 3 4>;
++						link-frequencies = /bits/ 64 <445500000 445500000 445500000 445500000>;
++						remote-endpoint = <&csi23_in>;
++					};
++				};
++			};
++		};
++	};
++
++	fragment@4 {
++		target = <&cru2>;
++		__overlay__ {
++			status = "okay";
++
++			memory-region = <&cru_func>;
++		};
++	};
++
++	fragment@5 {
++		target = <&csi22>;
++		__overlay__ {
++			status = "okay";
++			ports {
++				port@0 {
++					reg = <0>;
++					csi22_in: endpoint {
++						clock-lanes = <0>;
++						data-lanes = <1 2 3 4>;
++						remote-endpoint = <&imx415c_to_csi22>;
++					};
++				};
++			};
++		};
++	};
++
++	fragment@6 {
++		target = <&cru3>;
++		__overlay__ {
++			status = "okay";
++
++			memory-region = <&cru_func>;
++		};
++	};
++
++	fragment@7 {
++		target = <&csi23>;
++		__overlay__ {
++			status = "okay";
++			ports {
++				port@0 {
++					reg = <0>;
++					csi23_in: endpoint {
++						clock-lanes = <0>;
++						data-lanes = <1 2 3 4>;
++						remote-endpoint = <&imx415d_to_csi23>;
++					};
++				};
++			};
++		};
++	};
++
++	fragment@8 {
++		target = <&input_video_control>;
++		__overlay__ {
++			status = "okay";
++
++			crus = <&cru2 &cru3>;
++		};
++	};
++
++	fragment@9 {
++		target = <&isp>;
++		__overlay__ {
++			status = "okay";
++
++			sensor-i2c = <&imx415c &imx415d>;
++			sensor-default-preset-mode = <0 1>;
++		};
++	};
++
++	fragment@10 {
++		target = <&sensor>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@11 {
++		target = <&lens>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@12 {
++		target = <&iq>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camCD-imx415-dual-master.dts b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camCD-imx415-dual-master.dts
+new file mode 100644
+index 000000000000..5f27ebfe9ef5
+--- /dev/null
++++ b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camCD-imx415-dual-master.dts
+@@ -0,0 +1,211 @@
++/dts-v1/;
++/plugin/;
++#include <dt-bindings/interrupt-controller/arm-gic.h>
++#include <dt-bindings/pinctrl/renesas,r9a09g057-pinctrl.h>
++#include <dt-bindings/gpio/gpio.h>
++
++/ {
++	compatible = "renesas,r9a09g057";
++
++	fragment@0 {
++		target-path = "/";
++
++		__overlay__ {
++			clk_ext_camera: clk_ext_camera {
++				compatible = "fixed-clock";
++				#clock-cells = <0>;
++				clock-frequency = <24000000>;
++			};
++
++			imx415_ovdd_1v8: 1p8v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_ovdd";
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <1800000>;
++				regulator-always-on;
++			};
++
++			imx415_avdd_2v9: 2p9v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_avdd";
++				regulator-min-microvolt = <2800000>;
++				regulator-max-microvolt = <2800000>;
++				regulator-always-on;
++			};
++
++			imx415_dvdd_1v1: 1p1v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_dvdd";
++				regulator-min-microvolt = <1100000>;
++				regulator-max-microvolt = <1100000>;
++				regulator-always-on;
++			};
++		};
++	};
++
++	fragment@1 {
++		target = <&pinctrl>;
++		__overlay__ {
++			cam2_pwr_en {
++				gpio-hog;
++				gpios = <RZV2H_GPIO(6, 5) GPIO_ACTIVE_HIGH>;
++				output-high;
++				line-name = "cam2_pwr_en";
++			};
++
++			cam3_pwr_en {
++				gpio-hog;
++				gpios = <RZV2H_GPIO(6, 7) GPIO_ACTIVE_HIGH>;
++				output-high;
++				line-name = "cam3_pwr_en";
++			};
++		};
++	};
++
++	fragment@2 {
++		target = <&i2c6>;
++		__overlay__ {
++			status = "okay";
++
++			imx415c: imx415@1a {
++				compatible = "sony,imx415";
++				reg = <0x1a>;
++				clock-names = "inck";
++				clocks = <&clk_ext_camera>;
++				ovdd-supply = <&imx415_ovdd_1v8>;
++				avdd-supply = <&imx415_avdd_2v9>;
++				dvdd-supply = <&imx415_dvdd_1v1>;
++				reset-gpios = <&pinctrl RZV2H_GPIO(6, 4) GPIO_ACTIVE_LOW>;
++
++				port {
++					imx415c_to_csi22: endpoint {
++						clock-lanes = <0>;
++						data-lanes = <1 2 3 4>;
++						link-frequencies = /bits/ 64 <360000000 360000000 360000000 360000000>;
++						remote-endpoint = <&csi22_in>;
++					};
++				};
++			};
++		};
++	};
++
++	fragment@3 {
++		target = <&i2c7>;
++		__overlay__ {
++			status = "okay";
++
++			imx415d: imx415@1a {
++				compatible = "sony,imx415";
++				reg = <0x1a>;
++				//slave-mode;
++				clock-names = "inck";
++				clocks = <&clk_ext_camera>;
++				ovdd-supply = <&imx415_ovdd_1v8>;
++				avdd-supply = <&imx415_avdd_2v9>;
++				dvdd-supply = <&imx415_dvdd_1v1>;
++				reset-gpios = <&pinctrl RZV2H_GPIO(6, 6) GPIO_ACTIVE_LOW>;
++
++				port {
++					imx415d_to_csi23: endpoint {
++						clock-lanes = <0>;
++						data-lanes = <1 2 3 4>;
++						link-frequencies = /bits/ 64 <360000000 360000000 360000000 360000000>;
++						remote-endpoint = <&csi23_in>;
++					};
++				};
++			};
++		};
++	};
++
++	fragment@4 {
++		target = <&cru2>;
++		__overlay__ {
++			status = "okay";
++
++			memory-region = <&cru_func>;
++		};
++	};
++
++	fragment@5 {
++		target = <&csi22>;
++		__overlay__ {
++			status = "okay";
++			ports {
++				port@0 {
++					reg = <0>;
++					csi22_in: endpoint {
++						clock-lanes = <0>;
++						data-lanes = <1 2 3 4>;
++						remote-endpoint = <&imx415c_to_csi22>;
++					};
++				};
++			};
++		};
++	};
++
++	fragment@6 {
++		target = <&cru3>;
++		__overlay__ {
++			status = "okay";
++
++			memory-region = <&cru_func>;
++		};
++	};
++
++	fragment@7 {
++		target = <&csi23>;
++		__overlay__ {
++			status = "okay";
++			ports {
++				port@0 {
++					reg = <0>;
++					csi23_in: endpoint {
++						clock-lanes = <0>;
++						data-lanes = <1 2 3 4>;
++						remote-endpoint = <&imx415d_to_csi23>;
++					};
++				};
++			};
++		};
++	};
++
++	fragment@8 {
++		target = <&input_video_control>;
++		__overlay__ {
++			status = "okay";
++
++			crus = <&cru2 &cru3>;
++		};
++	};
++
++	fragment@9 {
++		target = <&isp>;
++		__overlay__ {
++			status = "okay";
++
++			sensor-i2c = <&imx415c &imx415d>;
++			sensor-default-preset-mode = <0 1>;
++		};
++	};
++
++	fragment@10 {
++		target = <&sensor>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@11 {
++		target = <&lens>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@12 {
++		target = <&iq>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camCD-imx415-dual.dts b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camCD-imx415-dual.dts
+new file mode 100644
+index 000000000000..ef40e38e5c3b
+--- /dev/null
++++ b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camCD-imx415-dual.dts
+@@ -0,0 +1,211 @@
++/dts-v1/;
++/plugin/;
++#include <dt-bindings/interrupt-controller/arm-gic.h>
++#include <dt-bindings/pinctrl/renesas,r9a09g057-pinctrl.h>
++#include <dt-bindings/gpio/gpio.h>
++
++/ {
++	compatible = "renesas,r9a09g057";
++
++	fragment@0 {
++		target-path = "/";
++
++		__overlay__ {
++			clk_ext_camera: clk_ext_camera {
++				compatible = "fixed-clock";
++				#clock-cells = <0>;
++				clock-frequency = <24000000>;
++			};
++
++			imx415_ovdd_1v8: 1p8v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_ovdd";
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <1800000>;
++				regulator-always-on;
++			};
++
++			imx415_avdd_2v9: 2p9v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_avdd";
++				regulator-min-microvolt = <2800000>;
++				regulator-max-microvolt = <2800000>;
++				regulator-always-on;
++			};
++
++			imx415_dvdd_1v1: 1p1v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_dvdd";
++				regulator-min-microvolt = <1100000>;
++				regulator-max-microvolt = <1100000>;
++				regulator-always-on;
++			};
++		};
++	};
++
++	fragment@1 {
++		target = <&pinctrl>;
++		__overlay__ {
++			cam2_pwr_en {
++				gpio-hog;
++				gpios = <RZV2H_GPIO(6, 5) GPIO_ACTIVE_HIGH>;
++				output-high;
++				line-name = "cam2_pwr_en";
++			};
++
++			cam3_pwr_en {
++				gpio-hog;
++				gpios = <RZV2H_GPIO(6, 7) GPIO_ACTIVE_HIGH>;
++				output-high;
++				line-name = "cam3_pwr_en";
++			};
++		};
++	};
++
++	fragment@2 {
++		target = <&i2c6>;
++		__overlay__ {
++			status = "okay";
++
++			imx415c: imx415@1a {
++				compatible = "sony,imx415";
++				reg = <0x1a>;
++				clock-names = "inck";
++				clocks = <&clk_ext_camera>;
++				ovdd-supply = <&imx415_ovdd_1v8>;
++				avdd-supply = <&imx415_avdd_2v9>;
++				dvdd-supply = <&imx415_dvdd_1v1>;
++				reset-gpios = <&pinctrl RZV2H_GPIO(6, 4) GPIO_ACTIVE_LOW>;
++
++				port {
++					imx415c_to_csi22: endpoint {
++						clock-lanes = <0>;
++						data-lanes = <1 2 3 4>;
++						link-frequencies = /bits/ 64 <360000000 360000000 360000000 360000000>;
++						remote-endpoint = <&csi22_in>;
++					};
++				};
++			};
++		};
++	};
++
++	fragment@3 {
++		target = <&i2c7>;
++		__overlay__ {
++			status = "okay";
++
++			imx415d: imx415@1a {
++				compatible = "sony,imx415";
++				reg = <0x1a>;
++				slave-mode;
++				clock-names = "inck";
++				clocks = <&clk_ext_camera>;
++				ovdd-supply = <&imx415_ovdd_1v8>;
++				avdd-supply = <&imx415_avdd_2v9>;
++				dvdd-supply = <&imx415_dvdd_1v1>;
++				reset-gpios = <&pinctrl RZV2H_GPIO(6, 6) GPIO_ACTIVE_LOW>;
++
++				port {
++					imx415d_to_csi23: endpoint {
++						clock-lanes = <0>;
++						data-lanes = <1 2 3 4>;
++						link-frequencies = /bits/ 64 <360000000 360000000 360000000 360000000>;
++						remote-endpoint = <&csi23_in>;
++					};
++				};
++			};
++		};
++	};
++
++	fragment@4 {
++		target = <&cru2>;
++		__overlay__ {
++			status = "okay";
++
++			memory-region = <&cru_func>;
++		};
++	};
++
++	fragment@5 {
++		target = <&csi22>;
++		__overlay__ {
++			status = "okay";
++			ports {
++				port@0 {
++					reg = <0>;
++					csi22_in: endpoint {
++						clock-lanes = <0>;
++						data-lanes = <1 2 3 4>;
++						remote-endpoint = <&imx415c_to_csi22>;
++					};
++				};
++			};
++		};
++	};
++
++	fragment@6 {
++		target = <&cru3>;
++		__overlay__ {
++			status = "okay";
++
++			memory-region = <&cru_func>;
++		};
++	};
++
++	fragment@7 {
++		target = <&csi23>;
++		__overlay__ {
++			status = "okay";
++			ports {
++				port@0 {
++					reg = <0>;
++					csi23_in: endpoint {
++						clock-lanes = <0>;
++						data-lanes = <1 2 3 4>;
++						remote-endpoint = <&imx415d_to_csi23>;
++					};
++				};
++			};
++		};
++	};
++
++	fragment@8 {
++		target = <&input_video_control>;
++		__overlay__ {
++			status = "okay";
++
++			crus = <&cru2 &cru3>;
++		};
++	};
++
++	fragment@9 {
++		target = <&isp>;
++		__overlay__ {
++			status = "okay";
++
++			sensor-i2c = <&imx415c &imx415d>;
++			sensor-default-preset-mode = <0 1>;
++		};
++	};
++
++	fragment@10 {
++		target = <&sensor>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@11 {
++		target = <&lens>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@12 {
++		target = <&iq>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camD-imx415-74M.dts b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camD-imx415-74M.dts
+new file mode 100644
+index 000000000000..09656816c73d
+--- /dev/null
++++ b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camD-imx415-74M.dts
+@@ -0,0 +1,150 @@
++/dts-v1/;
++/plugin/;
++#include <dt-bindings/interrupt-controller/arm-gic.h>
++#include <dt-bindings/pinctrl/renesas,r9a09g057-pinctrl.h>
++#include <dt-bindings/gpio/gpio.h>
++
++/ {
++	compatible = "renesas,r9a09g057";
++
++	fragment@0 {
++		target-path = "/";
++
++		__overlay__ {
++			clk_ext_camera: clk_ext_camera {
++				compatible = "fixed-clock";
++				#clock-cells = <0>;
++				clock-frequency = <74250000>;
++			};
++
++			imx415_ovdd_1v8: 1p8v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_ovdd";
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <1800000>;
++				regulator-always-on;
++			};
++
++			imx415_avdd_2v9: 2p9v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_avdd";
++				regulator-min-microvolt = <2800000>;
++				regulator-max-microvolt = <2800000>;
++				regulator-always-on;
++			};
++
++			imx415_dvdd_1v1: 1p1v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_dvdd";
++				regulator-min-microvolt = <1100000>;
++				regulator-max-microvolt = <1100000>;
++				regulator-always-on;
++			};
++		};
++	};
++
++	fragment@1 {
++		target = <&pinctrl>;
++		__overlay__ {
++			cam3_pwr_en {
++				gpio-hog;
++				gpios = <RZV2H_GPIO(6, 7) GPIO_ACTIVE_HIGH>;
++				output-high;
++				line-name = "cam3_pwr_en";
++			};
++		};
++	};
++
++	fragment@2 {
++		target = <&i2c7>;
++		__overlay__ {
++			status = "okay";
++
++			imx415d: imx415@1a {
++				compatible = "sony,imx415";
++				reg = <0x1a>;
++				clock-names = "inck";
++				clocks = <&clk_ext_camera>;
++				ovdd-supply = <&imx415_ovdd_1v8>;
++				avdd-supply = <&imx415_avdd_2v9>;
++				dvdd-supply = <&imx415_dvdd_1v1>;
++				reset-gpios = <&pinctrl RZV2H_GPIO(6, 6) GPIO_ACTIVE_LOW>;
++
++				port {
++					imx415d_to_csi23: endpoint {
++						clock-lanes = <0>;
++						data-lanes = <1 2 3 4>;
++						link-frequencies = /bits/ 64 <445500000 445500000 445500000 445500000>;
++						remote-endpoint = <&csi23_in>;
++					};
++				};
++			};
++		};
++	};
++
++	fragment@3 {
++		target = <&cru3>;
++		__overlay__ {
++			status = "okay";
++
++			memory-region = <&cru_func>;
++		};
++	};
++
++	fragment@4 {
++		target = <&csi23>;
++		__overlay__ {
++			status = "okay";
++			ports {
++				port@0 {
++					reg = <0>;
++					csi23_in: endpoint {
++						clock-lanes = <0>;
++						data-lanes = <1 2 3 4>;
++						remote-endpoint = <&imx415d_to_csi23>;
++					};
++				};
++			};
++		};
++	};
++
++	fragment@5 {
++		target = <&input_video_control>;
++		__overlay__ {
++			status = "okay";
++
++			crus = <&cru3>;
++		};
++	};
++
++	fragment@6 {
++		target = <&isp>;
++		__overlay__ {
++			status = "okay";
++
++			sensor-i2c = <&imx415d>;
++			sensor-default-preset-mode = <1>;
++		};
++	};
++
++	fragment@7 {
++		target = <&sensor>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@8 {
++		target = <&lens>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@9 {
++		target = <&iq>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camD-imx415.dts b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camD-imx415.dts
+new file mode 100644
+index 000000000000..f778f95f9855
+--- /dev/null
++++ b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-camD-imx415.dts
+@@ -0,0 +1,150 @@
++/dts-v1/;
++/plugin/;
++#include <dt-bindings/interrupt-controller/arm-gic.h>
++#include <dt-bindings/pinctrl/renesas,r9a09g057-pinctrl.h>
++#include <dt-bindings/gpio/gpio.h>
++
++/ {
++	compatible = "renesas,r9a09g057";
++
++	fragment@0 {
++		target-path = "/";
++
++		__overlay__ {
++			clk_ext_camera: clk_ext_camera {
++				compatible = "fixed-clock";
++				#clock-cells = <0>;
++				clock-frequency = <24000000>;
++			};
++
++			imx415_ovdd_1v8: 1p8v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_ovdd";
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <1800000>;
++				regulator-always-on;
++			};
++
++			imx415_avdd_2v9: 2p9v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_avdd";
++				regulator-min-microvolt = <2800000>;
++				regulator-max-microvolt = <2800000>;
++				regulator-always-on;
++			};
++
++			imx415_dvdd_1v1: 1p1v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_dvdd";
++				regulator-min-microvolt = <1100000>;
++				regulator-max-microvolt = <1100000>;
++				regulator-always-on;
++			};
++		};
++	};
++
++	fragment@1 {
++		target = <&pinctrl>;
++		__overlay__ {
++			cam3_pwr_en {
++				gpio-hog;
++				gpios = <RZV2H_GPIO(6, 7) GPIO_ACTIVE_HIGH>;
++				output-high;
++				line-name = "cam3_pwr_en";
++			};
++		};
++	};
++
++	fragment@2 {
++		target = <&i2c7>;
++		__overlay__ {
++			status = "okay";
++
++			imx415d: imx415@1a {
++				compatible = "sony,imx415";
++				reg = <0x1a>;
++				clock-names = "inck";
++				clocks = <&clk_ext_camera>;
++				ovdd-supply = <&imx415_ovdd_1v8>;
++				avdd-supply = <&imx415_avdd_2v9>;
++				dvdd-supply = <&imx415_dvdd_1v1>;
++				reset-gpios = <&pinctrl RZV2H_GPIO(6, 6) GPIO_ACTIVE_LOW>;
++
++				port {
++					imx415d_to_csi23: endpoint {
++						clock-lanes = <0>;
++						data-lanes = <1 2 3 4>;
++						link-frequencies = /bits/ 64 <360000000 360000000 360000000 360000000>;
++						remote-endpoint = <&csi23_in>;
++					};
++				};
++			};
++		};
++	};
++
++	fragment@3 {
++		target = <&cru3>;
++		__overlay__ {
++			status = "okay";
++
++			memory-region = <&cru_func>;
++		};
++	};
++
++	fragment@4 {
++		target = <&csi23>;
++		__overlay__ {
++			status = "okay";
++			ports {
++				port@0 {
++					reg = <0>;
++					csi23_in: endpoint {
++						clock-lanes = <0>;
++						data-lanes = <1 2 3 4>;
++						remote-endpoint = <&imx415d_to_csi23>;
++					};
++				};
++			};
++		};
++	};
++
++	fragment@5 {
++		target = <&input_video_control>;
++		__overlay__ {
++			status = "okay";
++
++			crus = <&cru3>;
++		};
++	};
++
++	fragment@6 {
++		target = <&isp>;
++		__overlay__ {
++			status = "okay";
++
++			sensor-i2c = <&imx415d>;
++			sensor-default-preset-mode = <1>;
++		};
++	};
++
++	fragment@7 {
++		target = <&sensor>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@8 {
++		target = <&lens>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@9 {
++		target = <&iq>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-i2c0-mux.dts b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-i2c0-mux.dts
+new file mode 100644
+index 000000000000..82bea62dc71a
+--- /dev/null
++++ b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-i2c0-mux.dts
+@@ -0,0 +1,57 @@
++/dts-v1/;
++/plugin/;
++#include <dt-bindings/pinctrl/renesas,r9a09g057-pinctrl.h>
++#include <dt-bindings/gpio/gpio.h>
++
++/ {
++	compatible = "renesas,r9a09g057";
++
++	fragment@0 {
++		target-path = "/aliases";
++		__overlay__ {
++			i2c9 = &i2c_mux0;
++			i2c10 = &i2c_mux1;
++			i2c11 = &i2c_mux2;
++			i2c12 = &i2c_mux3;
++		};
++	};
++
++	fragment@1 {
++		target = <&i2c0>;
++		__overlay__ {
++			status = "okay";
++
++			pca9545: i2c-mux@70 {
++				compatible = "nxp,pca9545";
++				reg = <0x70>;
++				#address-cells = <1>;
++				#size-cells = <0>;
++				reset-gpios = <&pinctrl RZV2H_GPIO(7, 4) GPIO_ACTIVE_HIGH>;
++
++				i2c_mux0: i2c@0 {
++				    reg = <0>;
++				    #address-cells = <1>;
++				    #size-cells = <0>;
++				};
++
++				i2c_mux1: i2c@1 {
++				    reg = <1>;
++				    #address-cells = <1>;
++				    #size-cells = <0>;
++				};
++
++				i2c_mux2: i2c@2 {
++				    reg = <2>;
++				    #address-cells = <1>;
++				    #size-cells = <0>;
++				};
++
++				i2c_mux3: i2c@3 {
++				    reg = <3>;
++				    #address-cells = <1>;
++				    #size-cells = <0>;
++				};
++			};
++		};	
++	};
++};
+diff --git a/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-i2c1-flash.dts b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-i2c1-flash.dts
+new file mode 100644
+index 000000000000..a4bfcf041a5c
+--- /dev/null
++++ b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-i2c1-flash.dts
+@@ -0,0 +1,27 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	compatible = "renesas,r9a09g057";
++
++	fragment@0 {
++		target-path = "/aliases";
++		__overlay__ {
++			i2c1 = "/soc/i2c@14400800";
++		};
++	};
++
++	fragment@1 {
++		target-path = "/soc/i2c@14400800";
++		__overlay__ {
++			status = "okay";
++
++			at24@50 {
++				compatible = "atmel,24c02";
++				reg = <0x50>;
++				pagesize = <8>;
++				//read-only;
++			};
++		};	
++	};
++};
+diff --git a/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-i2c1-rtc.dts b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-i2c1-rtc.dts
+new file mode 100644
+index 000000000000..cdc24f1886c5
+--- /dev/null
++++ b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-i2c1-rtc.dts
+@@ -0,0 +1,34 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	compatible = "renesas,r9a09g057";
++
++	fragment@0 {
++		target-path = "/aliases";
++		__overlay__ {
++			i2c1 = "/soc/i2c@14400800";
++		};
++	};
++
++	fragment@1 {
++		target-path = "/soc/i2c@14400800";
++		__overlay__ {
++			status = "okay";
++
++			ds3231: rtc@68 {
++				status = "okay";
++				compatible = "ds3231";
++				reg = <0x68>;
++			};
++		};	
++	};
++
++	fragment@2 {
++		target = <&rtc>;
++
++		__overlay__ {
++			status = "disabled";
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-i2c1.dts b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-i2c1.dts
+new file mode 100644
+index 000000000000..4d29dcad09c4
+--- /dev/null
++++ b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-i2c1.dts
+@@ -0,0 +1,20 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	compatible = "renesas,r9a09g057";
++
++	fragment@0 {
++		target-path = "/aliases";
++		__overlay__ {
++			i2c1 = "/soc/i2c@14400800";
++		};
++	};
++
++	fragment@1 {
++		target-path = "/soc/i2c@14400800";
++		__overlay__ {
++			status = "okay";
++		};	
++	};
++};
+diff --git a/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-i2c2.dts b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-i2c2.dts
+new file mode 100644
+index 000000000000..01977ae66d6a
+--- /dev/null
++++ b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-i2c2.dts
+@@ -0,0 +1,20 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	compatible = "renesas,r9a09g057";
++
++	fragment@0 {
++		target-path = "/aliases";
++		__overlay__ {
++			i2c2 = "/soc/i2c@14400c00";
++		};
++	};
++
++	fragment@1 {
++		target-path = "/soc/i2c@14400c00";
++		__overlay__ {
++			status = "okay";
++		};	
++	};
++};
+diff --git a/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-i2s3-nxez-pcm512x.dts b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-i2s3-nxez-pcm512x.dts
+new file mode 100644
+index 000000000000..7c2ae6394e31
+--- /dev/null
++++ b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-i2s3-nxez-pcm512x.dts
+@@ -0,0 +1,89 @@
++/dts-v1/;
++/plugin/;
++#include <dt-bindings/pinctrl/renesas,r9a09g057-pinctrl.h>
++
++/ {
++	compatible = "renesas,r9a09g057";
++
++	fragment@0 {
++		target-path = "/aliases";
++		__overlay__ {
++			i2c1 = "/soc/i2c@14400800";
++		};
++	};
++
++	fragment@1 {
++		target-path = "/soc/i2c@14400800";
++		__overlay__ {
++			status = "okay";
++
++			pcm5122: pcm5122@4d {
++				compatible = "ti,pcm5122";
++				reg = <0x4d>;
++				#sound-dai-cells = <0>;
++				status = "okay";
++
++				port {
++					pcm5122_endpoint: endpoint {
++						remote-endpoint = <&rsnd_endpoint1>;
++					};
++				};
++			};
++		};	
++	};
++
++	fragment@2 {
++		target = <&sound_card>;
++		__overlay__ {
++			dais = <&rsnd_port0     /* HDMI0 */
++				&rsnd_port1	/* Codec */
++				>;
++		};
++	};
++
++	fragment@3 {
++		target = <&rcar_sound>;
++		__overlay__ {
++			/* Multi DAI */
++			#sound-dai-cells = <1>;
++
++			ports {
++				rsnd_port1: port@1 {
++					reg = <1>;
++					rsnd_endpoint1: endpoint {
++						remote-endpoint = <&pcm5122_endpoint>;
++
++						dai-format = "i2s";
++						bitclock-master = <&rsnd_endpoint1>;
++						frame-master = <&rsnd_endpoint1>;
++						mclk-fs = <256>;
++
++						playback = <&ssi3>, <&src0>, <&dvc0>;
++						capture = <&ssi4>, <&src1>, <&dvc1>;
++					};
++				};
++			};
++		};
++	};
++
++	fragment@4 {
++		target = <&sound_pins>;
++		__overlay__ {
++			ssi34_pins: ssi34 {
++				pinmux = <RZV2H_PORT_PINMUX(1, 2, 7)>, /* SSI3_SCK */
++					 <RZV2H_PORT_PINMUX(1, 3, 7)>, /* SSI3_WS */
++					 <RZV2H_PORT_PINMUX(0, 4, 7)>, /* SSI3_SDATA */
++					 <RZV2H_PORT_PINMUX(1, 5, 7)>; /* SSI4_SDATA */
++			};
++		};
++	};
++
++	fragment@5 {
++		target = <&sound_clk_pins>;
++		__overlay__ {
++			pinmux = <RZV2H_PORT_PINMUX(1, 0, 7)>, /* AUDIO_CLKB */
++				 <RZV2H_PORT_PINMUX(1, 1, 7)>, /* AUDIO_CLKC */
++				 <RZV2H_PORT_PINMUX(9, 7, 8)>; /* AUDIO_CLKOUT */
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-i2s3-waveshare-wm8960.dts b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-i2s3-waveshare-wm8960.dts
+new file mode 100644
+index 000000000000..fb0b36208d7f
+--- /dev/null
++++ b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-i2s3-waveshare-wm8960.dts
+@@ -0,0 +1,105 @@
++/dts-v1/;
++/plugin/;
++#include <dt-bindings/pinctrl/renesas,r9a09g057-pinctrl.h>
++
++/ {
++	compatible = "renesas,r9a09g057";
++
++	fragment@0 {
++		target-path = "/";
++
++		__overlay__ {
++			wm8960_mclk: wm8960_mclk {
++				compatible = "fixed-clock";
++				status = "okay";
++				#clock-cells = <0x0>;
++				clock-frequency = <0xbb8000>;
++			};
++		};
++	};
++
++	fragment@1 {
++		target-path = "/aliases";
++		__overlay__ {
++			i2c1 = "/soc/i2c@14400800";
++		};
++	};
++
++	fragment@2 {
++		target-path = "/soc/i2c@14400800";
++		__overlay__ {
++			status = "okay";
++
++			wm8960: wm8960@1a {
++		                #sound-dai-cells = <0>;
++		                compatible = "wlf,wm8960";
++		                reg = <0x1a>;
++				status = "okay";
++				clocks = <&wm8960_mclk>;
++				clock-names = "mclk";
++
++				port {
++					wm8960_endpoint: endpoint {
++						remote-endpoint = <&rsnd_endpoint1>;
++					};
++				};
++
++		        };
++		};	
++	};
++
++	fragment@3 {
++		target = <&sound_card>;
++		__overlay__ {
++			dais = <&rsnd_port0     /* HDMI0 */
++				&rsnd_port1	/* Codec */
++				>;
++		};
++	};
++
++	fragment@4 {
++		target = <&rcar_sound>;
++		__overlay__ {
++			/* Multi DAI */
++			#sound-dai-cells = <1>;
++
++			ports {
++				rsnd_port1: port@1 {
++					reg = <1>;
++					rsnd_endpoint1: endpoint {
++						remote-endpoint = <&wm8960_endpoint>;
++
++						dai-format = "i2s";
++						bitclock-master = <&rsnd_endpoint1>;
++						frame-master = <&rsnd_endpoint1>;
++						mclk-fs = <256>;
++
++						playback = <&ssi3>, <&src0>, <&dvc0>;
++						capture = <&ssi4>, <&src1>, <&dvc1>;
++					};
++				};
++			};
++		};
++	};
++
++	fragment@5 {
++		target = <&sound_pins>;
++		__overlay__ {
++			ssi34_pins: ssi34 {
++				pinmux = <RZV2H_PORT_PINMUX(1, 2, 7)>, /* SSI3_SCK */
++					 <RZV2H_PORT_PINMUX(1, 3, 7)>, /* SSI3_WS */
++					 <RZV2H_PORT_PINMUX(0, 4, 7)>, /* SSI3_SDATA */
++					 <RZV2H_PORT_PINMUX(1, 5, 7)>; /* SSI4_SDATA */
++			};
++		};
++	};
++
++	fragment@6 {
++		target = <&sound_clk_pins>;
++		__overlay__ {
++			pinmux = <RZV2H_PORT_PINMUX(1, 0, 7)>, /* AUDIO_CLKB */
++				 <RZV2H_PORT_PINMUX(1, 1, 7)>, /* AUDIO_CLKC */
++				 <RZV2H_PORT_PINMUX(9, 7, 8)>; /* AUDIO_CLKOUT */
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-panel-hc070iy30025.dts b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-panel-hc070iy30025.dts
+new file mode 100644
+index 000000000000..b78cdfc83019
+--- /dev/null
++++ b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-panel-hc070iy30025.dts
+@@ -0,0 +1,143 @@
++/dts-v1/;
++/plugin/;
++#include <dt-bindings/interrupt-controller/arm-gic.h>
++#include <dt-bindings/pinctrl/renesas,r9a09g057-pinctrl.h>
++#include <dt-bindings/gpio/gpio.h>
++
++/ {
++        compatible = "renesas,r9a09g057";
++
++        fragment@0 {
++                target-path = "/";
++
++                __overlay__ {
++			
++			vdd5v0_dsi: regulator-vdd5v0-dsi {
++				compatible = "regulator-fixed";
++				regulator-name = "dsi-panel-power-5v";
++				regulator-min-microvolt = <5000000>;
++				regulator-max-microvolt = <5000000>;
++				startup-delay-us = <20000>;
++				gpios = <&pinctrl RZV2H_GPIO(8, 3) GPIO_ACTIVE_HIGH>;
++				enable-active-high;
++				vin-supply = <&vdd5v0_sys>;
++			};
++
++			vdd3v0_dsi: regulator-vdd3v0-dsi {
++				compatible = "regulator-fixed";
++				regulator-name = "dsi-panel-power-3v3";
++				regulator-min-microvolt = <3300000>;
++				regulator-max-microvolt = <3300000>;
++				vin-supply = <&vdd5v0_dsi>;
++			};
++
++		        backlight: backlight {
++				compatible = "pwm-backlight";
++				power-supply = <&vdd5v0_dsi>;
++				enable-gpios = <&pinctrl RZV2H_GPIO(4, 2) GPIO_ACTIVE_HIGH>;
++				pwms = <&gpt0_3 0 50000 0>;
++				brightness-levels = <0 5 10 15 20 30 40 55 70 85 100>;
++				default-brightness-level = <6>;
++			};
++
++			hdmi-out {
++				status = "disabled";
++			};
++		};
++	};
++
++	fragment@1 {
++		target = <&dsi0>;
++		 __overlay__ {
++
++			ports {
++				port@1 {
++					dsi0_out: endpoint {
++						data-lanes = <1 2 3 4>;
++						remote-endpoint = <&panel_in>;
++					};
++				};
++			};
++
++			panel@0 {
++				compatible = "bananapi,hc070iy30025";
++				reg = <0>;
++				power-supply = <&vdd3v0_dsi>;
++				//enable-gpios = <&pinctrl RZV2H_GPIO(4, 2) GPIO_ACTIVE_HIGH>;
++				reset-gpios = <&pinctrl RZV2H_GPIO(4, 3) GPIO_ACTIVE_HIGH>;
++				backlight = <&backlight>;
++
++				port {
++					panel_in: endpoint {
++						remote-endpoint = <&dsi0_out>;
++					};
++				};
++			};
++		};	
++	};
++
++	fragment@2 {
++		target = <&pinctrl>;
++		 __overlay__ {
++			
++			backlight_pins: backlight {
++				pins =  "P8_2";
++			};
++		};
++	};
++
++	fragment@3 {
++		target = <&adv7535>;
++
++		__overlay__ {
++			status = "disabled";
++		};
++	};
++
++	fragment@4 {
++		target = <&i2c3>;
++
++		__overlay__ {
++
++			touchscreen@5d {
++				compatible = "goodix,gt911";
++				reg = <0x5d>;
++				interrupt-parent = <&pinctrl>;
++				interrupts = <RZV2H_GPIO(4, 1) IRQ_TYPE_EDGE_FALLING>;
++				AVDD28-supply = <&vdd3v0_dsi>;
++				VDDIO-supply = <&reg_1p8v>;
++				irq-gpios = <&pinctrl RZV2H_GPIO(4, 1) GPIO_ACTIVE_HIGH>;
++				reset-gpios = <&pinctrl RZV2H_GPIO(4, 0) GPIO_ACTIVE_HIGH>;
++			};
++		};
++	};
++
++	fragment@5 {
++		target = <&gpt0_3>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@6 {
++		target = <&pinctrl>;
++
++		__overlay__ {
++			sound_no_hdmi_pins: sound-no-hdmi {
++				sound_clk {
++					pinmux = <RZV2H_PORT_PINMUX(1, 0, 7)>,
++						 <RZV2H_PORT_PINMUX(1, 1, 7)>;
++				};
++			};
++		};
++	};
++
++	fragment@7 {
++		target = <&rcar_sound>;
++
++		__overlay__ {
++			pinctrl-0 = <&sound_no_hdmi_pins>;
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-pwm.dts b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-pwm.dts
+new file mode 100644
+index 000000000000..afc4fafae141
+--- /dev/null
++++ b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-pwm.dts
+@@ -0,0 +1,15 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	compatible = "renesas,r9a09g057";
++
++	fragment@0 {
++		target-path = "/soc/gpt@13010500";
++		__overlay__ {
++			status = "okay";
++
++			channel = "channel_A";
++		};	
++	};
++};
+diff --git a/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-pwmfan.dts b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-pwmfan.dts
+new file mode 100644
+index 000000000000..f3649b513971
+--- /dev/null
++++ b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-pwmfan.dts
+@@ -0,0 +1,84 @@
++/dts-v1/;
++/plugin/;
++#include <dt-bindings/pwm/pwm.h>
++
++/ {
++	compatible = "renesas,r9a09g057";
++
++	fragment@0 {
++		target-path = "/soc/gpt@13010500";
++		__overlay__ {
++			#pwm-cells = <3>;
++			status = "okay";
++
++			channel = "channel_B";
++		};	
++	};
++
++	fragment@1 {
++		target-path = "/";
++		__overlay__ {
++		        pwm_fan: pwm-fan {
++				compatible = "pwm-fan";
++				cooling-levels = <0 120 170 220>;
++				#cooling-cells = <2>;
++				fan-supply = <&reg_1p8v>;
++				pwms = <&gpt0_5 0 50000 PWM_POLARITY_INVERTED>;
++			};
++		};
++	};
++
++	fragment@2 {
++		target-path = "/gpio-fan";
++		__overlay__ {
++			status = "disabled";
++		};
++	};
++
++	fragment@3 {
++		target = <&cpu_thermal0>;
++		__overlay__ {
++			trips {
++				/delete-node/ fan-active;
++
++				cpu_active: cpu-active {
++					temperature = <65000>;
++					hysteresis = <2000>;
++					type = "active";
++				};
++
++				cpu_warm: cpu-warm {
++					temperature = <75000>;
++					hysteresis = <2000>;
++					type = "active";
++				};
++
++				cpu_hot: cpu-hot {
++					temperature = <85000>;
++					hysteresis = <2000>;
++					type = "active";
++				};
++			};
++
++			cooling-maps {
++				/delete-node/ map1;
++
++				map1 {
++					trip = <&cpu_active>;
++					cooling-device = <&pwm_fan 1 1>;
++				};
++
++				map2 {
++					trip = <&cpu_warm>;
++					cooling-device = <&pwm_fan 2 2>;
++				};
++
++				map3 {
++					trip = <&cpu_hot>;
++					cooling-device = <&pwm_fan 3 3>;
++				};
++			};
++		};
++	};
++
++};
+diff --git a/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-spi0.dts b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-spi0.dts
+new file mode 100644
+index 000000000000..04bf0e4169e8
+--- /dev/null
++++ b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-spi0.dts
+@@ -0,0 +1,36 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	compatible = "renesas,r9a09g057";
++
++	fragment@0 {
++		target-path = "/aliases";
++		__overlay__ {
++			spi1 = "/soc/spi@12800000";
++		};
++	};
++
++	fragment@1 {
++		target-path = "/soc/spi@12800000";
++		__overlay__ {
++			status = "okay";
++
++			spidev@0 {
++				reg = <0>;
++				compatible = "rohm,dh2228fv";
++				spi-max-frequency = <500000>;
++				spi-rx-bus-width = <0x1>;
++				spi-tx-bus-width = <0x1>;
++			};
++
++			spidev@1 {
++                                reg = <1>;
++                                compatible = "rohm,dh2228fv";
++                                spi-max-frequency = <500000>;
++                                spi-rx-bus-width = <0x1>;
++                                spi-tx-bus-width = <0x1>;
++                        };
++		};	
++	};
++};
+diff --git a/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-spi2-flash.dts b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-spi2-flash.dts
+new file mode 100644
+index 000000000000..a667b255c9b9
+--- /dev/null
++++ b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-spi2-flash.dts
+@@ -0,0 +1,31 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	compatible = "renesas,r9a09g057";
++
++	fragment@0 {
++		target-path = "/aliases";
++		__overlay__ {
++			spi2 = "/soc/spi@12800800";
++		};
++	};
++
++	fragment@1 {
++		target-path = "/soc/spi@12800800";
++		__overlay__ {
++			status = "okay";
++
++			spiflash: w25q128@0 {
++				compatible = "w25q128", "jedec,spi-nor", "winbond,w25q128";
++				reg = <0>;
++				#address-cells = <1>;
++				#size-cells = <1>;
++
++				spi-max-frequency = <25000000>;
++				spi-cpol;
++				spi-cpha;
++			};
++		};	
++	};
++};
+diff --git a/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-spi2-waveshare-st7789v.dts b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-spi2-waveshare-st7789v.dts
+new file mode 100644
+index 000000000000..8d541bdb6812
+--- /dev/null
++++ b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-spi2-waveshare-st7789v.dts
+@@ -0,0 +1,38 @@
++/dts-v1/;
++/plugin/;
++
++#include <dt-bindings/pinctrl/renesas,r9a09g057-pinctrl.h>
++#include <dt-bindings/gpio/gpio.h>
++
++/ {
++	compatible = "renesas,r9a09g057";
++
++	fragment@0 {
++		target-path = "/aliases";
++		__overlay__ {
++			spi2 = "/soc/spi@12800800";
++		};
++	};
++
++	fragment@1 {
++		target-path = "/soc/spi@12800800";
++		__overlay__ {
++			status = "okay";
++
++			st7789v@0 {
++				status = "okay";
++				compatible = "sitronix,st7789v";
++				reg = <0>;
++				spi-max-frequency = <75000000>;
++				rotate = <90>;
++				rgb;
++				fps = <30>;
++				buswidth = <8>;
++				reset-gpios = <&pinctrl RZV2H_GPIO(5, 3) GPIO_ACTIVE_LOW>;  //phy.22
++				dc-gpios = <&pinctrl RZV2H_GPIO(5, 6) GPIO_ACTIVE_HIGH>;    //phy.18
++				led-gpios = <&pinctrl RZV2H_GPIO(A, 7) GPIO_ACTIVE_HIGH>;   //phy.24
++				debug = <1>;
++			};
++		};	
++	};
++};
+diff --git a/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-spi2-waveshare-tft24.dts b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-spi2-waveshare-tft24.dts
+new file mode 100644
+index 000000000000..4b0efed26066
+--- /dev/null
++++ b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-spi2-waveshare-tft24.dts
+@@ -0,0 +1,37 @@
++/dts-v1/;
++/plugin/;
++
++#include <dt-bindings/pinctrl/renesas,r9a09g057-pinctrl.h>
++#include <dt-bindings/gpio/gpio.h>
++
++/ {
++	compatible = "renesas,r9a09g057";
++
++	fragment@0 {
++		target-path = "/aliases";
++		__overlay__ {
++			spi2 = "/soc/spi@12800800";
++		};
++	};
++
++	fragment@1 {
++		target-path = "/soc/spi@12800800";
++		__overlay__ {
++			status = "okay";
++
++			tft24: tft24@0 {
++				compatible = "ilitek,ili9341";
++				reg = <0>;
++				spi-max-frequency = <50000000>;
++				rotate = <90>;
++				bgr = <0>;
++				fps = <30>;
++				buswidth = <8>;
++				reset-gpios = <&pinctrl RZV2H_GPIO(5, 3) GPIO_ACTIVE_LOW>;  //phy.22
++				dc-gpios = <&pinctrl RZV2H_GPIO(5, 6) GPIO_ACTIVE_HIGH>;    //phy.18
++				led-gpios = <&pinctrl RZV2H_GPIO(A, 7) GPIO_ACTIVE_HIGH>;   //phy.24
++				debug = <0>;
++			};
++		};	
++	};
++};
+diff --git a/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-spi2-waveshare-tft35c.dts b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-spi2-waveshare-tft35c.dts
+new file mode 100644
+index 000000000000..c4299832321d
+--- /dev/null
++++ b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-spi2-waveshare-tft35c.dts
+@@ -0,0 +1,71 @@
++/dts-v1/;
++/plugin/;
++
++#include <dt-bindings/interrupt-controller/arm-gic.h>
++#include <dt-bindings/pinctrl/renesas,r9a09g057-pinctrl.h>
++#include <dt-bindings/gpio/gpio.h>
++
++/ {
++	compatible = "renesas,r9a09g057";
++
++	fragment@0 {
++		target-path = "/aliases";
++		__overlay__ {
++			spi2 = "/soc/spi@12800800";
++		};
++	};
++
++	fragment@1 {
++		target-path = "/soc/spi@12800800";
++		__overlay__ {
++			status = "okay";
++
++			tft35c: tft35c@0 {
++				compatible = "ilitek,ili9486";
++				status = "okay";
++				reg = <0>;
++				spi-max-frequency = <100000000>;
++				txbuflen = <32768>;
++				rotate = <90>;
++				bgr = <0>;
++				fps = <60>;
++				buswidth = <8>;
++				regwidth = <16>;
++				reset-gpios = <&pinctrl RZV2H_GPIO(5, 3) GPIO_ACTIVE_LOW>; //phy.22
++				dc-gpios = <&pinctrl RZV2H_GPIO(5, 6) GPIO_ACTIVE_HIGH>;    //phy.18
++				debug = <0>;
++
++				init = <0x10000f1 0x36 0x4 0x0 0x3c 0xf 0x8f
++                                       0x10000f2 0x18 0xa3 0x12 0x2 0xb2 0x12 0xff 0x10 0x0
++                                       0x10000f8 0x21 0x4
++                                       0x10000f9 0x0 0x8
++                                       0x1000036 0x8
++                                       0x10000b4 0x0
++                                       0x10000c1 0x41
++                                       0x10000c5 0x0 0x91 0x80 0x0
++                                       0x10000e0 0xf 0x1f 0x1c 0xc 0xf 0x8 0x48 0x98 0x37 0xa 0x13 0x4 0x11 0xd 0x0
++                                       0x10000e1 0xf 0x32 0x2e 0xb 0xd 0x5 0x47 0x75 0x37 0x6 0x10 0x3 0x24 0x20 0x0
++                                       0x100003a 0x55
++                                       0x1000011
++                                       0x1000036 0x28
++                                       0x20000ff
++                                       0x1000029>;
++			};
++
++			ads7846: ads7846@1 {
++				compatible = "ti,ads7846";
++				status = "disabled";
++				reg = <1>;
++				spi-max-frequency = <2000000>;
++				interrupt-parent = <&pinctrl>;
++				interrupts = <RZV2H_GPIO(9, 0) IRQ_TYPE_LEVEL_LOW>;  //phy.11
++				pendown-gpio = <&pinctrl RZV2H_GPIO(9, 0) GPIO_ACTIVE_HIGH>;  //phy.11
++				ti,x-plate-ohms = /bits/ 16 <60>;
++				ti,pressure-max = /bits/ 16 <255>;
++				ti,swap-xy = <1>;
++
++				//linux,wakeup;
++			};
++		};	
++	};
++};
+diff --git a/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-spi2.dts b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-spi2.dts
+new file mode 100644
+index 000000000000..e3e301fed922
+--- /dev/null
++++ b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-spi2.dts
+@@ -0,0 +1,36 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	compatible = "renesas,r9a09g057";
++
++	fragment@0 {
++		target-path = "/aliases";
++		__overlay__ {
++			spi2 = "/soc/spi@12800800";
++		};
++	};
++
++	fragment@1 {
++		target-path = "/soc/spi@12800800";
++		__overlay__ {
++			status = "okay";
++
++			spidev@0 {
++				reg = <0>;
++				compatible = "rohm,dh2228fv";
++				spi-max-frequency = <500000>;
++				spi-rx-bus-width = <0x1>;
++				spi-tx-bus-width = <0x1>;
++			};
++
++			spidev@1 {
++                                reg = <1>;
++                                compatible = "rohm,dh2228fv";
++                                spi-max-frequency = <500000>;
++                                spi-rx-bus-width = <0x1>;
++                                spi-tx-bus-width = <0x1>;
++                        };
++		};	
++	};
++};
+diff --git a/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-uart0.dts b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-uart0.dts
+new file mode 100644
+index 000000000000..f4dd11d0ef4b
+--- /dev/null
++++ b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-uart0.dts
+@@ -0,0 +1,20 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	compatible = "renesas,r9a09g057";
++
++	fragment@0 {
++		target-path = "/aliases";
++		__overlay__ {
++			serial1 = "/soc/serial@12800c00";
++		};
++	};
++
++	fragment@1 {
++		target-path = "/soc/serial@12800c00";
++		__overlay__ {
++			status = "okay";
++		};	
++	};
++};
+diff --git a/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-uart2.dts b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-uart2.dts
+new file mode 100644
+index 000000000000..6630731e53e0
+--- /dev/null
++++ b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-uart2.dts
+@@ -0,0 +1,20 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	compatible = "renesas,r9a09g057";
++
++	fragment@0 {
++		target-path = "/aliases";
++		__overlay__ {
++			serial2 = "/soc/serial@12801400";
++		};
++	};
++
++	fragment@1 {
++		target-path = "/soc/serial@12801400";
++		__overlay__ {
++			status = "okay";
++		};	
++	};
++};
+diff --git a/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-waveshare-jetson-io-cam0-imx415.dts b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-waveshare-jetson-io-cam0-imx415.dts
+new file mode 100644
+index 000000000000..c83f76fe963d
+--- /dev/null
++++ b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-waveshare-jetson-io-cam0-imx415.dts
+@@ -0,0 +1,150 @@
++/dts-v1/;
++/plugin/;
++#include <dt-bindings/interrupt-controller/arm-gic.h>
++#include <dt-bindings/pinctrl/renesas,r9a09g057-pinctrl.h>
++#include <dt-bindings/gpio/gpio.h>
++
++/ {
++	compatible = "renesas,r9a09g057";
++
++	fragment@0 {
++		target-path = "/";
++
++		__overlay__ {
++			clk_ext_camera: clk_ext_camera {
++				compatible = "fixed-clock";
++				#clock-cells = <0>;
++				clock-frequency = <74250000>;
++			};
++
++			imx415_ovdd_1v8: 1p8v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_ovdd";
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <1800000>;
++				regulator-always-on;
++			};
++
++			imx415_avdd_2v9: 2p9v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_avdd";
++				regulator-min-microvolt = <2900000>;
++				regulator-max-microvolt = <2900000>;
++				regulator-always-on;
++			};
++
++			imx415_dvdd_1v1: 1p1v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_dvdd";
++				regulator-min-microvolt = <1100000>;
++				regulator-max-microvolt = <1100000>;
++				regulator-always-on;
++			};
++		};
++	};
++
++	fragment@1 {
++		target = <&pinctrl>;
++		__overlay__ {
++			cam0_pwr_en {
++				gpio-hog;
++				gpios = <RZV2H_GPIO(6, 1) GPIO_ACTIVE_HIGH>;
++				output-high;
++				line-name = "cam0_pwr_en";
++			};
++		};
++	};
++
++	fragment@2 {
++		target = <&i2c0>;
++		__overlay__ {
++			status = "okay";
++
++			imx415a: imx415@37 {
++				compatible = "sony,imx415";
++				reg = <0x37>;
++				clock-names = "inck";
++				clocks = <&clk_ext_camera>;
++				ovdd-supply = <&imx415_ovdd_1v8>;
++				avdd-supply = <&imx415_avdd_2v9>;
++				dvdd-supply = <&imx415_dvdd_1v1>;
++				reset-gpios = <&pinctrl RZV2H_GPIO(6, 0) GPIO_ACTIVE_LOW>;
++
++				port {
++					imx415a_to_csi20: endpoint {
++						clock-lanes = <0>;
++						data-lanes = <1 2>;
++						link-frequencies = /bits/ 64 <445500000 445500000 445500000 445500000>;
++						remote-endpoint = <&csi20_in>;
++					};
++				};
++			};
++		};	
++	};
++
++	fragment@3 {
++		target = <&cru0>;
++		__overlay__ {
++			status = "okay";
++
++			memory-region = <&cru_func>;
++		};
++	};
++
++	fragment@4 {
++		target = <&csi20>;
++		__overlay__ {
++			status = "okay";
++			ports {
++				port@0 {
++					reg = <0>;
++					csi20_in: endpoint {
++						clock-lanes = <0>;
++						data-lanes = <1 2>;
++						remote-endpoint = <&imx415a_to_csi20>;
++					};
++				};
++			};
++		};
++	};
++
++	fragment@5 {
++		target = <&input_video_control>;
++		__overlay__ {
++			status = "okay";
++
++			crus = <&cru0>;
++		};
++	};
++
++	fragment@6 {
++		target = <&isp>;
++		__overlay__ {
++			status = "okay";
++
++			sensor-i2c = <&imx415a>;
++			sensor-default-preset-mode = <0>;
++		};
++	};
++
++	fragment@7 {
++		target = <&sensor>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@8 {
++		target = <&lens>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@9 {
++		target = <&iq>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-waveshare-jetson-io-cam0-luckfox-imx415.dts b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-waveshare-jetson-io-cam0-luckfox-imx415.dts
+new file mode 100644
+index 000000000000..75260bb12bf8
+--- /dev/null
++++ b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-waveshare-jetson-io-cam0-luckfox-imx415.dts
+@@ -0,0 +1,157 @@
++/dts-v1/;
++/plugin/;
++#include <dt-bindings/interrupt-controller/arm-gic.h>
++#include <dt-bindings/pinctrl/renesas,r9a09g057-pinctrl.h>
++#include <dt-bindings/gpio/gpio.h>
++
++/ {
++	compatible = "renesas,r9a09g057";
++
++	fragment@0 {
++		target-path = "/";
++
++		__overlay__ {
++			clk_ext_camera: clk_ext_camera {
++				compatible = "fixed-clock";
++				#clock-cells = <0>;
++				clock-frequency = <24000000>;
++			};
++
++			imx415_ovdd_1v8: 1p8v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_ovdd";
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <1800000>;
++				regulator-always-on;
++			};
++
++			imx415_avdd_2v9: 2p9v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_avdd";
++				regulator-min-microvolt = <2900000>;
++				regulator-max-microvolt = <2900000>;
++				regulator-always-on;
++			};
++
++			imx415_dvdd_1v1: 1p1v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_dvdd";
++				regulator-min-microvolt = <1100000>;
++				regulator-max-microvolt = <1100000>;
++				regulator-always-on;
++			};
++		};
++	};
++
++	fragment@1 {
++		target = <&pinctrl>;
++		__overlay__ {
++			cam0_pwr_en {
++				gpio-hog;
++				gpios = <RZV2H_GPIO(6, 1) GPIO_ACTIVE_HIGH>;
++				output-high;
++				line-name = "cam0_pwr_en";
++			};
++
++			cam1_pwr_en {
++				gpio-hog;
++				gpios = <RZV2H_GPIO(6, 3) GPIO_ACTIVE_HIGH>;
++				output-high;
++				line-name = "cam1_pwr_en";
++			};
++		};
++	};
++
++	fragment@2 {
++		target = <&i2c0>;
++		__overlay__ {
++			status = "okay";
++
++			imx415a: imx415@37 {
++				compatible = "sony,imx415";
++				reg = <0x37>;
++				clock-names = "inck";
++				clocks = <&clk_ext_camera>;
++				ovdd-supply = <&imx415_ovdd_1v8>;
++				avdd-supply = <&imx415_avdd_2v9>;
++				dvdd-supply = <&imx415_dvdd_1v1>;
++				reset-gpios = <&pinctrl RZV2H_GPIO(6, 0) GPIO_ACTIVE_LOW>;
++
++				port {
++					imx415a_to_csi20: endpoint {
++						clock-lanes = <0>;
++						data-lanes = <1 2>;
++						link-frequencies = /bits/ 64 <360000000 360000000 360000000 360000000>;
++						remote-endpoint = <&csi20_in>;
++					};
++				};
++			};
++		};	
++	};
++
++	fragment@3 {
++		target = <&cru0>;
++		__overlay__ {
++			status = "okay";
++
++			memory-region = <&cru_func>;
++		};
++	};
++
++	fragment@4 {
++		target = <&csi20>;
++		__overlay__ {
++			status = "okay";
++			ports {
++				port@0 {
++					reg = <0>;
++					csi20_in: endpoint {
++						clock-lanes = <0>;
++						data-lanes = <1 2>;
++						remote-endpoint = <&imx415a_to_csi20>;
++					};
++				};
++			};
++		};
++	};
++
++	fragment@5 {
++		target = <&input_video_control>;
++		__overlay__ {
++			status = "okay";
++
++			crus = <&cru0>;
++		};
++	};
++
++	fragment@6 {
++		target = <&isp>;
++		__overlay__ {
++			status = "okay";
++
++			sensor-i2c = <&imx415a>;
++			sensor-default-preset-mode = <0>;
++		};
++	};
++
++	fragment@7 {
++		target = <&sensor>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@8 {
++		target = <&lens>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@9 {
++		target = <&iq>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-waveshare-jetson-io-cam0-ov5640.dts b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-waveshare-jetson-io-cam0-ov5640.dts
+new file mode 100644
+index 000000000000..259a05faaf12
+--- /dev/null
++++ b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-waveshare-jetson-io-cam0-ov5640.dts
+@@ -0,0 +1,127 @@
++/dts-v1/;
++/plugin/;
++#include <dt-bindings/interrupt-controller/arm-gic.h>
++#include <dt-bindings/pinctrl/renesas,r9a09g057-pinctrl.h>
++#include <dt-bindings/gpio/gpio.h>
++
++/ {
++	compatible = "renesas,r9a09g057";
++
++	fragment@0 {
++		target-path = "/";
++
++		__overlay__ {
++			clk_ext_camera: clk_ext_camera {
++				compatible = "fixed-clock";
++				#clock-cells = <0>;
++				clock-frequency = <24000000>;
++			};
++
++			ov5640_vdddo_1v8: 1p8v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_vdddo";
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <1800000>;
++				regulator-always-on;
++			};
++
++			ov5640_vdda_2v8: 2p8v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_vdda";
++				regulator-min-microvolt = <2800000>;
++				regulator-max-microvolt = <2800000>;
++				regulator-always-on;
++			};
++
++			ov5640_vddd_1v5: 1p5v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_vddd";
++				regulator-min-microvolt = <1500000>;
++				regulator-max-microvolt = <1500000>;
++				regulator-always-on;
++			};
++		};
++	};
++
++	fragment@1 {
++		target = <&pinctrl>;
++		__overlay__ {
++			cam0_pwr_en {
++				gpio-hog;
++				gpios = <RZV2H_GPIO(6, 1) GPIO_ACTIVE_HIGH>;
++				output-high;
++				line-name = "cam0_pwr_en";
++			};
++/*
++			cam1_i2c_sel {
++				gpio-hog;
++				gpios = <RZV2H_GPIO(7, 4) GPIO_ACTIVE_HIGH>;
++				output-high;
++				line-name = "cam1_i2c_sel";
++			};
++
++			cam1_pwr_en {
++				gpio-hog;
++				gpios = <RZV2H_GPIO(6, 3) GPIO_ACTIVE_HIGH>;
++				output-high;
++				line-name = "cam1_pwr_en";
++			};*/
++		};
++	};
++
++	fragment@2 {
++		target = <&i2c0>;
++		__overlay__ {
++			status = "okay";
++
++			ov5640_csi20: ov5640_csi20@3c {
++		                compatible = "ovti,ov5640";
++		                reg = <0x3c>;
++		                clock-names = "xclk";
++		                clocks = <&clk_ext_camera>;
++		                clock-frequency = <24000000>;
++		                vdddo-supply = <&ov5640_vdddo_1v8>;
++		                vdda-supply = <&ov5640_vdda_2v8>;
++		                vddd-supply = <&ov5640_vddd_1v5>;
++		                /* Set dummy enable gpio */
++		                enable-gpios = <&pinctrl RZV2H_GPIO(6, 1) GPIO_ACTIVE_HIGH>;
++		                reset-gpios = <&pinctrl RZV2H_GPIO(6, 0) GPIO_ACTIVE_HIGH>;
++
++		                port {
++		                        ov5640_to_csi20: endpoint {
++		                                clock-lanes = <0>;
++		                                data-lanes = <1 2>;
++		                                remote-endpoint = <&csi20_in>;
++		                        };
++		                };
++		        };
++		};	
++	};
++
++	fragment@3 {
++		target = <&cru0>;
++		__overlay__ {
++			status = "okay";
++
++			interrupts = <GIC_SPI 838 IRQ_TYPE_LEVEL_HIGH>;
++			/delete-property/ interrupt-names;
++		};
++	};
++
++	fragment@4 {
++		target = <&csi20>;
++		__overlay__ {
++			status = "okay";
++			ports {
++				port@0 {
++					reg = <0>;
++					csi20_in: endpoint {
++						clock-lanes = <0>;
++						data-lanes = <1 2>;
++						remote-endpoint = <&ov5640_to_csi20>;
++					};
++				};
++			};
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-waveshare-jetson-io-cam0-waveshare-imx415.dts b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-waveshare-jetson-io-cam0-waveshare-imx415.dts
+new file mode 100644
+index 000000000000..7f1e7a0986ec
+--- /dev/null
++++ b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-waveshare-jetson-io-cam0-waveshare-imx415.dts
+@@ -0,0 +1,150 @@
++/dts-v1/;
++/plugin/;
++#include <dt-bindings/interrupt-controller/arm-gic.h>
++#include <dt-bindings/pinctrl/renesas,r9a09g057-pinctrl.h>
++#include <dt-bindings/gpio/gpio.h>
++
++/ {
++	compatible = "renesas,r9a09g057";
++
++	fragment@0 {
++		target-path = "/";
++
++		__overlay__ {
++			clk_ext_camera: clk_ext_camera {
++				compatible = "fixed-clock";
++				#clock-cells = <0>;
++				clock-frequency = <37125000>;
++			};
++
++			imx415_ovdd_1v8: 1p8v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_ovdd";
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <1800000>;
++				regulator-always-on;
++			};
++
++			imx415_avdd_2v9: 2p9v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_avdd";
++				regulator-min-microvolt = <2900000>;
++				regulator-max-microvolt = <2900000>;
++				regulator-always-on;
++			};
++
++			imx415_dvdd_1v1: 1p1v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_dvdd";
++				regulator-min-microvolt = <1100000>;
++				regulator-max-microvolt = <1100000>;
++				regulator-always-on;
++			};
++		};
++	};
++
++	fragment@1 {
++		target = <&pinctrl>;
++		__overlay__ {
++			cam0_pwr_en {
++				gpio-hog;
++				gpios = <RZV2H_GPIO(6, 1) GPIO_ACTIVE_HIGH>;
++				output-high;
++				line-name = "cam0_pwr_en";
++			};
++		};
++	};
++
++	fragment@2 {
++		target = <&i2c0>;
++		__overlay__ {
++			status = "okay";
++
++			imx415a: imx415@37 {
++				compatible = "sony,imx415";
++				reg = <0x37>;
++				clock-names = "inck";
++				clocks = <&clk_ext_camera>;
++				ovdd-supply = <&imx415_ovdd_1v8>;
++				avdd-supply = <&imx415_avdd_2v9>;
++				dvdd-supply = <&imx415_dvdd_1v1>;
++				reset-gpios = <&pinctrl RZV2H_GPIO(6, 0) GPIO_ACTIVE_LOW>;
++
++				port {
++					imx415a_to_csi20: endpoint {
++						clock-lanes = <0>;
++						data-lanes = <1 2>;
++						link-frequencies = /bits/ 64 <445500000 445500000 445500000 445500000>;
++						remote-endpoint = <&csi20_in>;
++					};
++				};
++			};
++		};	
++	};
++
++	fragment@3 {
++		target = <&cru0>;
++		__overlay__ {
++			status = "okay";
++
++			memory-region = <&cru_func>;
++		};
++	};
++
++	fragment@4 {
++		target = <&csi20>;
++		__overlay__ {
++			status = "okay";
++			ports {
++				port@0 {
++					reg = <0>;
++					csi20_in: endpoint {
++						clock-lanes = <0>;
++						data-lanes = <1 2>;
++						remote-endpoint = <&imx415a_to_csi20>;
++					};
++				};
++			};
++		};
++	};
++
++	fragment@5 {
++		target = <&input_video_control>;
++		__overlay__ {
++			status = "okay";
++
++			crus = <&cru0>;
++		};
++	};
++
++	fragment@6 {
++		target = <&isp>;
++		__overlay__ {
++			status = "okay";
++
++			sensor-i2c = <&imx415a>;
++			sensor-default-preset-mode = <0>;
++		};
++	};
++
++	fragment@7 {
++		target = <&sensor>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@8 {
++		target = <&lens>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@9 {
++		target = <&iq>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-waveshare-jetson-io-cam1-waveshare-imx415.dts b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-waveshare-jetson-io-cam1-waveshare-imx415.dts
+new file mode 100644
+index 000000000000..6f6cb37472bd
+--- /dev/null
++++ b/arch/arm64/boot/dts/renesas/overlay/bpi-ai2h-waveshare-jetson-io-cam1-waveshare-imx415.dts
+@@ -0,0 +1,158 @@
++/dts-v1/;
++/plugin/;
++#include <dt-bindings/interrupt-controller/arm-gic.h>
++#include <dt-bindings/pinctrl/renesas,r9a09g057-pinctrl.h>
++#include <dt-bindings/gpio/gpio.h>
++
++/ {
++	compatible = "renesas,r9a09g057";
++
++	fragment@0 {
++		target-path = "/";
++
++		__overlay__ {
++			clk_ext_camera: clk_ext_camera {
++				compatible = "fixed-clock";
++				#clock-cells = <0>;
++				clock-frequency = <37125000>;
++			};
++
++			imx415_ovdd_1v8: 1p8v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_ovdd";
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <1800000>;
++				regulator-always-on;
++			};
++
++			imx415_avdd_2v9: 2p9v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_avdd";
++				regulator-min-microvolt = <2900000>;
++				regulator-max-microvolt = <2900000>;
++				regulator-always-on;
++			};
++
++			imx415_dvdd_1v1: 1p1v {
++				compatible = "regulator-fixed";
++				regulator-name = "camera_dvdd";
++				regulator-min-microvolt = <1100000>;
++				regulator-max-microvolt = <1100000>;
++				regulator-always-on;
++			};
++		};
++	};
++
++	fragment@1 {
++		target = <&pinctrl>;
++		__overlay__ {
++
++			cam1_i2c_sel {
++				gpio-hog;
++				gpios = <RZV2H_GPIO(7, 4) GPIO_ACTIVE_HIGH>;
++				output-high;
++				line-name = "cam1_i2c_sel";
++			};
++
++			cam1_pwr_en {
++				gpio-hog;
++				gpios = <RZV2H_GPIO(6, 3) GPIO_ACTIVE_HIGH>;
++				output-high;
++				line-name = "cam1_pwr_en";
++			};
++		};
++	};
++
++	fragment@2 {
++		target = <&i2c0>;
++		__overlay__ {
++			status = "okay";
++
++			imx415b: imx415@37 {
++				compatible = "sony,imx415";
++				reg = <0x37>;
++				clock-names = "inck";
++				clocks = <&clk_ext_camera>;
++				ovdd-supply = <&imx415_ovdd_1v8>;
++				avdd-supply = <&imx415_avdd_2v9>;
++				dvdd-supply = <&imx415_dvdd_1v1>;
++				reset-gpios = <&pinctrl RZV2H_GPIO(6, 2) GPIO_ACTIVE_LOW>;
++
++				port {
++					imx415b_to_csi21: endpoint {
++						clock-lanes = <0>;
++						data-lanes = <1 2>;
++						link-frequencies = /bits/ 64 <445500000 445500000 445500000 445500000>;
++						remote-endpoint = <&csi21_in>;
++					};
++				};
++			};
++		};	
++	};
++
++	fragment@3 {
++		target = <&cru1>;
++		__overlay__ {
++			status = "okay";
++
++			memory-region = <&cru_func>;
++		};
++	};
++
++	fragment@4 {
++		target = <&csi21>;
++		__overlay__ {
++			status = "okay";
++			ports {
++				port@0 {
++					reg = <0>;
++					csi21_in: endpoint {
++						clock-lanes = <0>;
++						data-lanes = <1 2>;
++						remote-endpoint = <&imx415b_to_csi21>;
++					};
++				};
++			};
++		};
++	};
++
++	fragment@5 {
++		target = <&input_video_control>;
++		__overlay__ {
++			status = "okay";
++
++			crus = <&cru1>;
++		};
++	};
++
++	fragment@6 {
++		target = <&isp>;
++		__overlay__ {
++			status = "okay";
++
++			sensor-i2c = <&imx415b>;
++			sensor-default-preset-mode = <1>;
++		};
++	};
++
++	fragment@7 {
++		target = <&sensor>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@8 {
++		target = <&lens>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@9 {
++		target = <&iq>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/renesas/overlay/renesas-fixup.scr b/arch/arm64/boot/dts/renesas/overlay/renesas-fixup.scr
+new file mode 100644
+index 0000000000000000000000000000000000000000..aa177f60e2d42bd90adf971d31442622e5c95cb0
+GIT binary patch
+literal 232
+zcmaKkF%H5o3`M(?p$9->v)TcWU|>fagFS82Vku23+o|Xd8;4*-a6eW^fv#Bkvfj7<
+zpU1O(eBM3qba_TmbPM{-YkS|s)5(bc_H{UB;5to4^$ZmreG6O=wvuFkO>1<ctuQPc
+z0Vz3X0`@rziWkkxF$#)m|NX4IEd-ra2Bi-rp3&Ce*ST}@s}9BrwC#|b9YWA4LX{iM
+Rplk_gRZ0qlYnnhw@&;TLLZ<)#
+
+literal 0
+HcmV?d00001
+
+diff --git a/arch/arm64/boot/dts/renesas/overlay/renesas-fixup.scr-cmd b/arch/arm64/boot/dts/renesas/overlay/renesas-fixup.scr-cmd
+new file mode 100644
+index 000000000000..d4c39e20a3a2
+--- /dev/null
++++ b/arch/arm64/boot/dts/renesas/overlay/renesas-fixup.scr-cmd
+@@ -0,0 +1,4 @@
++# overlays fixup script
++# implements (or rather substitutes) overlay arguments functionality
++# using u-boot scripting, environment variables and "fdt" command
++
+diff --git a/arch/arm64/boot/dts/renesas/r9a09g057.dtsi b/arch/arm64/boot/dts/renesas/r9a09g057.dtsi
+index d68be2de6fa4..c5a64385878e 100644
+--- a/arch/arm64/boot/dts/renesas/r9a09g057.dtsi
++++ b/arch/arm64/boot/dts/renesas/r9a09g057.dtsi
+@@ -3634,7 +3634,7 @@ emergency {
+ 			target_cpus = <&cpu1 &cpu2 &cpu3>;
+ 			status = "disabled";
+ 		};
+-		cpu-thermal0 {
++		cpu_thermal0: cpu-thermal0 {
+ 			polling-delay = <1000>;
+ 			polling-delay-passive = <250>;
+ 			thermal-sensors = <&tsu0>;
+@@ -3663,7 +3663,7 @@ sensor0_crit: sensor-crit {
+ 			};
+ 		};
+ 
+-		cpu-thermal1 {
++		cpu_thermal1: cpu-thermal1 {
+ 			polling-delay = <1000>;
+ 			polling-delay-passive = <250>;
+ 			thermal-sensors = <&tsu1>;
+-- 
+2.43.0
+

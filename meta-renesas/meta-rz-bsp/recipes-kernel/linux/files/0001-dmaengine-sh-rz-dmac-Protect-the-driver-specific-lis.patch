@@ -1,0 +1,124 @@
+From 46e9b48092e0b4c8c4c06f5f4a53261a67376bc3 Mon Sep 17 00:00:00 2001
+From: Huynh Thanh Hung <hung.huynh.wz@renesas.com>
+Date: Mon, 26 Jan 2026 13:30:56 +0700
+Subject: [PATCH] dmaengine: sh: rz-dmac: Protect the driver specific lists
+
+The driver lists (ld_free, ld_queue) are used in
+rz_dmac_free_chan_resources(), rz_dmac_terminate_all(),
+rz_dmac_issue_pending(), and rz_dmac_irq_handler_thread(), all under
+the virtual channel lock. Take the same lock in rz_dmac_prep_slave_sg()
+and rz_dmac_prep_dma_memcpy() as well to avoid concurrency issues, since
+these functions also check whether the lists are empty and update or
+remove list entries.
+
+https://lore.kernel.org/all/20260108103620.3482147-2-claudiu.beznea.uj@bp.renesas.com/
+
+Fixes: 5000d370 ("dmaengine: sh: Add DMAC driver for RZ/G2L SoC")
+Cc: stable@vger.kernel.org
+Signed-off-by: default avatarClaudiu Beznea
+<claudiu.beznea.uj@bp.renesas.com>
+Signed-off-by: Hiep Pham <hiep.pham.zy@renesas.com>
+Signed-off-by: Huynh Thanh Hung <hung.huynh.wz@renesas.com>
+---
+ drivers/dma/sh/rz-dmac.c | 56 ++++++++++++++++++++++------------------
+ 1 file changed, 31 insertions(+), 25 deletions(-)
+
+diff --git a/drivers/dma/sh/rz-dmac.c b/drivers/dma/sh/rz-dmac.c
+index 5c54c0deb8d9..a1d7fadbf9f7 100644
+--- a/drivers/dma/sh/rz-dmac.c
++++ b/drivers/dma/sh/rz-dmac.c
+@@ -10,6 +10,7 @@
+  */
+ 
+ #include <linux/bitfield.h>
++#include <linux/cleanup.h>
+ #include <linux/console.h>
+ #include <linux/dma-mapping.h>
+ #include <linux/dmaengine.h>
+@@ -458,6 +459,7 @@ static int rz_dmac_alloc_chan_resources(struct dma_chan *chan)
+ 		if (!desc)
+ 			break;
+ 
++		/* No need to lock. This is called only for the 1st client. */
+ 		list_add_tail(&desc->node, &channel->ld_free);
+ 		channel->descs_allocated++;
+ 	}
+@@ -517,18 +519,20 @@ rz_dmac_prep_dma_memcpy(struct dma_chan *chan, dma_addr_t dest, dma_addr_t src,
+ 	dev_dbg(dmac->dev, "%s channel: %d src=0x%pad dst=0x%pad len=%zu\n",
+ 		__func__, channel->index, &src, &dest, len);
+ 
+-	if (list_empty(&channel->ld_free))
+-		return NULL;
++	scoped_guard(spinlock_irqsave, &channel->vc.lock) {
++		if (list_empty(&channel->ld_free))
++			return NULL;
+ 
+-	desc = list_first_entry(&channel->ld_free, struct rz_dmac_desc, node);
++		desc = list_first_entry(&channel->ld_free, struct rz_dmac_desc, node);
+ 
+-	desc->type = RZ_DMAC_DESC_MEMCPY;
+-	desc->src = src;
+-	desc->dest = dest;
+-	desc->len = len;
+-	desc->direction = DMA_MEM_TO_MEM;
++		desc->type = RZ_DMAC_DESC_MEMCPY;
++		desc->src = src;
++		desc->dest = dest;
++		desc->len = len;
++		desc->direction = DMA_MEM_TO_MEM;
+ 
+-	list_move_tail(channel->ld_free.next, &channel->ld_queue);
++		list_move_tail(channel->ld_free.next, &channel->ld_queue);
++	}
+ 	return vchan_tx_prep(&channel->vc, &desc->vd, flags);
+ }
+ 
+@@ -544,27 +548,29 @@ rz_dmac_prep_slave_sg(struct dma_chan *chan, struct scatterlist *sgl,
+ 	int dma_length = 0;
+ 	int i = 0;
+ 
+-	if (list_empty(&channel->ld_free))
+-		return NULL;
++	scoped_guard(spinlock_irqsave, &channel->vc.lock) {
++		if (list_empty(&channel->ld_free))
++			return NULL;
+ 
+-	desc = list_first_entry(&channel->ld_free, struct rz_dmac_desc, node);
++		desc = list_first_entry(&channel->ld_free, struct rz_dmac_desc, node);
+ 
+-	for_each_sg(sgl, sg, sg_len, i) {
+-		dma_length += sg_dma_len(sg);
+-	}
++		for_each_sg(sgl, sg, sg_len, i) {
++			dma_length += sg_dma_len(sg);
++		}
+ 
+-	desc->type = RZ_DMAC_DESC_SLAVE_SG;
+-	desc->sg = sgl;
+-	desc->sgcount = sg_len;
+-	desc->len = dma_length;
+-	desc->direction = direction;
++		desc->type = RZ_DMAC_DESC_SLAVE_SG;
++		desc->sg = sgl;
++		desc->sgcount = sg_len;
++		desc->len = dma_length;
++		desc->direction = direction;
+ 
+-	if (direction == DMA_DEV_TO_MEM)
+-		desc->src = channel->src_per_address;
+-	else
+-		desc->dest = channel->dst_per_address;
++		if (direction == DMA_DEV_TO_MEM)
++			desc->src = channel->src_per_address;
++		else
++			desc->dest = channel->dst_per_address;
+ 
+-	list_move_tail(channel->ld_free.next, &channel->ld_queue);
++		list_move_tail(channel->ld_free.next, &channel->ld_queue);
++	}
+ 	return vchan_tx_prep(&channel->vc, &desc->vd, flags);
+ }
+ 
+-- 
+2.25.1
+
