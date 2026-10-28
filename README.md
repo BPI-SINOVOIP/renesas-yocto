@@ -1,7 +1,7 @@
 
 # meta-bananapi
 
-Renesas Yocto/OpenEmbedded layer supporting the Banana Pi RZ/V2H, RZ/V2N and RZ/G3L platforms.
+Renesas Yocto/OpenEmbedded layer supporting the Bananapi AI2H and AI2N boards.
 
 Get the [bpi-build-v2h-yocto](https://github.com/BPI-SINOVOIP/bpi-build/tree/v2h-yocto) docker image for Source code building
 
@@ -21,7 +21,7 @@ Get the [bpi-build-v2h-yocto](https://github.com/BPI-SINOVOIP/bpi-build/tree/v2h
 
 Initialize a yocto build
 
-    $ git clone -b bpi-rz https://github.com/Dangku/renesas-yocto.git
+    $ git clone https://github.com/BPI-SINOVOIP/renesas-yocto.git
     $ cd renesas-yocto
 
 For the bananapi-ai2h and bananapi-ai2n machines, use the RZV template:
