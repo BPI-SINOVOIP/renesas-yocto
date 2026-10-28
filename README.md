@@ -1,29 +1,43 @@
-# renesas-yocto
 
-# bananapi-ai2h/bananapi-ai2n
+# meta-bananapi
 
-[Build instructions](meta-bananapi/README.md)
+Renesas Yocto/OpenEmbedded layer supporting the Banana Pi RZ/V2H, RZ/V2N and RZ/G3L platforms.
 
-# rzv2h/rzv2n
+Get the [bpi-build-v2h-yocto](https://github.com/BPI-SINOVOIP/bpi-build/tree/v2h-yocto) docker image for Source code building
 
-$ TEMPLATECONF=$PWD/meta-renesas/meta-rz-distro/conf/templates/vlp-v4-conf/ source poky/oe-init-build-env build
+    $ docker pull sinovoip/bpi-build-v2h-yocto:ubuntu20.04
+    $ docker run \
+        --pid=host \
+        --security-opt apparmor=rootlesskit \
+        -it \
+        -v /media:/media \
+        -v /etc/localtime:/etc/localtime:ro \
+        -v /dev:/dev \
+        -v /tmp:/tmp \
+        sinovoip/bpi-build-v2h-yocto:ubuntu20.04 \
+        /bin/bash
 
-$ patch -p1 < ../patch/0000-AI_SDK-settings.patch
+## build
 
-$ patch -p1 < ../patch/0001-tesseract.patch
+Initialize a yocto build
 
-$ patch -p1 < ../patch/0002-openmp.patch
+    $ git clone -b bpi-rz https://github.com/Dangku/renesas-yocto.git
+    $ cd renesas-yocto
 
-$ cp ${WORK}/src_setup/oss_pkg_rzv_*.7z ${YOCTO_WORK}
+For the bananapi-ai2h and bananapi-ai2n machines, use the RZV template:
 
-$ 7z x ${YOCTO_WORK}/oss_pkg_rzv_*.7z -o${YOCTO_WORK}/build
+    $ TEMPLATECONF=${PWD}/meta-bananapi/meta-renesas-bsp/conf/templates/rzv-conf-bananapi source poky/oe-init-build-env build
 
-$ MACHINE=rzv2n-evk bitbake core-image-weston
+Download [OSS package]() to $OSS_PKG_PATH and Decompress it to build directory.
 
-$ MACHINE=rzv2n-evk bitbake core-image-weston -c populate_sdk
+    $ 7z x $OSS_PKG_PATH/oss_pkg_rzv_*.7z -o.
 
-# rzg3l
+Run the following command to build the Yocto image. The generated files are
+located in `build/tmp/deploy/images/<board>`:
 
-$ TEMPLATECONF=$PWD/meta-renesas/meta-rz-distro/conf/templates/vlp-v5-conf/ source poky/oe-init-build-env build
+    $ MACHINE=<board> bitbake core-image-weston
 
-$ MACHINE=smarc-rzg3l bitbake core-image-weston
+Run the following command to build the cross-compiler installer. It is
+generated under `build/tmp/deploy/sdk/`:
+
+    $ MACHINE=<board> bitbake core-image-weston -c populate_sdk
