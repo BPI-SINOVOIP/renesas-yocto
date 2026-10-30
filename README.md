@@ -28,7 +28,7 @@ For the bananapi-ai2h and bananapi-ai2n machines, use the RZV template:
 
     $ TEMPLATECONF=${PWD}/meta-bananapi/meta-renesas-bsp/conf/templates/rzv-conf-bananapi source poky/oe-init-build-env build
 
-Download [OSS package]() to $OSS_PKG_PATH and Decompress it to build directory.
+Download OSS package from [BaiduPan(pincode:8888)](https://pan.baidu.com/s/1Q6qTbbPI0kPFkrjoeHREyg?pwd=8888) or [GoogleDrive](https://drive.google.com/drive/folders/1_GhTCvg8V3EAMUMb9f-H-K8HdEFi-H3w?usp=sharing) to $OSS_PKG_PATH and Decompress it to build directory.
 
     $ 7z x $OSS_PKG_PATH/oss_pkg_rzv_*.7z -o.
 
